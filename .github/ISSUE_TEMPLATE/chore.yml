@@ -1,0 +1,24 @@
+name: "환경 설정"
+description: 빌드, 패키지, 설정 등의 작업 사항을 작성해주세요.
+title: "[ Chore ] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        작성 예시 : "[ Chore ] ESLint 설정 추가"
+  - type: textarea
+    id: chore-description
+    attributes:
+      label: 🛠 작업 내용
+      description: 어떤 설정 또는 환경 관련 작업을 하려는지 작성해주세요.
+      placeholder: 작업 목적과 내용을 작성해주세요.
+    validations:
+      required: true
+  - type: textarea
+    id: chore-list
+    attributes:
+      label: 📝 To-do
+      description: 작업에 필요한 세부 항목을 체크리스트로 작성해주세요.
+      placeholder: 예) - [ ] tailwind.config.js 수정\n- [ ] .env 추가
+    validations:
+      required: true
