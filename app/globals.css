@@ -1,26 +1,44 @@
 @import "tailwindcss";
+@tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+html,
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  max-width: 768px;
+  margin: 0 auto;
+  min-height: 100vh;
+  max-height: 100vh;
+  /*overflow-y: hidden;*/
+  word-break: keep-all;
+  border: 1px solid red;
+}
+* {
+  box-sizing: border-box;
+}
+
+/* Custom Colors */
+@theme{
+  --color-primary:      #33C4A8;
+  --color-primary-2:    #EAF9F6;
+  --color-primary-50:   #e6fbf8;
+  --color-primary-100:  #c0f4ec;
+  --color-primary-200:  #99ecdf;
+  --color-primary-300:  #66e1d0;
+  --color-primary-400:  #33d5c1;
+  --color-primary-500:  #33C4A8;
+  --color-primary-600:  #2da890;
+  --color-primary-700:  #258c78;
+  --color-primary-800:  #1e7161;
+  --color-primary-900:  #185c4f;
+
+  --color-gray: #4C525D;
+  --color-gray-2: #E9E9E9;
+  --color-gray-3: #F3F4F6;
+  --color-subtitle:  #8B8B8B;
+  --color-hana-red: #DC221E;
+  --color-hana-green: #009178;
+
+  --color-blue: #155DFC;
+  --color-blue-light: #DDE8FF;
+  --color-green-light: #2EBF72;
+
 }
