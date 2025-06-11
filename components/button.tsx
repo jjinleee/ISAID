@@ -1,5 +1,5 @@
-'use client';
 import type { ButtonProps } from '@/types/components.ts';
+// onClick event 가 있는 컴포넌트입니다. 부모 컴포넌트에서 use client 선언을 해주셔야 오류 없이 사용 가능합니다.
 // ex) <Button
 //   text={'thin={true} active={true}'}
 //   thin={true}
@@ -18,7 +18,7 @@ export const Button = ({ text, thin, active, onClick }: ButtonProps) => {
               : 'py-4 bg-hana-green text-white'
         }`;
   return (
-    <div className={className.trim()} {...(onClick ? { onClick } : {})}>
+    <div className={className.trim()} {...(onClick && { onClick })}>
       {text}
     </div>
   );

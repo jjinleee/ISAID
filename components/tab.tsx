@@ -1,4 +1,4 @@
-import type { TabProps } from '../types/components.ts';
+import type { TabProps } from '@/types/components.ts';
 
 // ex) <Tab text="기본정보" active={false} rounded={false} />
 export const Tab = ({ text, rounded, active }: TabProps) => {

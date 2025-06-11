@@ -1,4 +1,4 @@
-import type { InputProps } from '../types/components.ts';
+import type { InputProps } from '@/types/components.ts';
 
 // ex) <Input type="number" thin={true} placeholder={'input placeholder'} />
 export const Input = ({ thin, type, placeholder }: InputProps) => {
