@@ -16,16 +16,33 @@ export const authOptions: AuthOptions = {
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
+        console.log("함수호출");
         const result = LoginSchema.safeParse(credentials);
-        if (!result.success) return null;
+        if (!result.success) {
+          console.log('❌ 유효성 검사 실패:', result.error);
+          return null;
+        }
 
         const { email, password } = result.data;
         const user = await getUserByEmail(email);
-        if (!user || !user.password) return null;
+
+        if (!user) {
+          console.log('❌ 사용자 없음:', email);
+          return null;
+        }
+
+        if (!user.password) {
+          console.log('❌ 사용자에 비밀번호 없음');
+          return null;
+        }
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!isPasswordValid) return null;
+        if (!isPasswordValid) {
+          console.log('❌ 비밀번호 불일치');
+          return null;
+        }
 
+        console.log('✅ 로그인 성공:', email);
         return {
           id: user.user_id,
           name: user.name,
@@ -34,9 +51,9 @@ export const authOptions: AuthOptions = {
       },
     }),
   ],
-  pages: {
-    signIn: '/login',
-  },
+  // pages: {
+  //   signIn: '/login',
+  // },
   secret: process.env.AUTH_SECRET,
   session: {
     strategy: 'jwt',
