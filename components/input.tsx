@@ -1,7 +1,8 @@
+'use client';
 import type { InputProps } from '@/types/components.ts';
 
 // ex) <Input type="number" thin={true} placeholder={'input placeholder'} />
-export const Input = ({ thin, type, placeholder }: InputProps) => {
+export const Input = ({ thin, type, placeholder, name }: InputProps) => {
   // type : number 일 경우 -> 좌측에 스크롤 버튼이 뜨지 않도록
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (type === 'number') {
@@ -45,6 +46,7 @@ export const Input = ({ thin, type, placeholder }: InputProps) => {
 
   return (
     <input
+      name={name}
       type={type !== 'number' ? type : 'text'}
       placeholder={placeholder}
       onKeyDown={handleKeyDown}

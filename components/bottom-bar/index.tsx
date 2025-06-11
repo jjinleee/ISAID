@@ -17,7 +17,7 @@ export const BottomBar = () => {
   const pathname = usePathname();
   return (
     <div
-      className="fixed bottom-0 w-full flex justify-around
+      className="fixed bottom-0 w-full flex justify-around inset-x-0
       items-center border-t border-t-hana-green bg-white
       "
     >

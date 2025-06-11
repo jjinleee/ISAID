@@ -10,13 +10,16 @@ export type InputProps = {
   thin: boolean;
   type: string;
   placeholder: string;
+  name: string;
 };
 
 export type ButtonProps = {
   text: string;
   thin: boolean;
   active: boolean;
+  disabled?: boolean;
   onClick?: () => void;
+  type?: string;
 };
 
 export type QuestionOptionProps = {
