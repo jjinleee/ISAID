@@ -2,8 +2,6 @@ import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import bcrypt from 'bcryptjs';
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
-import GitHub from 'next-auth/providers/github';
-import Google from 'next-auth/providers/google';
 
 import { getUserByEmail } from './data/user';
 import { prisma } from './lib/prisma';
@@ -19,8 +17,6 @@ export const {
   adapter: PrismaAdapter(prisma),
   trustHost: true,
   providers: [
-    Google,
-    GitHub,
     Credentials({
       name: 'Credentials',
       credentials: {
