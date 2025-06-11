@@ -1,6 +1,6 @@
-name: "[ Chore ] 환경 설정"
+name: '[ Chore ] 환경 설정'
 description: 빌드, 패키지, 설정 등의 작업 사항을 작성해주세요.
-title: "[ Chore ] "
+title: '[ Chore ] '
 body:
   - type: markdown
     attributes:

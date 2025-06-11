@@ -1,5 +1,5 @@
-import { clsx } from 'clsx';
 import type { CircleProps } from '@/types/components.ts';
+import { clsx } from 'clsx';
 
 export const CircleEmpty = ({ className = '' }: CircleProps) => (
   <svg

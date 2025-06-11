@@ -1,7 +1,7 @@
-import type { QuestionOptionProps } from '@/types/components.ts';
-import { Button } from '@/components/ui/button';
 import { CircleCheck } from '@/public/images/circle-check';
 import { CircleEmpty } from '@/public/images/circle-empty';
+import type { QuestionOptionProps } from '@/types/components.ts';
+import { Button } from '@/components/ui/button';
 
 // onClick event 가 있는 컴포넌트입니다. 부모 컴포넌트에서 use client 선언을 해주셔야 오류 없이 사용 가능합니다.
 // ex) <QuestionOption

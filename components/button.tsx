@@ -1,4 +1,5 @@
 import type { ButtonProps } from '@/types/components.ts';
+
 // onClick event 가 있는 컴포넌트입니다. 부모 컴포넌트에서 use client 선언을 해주셔야 오류 없이 사용 가능합니다.
 // ex) <Button
 //   text={'thin={true} active={true}'}
