@@ -1,12 +1,11 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import BottomTab from '@/components/bottom-tab';
+import BottomTab from './bottom-tab';
 import PiggyBank from '@/public/images/piggy-bank';
 import Home from '@/public/images/home';
 import BottomChart from '@/public/images/bottom-chart';
 import Link from 'next/link';
-
 
 const items = [
   { to: '/isa', text: 'ISA', icon: PiggyBank },
@@ -24,19 +23,11 @@ export const BottomBar = () => {
     >
       {items.map(({ to, text, icon: Icon }) => {
         const isActive =
-          to === '/'
-            ? pathname === '/'
-            : pathname.startsWith(to);
+          to === '/' ? pathname === '/' : pathname.startsWith(to);
         return (
           <Link href={to} key={to}>
-            <BottomTab
-              key={to}
-              active={isActive}
-              text={text}
-              Icon={Icon}
-            />
+            <BottomTab key={to} active={isActive} text={text} Icon={Icon} />
           </Link>
-
         );
       })}
     </div>
