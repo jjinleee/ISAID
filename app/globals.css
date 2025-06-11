@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 @tailwind utilities;
 
 html,
@@ -42,3 +43,4 @@ body {
   --color-green-light: #2EBF72;
 
 }
+
