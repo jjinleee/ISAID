@@ -6,7 +6,7 @@ import BackIcon from '@/public/images/back-icon';
 import MenuIcon from '@/public/images/menu-icon';
 import { HeaderBarProps } from '@/types/components';
 
-const HeaderBar = ({ title, subtitle }: HeaderBarProps) => {
+const HeaderBar = ({ title, subtitle, onMenuClick }: HeaderBarProps) => {
   const router = useRouter();
 
   return (
@@ -23,7 +23,9 @@ const HeaderBar = ({ title, subtitle }: HeaderBarProps) => {
           </div>
         </div>
 
-        <MenuIcon />
+        <button onClick={onMenuClick} className='cursor-pointer'>
+          <MenuIcon />
+        </button>
       </div>
     </div>
   );
