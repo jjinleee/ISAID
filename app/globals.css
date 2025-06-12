@@ -1,5 +1,5 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
 @tailwind utilities;
 
 html,
@@ -17,31 +17,28 @@ body {
 }
 
 /* Custom Colors */
-@theme{
-  --color-primary:      #33C4A8;
-  --color-primary-2:    #EAF9F6;
-  --color-primary-50:   #e6fbf8;
-  --color-primary-100:  #c0f4ec;
-  --color-primary-200:  #99ecdf;
-  --color-primary-300:  #66e1d0;
-  --color-primary-400:  #33d5c1;
-  --color-primary-500:  #33C4A8;
-  --color-primary-600:  #2da890;
-  --color-primary-700:  #258c78;
-  --color-primary-800:  #1e7161;
-  --color-primary-900:  #185c4f;
+@theme {
+  --color-primary: #33c4a8;
+  --color-primary-2: #eaf9f6;
+  --color-primary-50: #e6fbf8;
+  --color-primary-100: #c0f4ec;
+  --color-primary-200: #99ecdf;
+  --color-primary-300: #66e1d0;
+  --color-primary-400: #33d5c1;
+  --color-primary-500: #33c4a8;
+  --color-primary-600: #2da890;
+  --color-primary-700: #258c78;
+  --color-primary-800: #1e7161;
+  --color-primary-900: #185c4f;
 
-  --color-gray: #4C525D;
-  --color-gray-2: #E9E9E9;
-  --color-gray-3: #F3F4F6;
-  --color-gray-4: #5A5A5A;
-  --color-subtitle:  #8B8B8B;
-  --color-hana-red: #DC221E;
+  --color-gray: #4c525d;
+  --color-gray-2: #e9e9e9;
+  --color-gray-3: #f3f4f6;
+  --color-subtitle: #8b8b8b;
+  --color-hana-red: #dc221e;
   --color-hana-green: #009178;
 
-  --color-blue: #155DFC;
-  --color-blue-light: #DDE8FF;
-  --color-green-light: #2EBF72;
-
+  --color-blue: #155dfc;
+  --color-blue-light: #dde8ff;
+  --color-green-light: #2ebf72;
 }
-
