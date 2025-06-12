@@ -9,6 +9,7 @@ import AddressSearch from './address-modal';
 
 export interface FormData {
   name: string;
+  nameEng: string;
   rrn: string;
   phone: string;
   verificationCode: string;
@@ -20,6 +21,7 @@ export interface FormData {
 
 interface ValidationErrors {
   name: boolean;
+  nameEng: boolean;
   phone: boolean;
   verificationCode: boolean;
   address: boolean;
@@ -32,6 +34,7 @@ export default function RegisterForm() {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<FormData>({
     name: '',
+    nameEng: '',
     rrn: '',
     phone: '',
     verificationCode: '',
@@ -43,6 +46,7 @@ export default function RegisterForm() {
 
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>({
     name: false,
+    nameEng: false,
     phone: false,
     verificationCode: false,
     address: false,
@@ -67,6 +71,11 @@ export default function RegisterForm() {
     switch (field) {
       case 'name':
         return value.trim().length > 0;
+
+      case 'nameEng':
+        return (
+          value === '' || (/^[A-Z ]+$/.test(value) && value.trim().length > 0)
+        );
 
       case 'rrn':
         return /^[0-9]{13}$/.test(value);
@@ -95,6 +104,16 @@ export default function RegisterForm() {
   };
 
   const handleInputChange = (field: keyof FormData, value: string) => {
+    if (field === 'nameEng') {
+      const raw = value.replace(/[^A-Za-z ]/g, '').toUpperCase();
+      setFormData((prev) => ({ ...prev, nameEng: raw }));
+      setValidationErrors((prev) => ({
+        ...prev,
+        nameEng: !validateField('nameEng', raw),
+      }));
+      return;
+    }
+
     if (field === 'phone') {
       const raw = value.replace(/\D/g, ''); // 숫자만 추출
       setFormData((prev) => ({ ...prev, [field]: raw }));
@@ -135,10 +154,7 @@ export default function RegisterForm() {
         validateField('verificationCode', formData.verificationCode)
       );
     }
-    console.log(
-      "validateField('verificationCode', formData.verificationCode) :",
-      validateField('verificationCode', formData.verificationCode)
-    );
+
     if (currentField === 'email') {
       return (
         validateField('email', formData.email) &&
@@ -206,7 +222,7 @@ export default function RegisterForm() {
       >
         <ArrowLeft />
       </div>
-      <div className="flex pt-10 gap-2 px-4 mb-8">
+      <div className="flex pt-10 gap-2 px-4 mb-12 border border-black">
         {steps.map((_, index) => (
           <div
             key={index}
@@ -229,12 +245,12 @@ export default function RegisterForm() {
             className="flex transition-transform duration-300 ease-in-out"
             style={{ transform: `translateX(-${currentStep * 100}%)` }}
           >
-            <div className="w-full flex-shrink-0 font-light">
-              <h1 className="text-xl mb-8">이름을 입력해주세요</h1>
-              <div className="space-y-2">
-                <Label htmlFor="name" className="text-gray-600">
-                  이름
-                </Label>
+            <div className="w-full flex-shrink-0 flex flex-col gap-3">
+              <h1 className="text-xl mb-8 font-light">이름을 입력해주세요</h1>
+              <div className="flex flex-col gap-1">
+                <span className="text-gray-500 text-sm">
+                  이름을 입력해주세요.
+                </span>
                 <CustomInput
                   type="text"
                   thin={true}
@@ -245,12 +261,30 @@ export default function RegisterForm() {
                   onChange={handleInputChange}
                 />
               </div>
+              <div className="flex flex-col gap-1">
+                <p className="text-gray-500 text-sm ">
+                  영문 이름을 입력해주세요.
+                </p>
+                <CustomInput
+                  type="text"
+                  thin={true}
+                  placeholder="이름을 입력해주세요"
+                  name="nameEng"
+                  field="nameEng"
+                  value={formData.nameEng}
+                  onChange={handleInputChange}
+                />
+              </div>
             </div>
 
-            <div className="w-full flex-shrink-0 font-light">
-              <h1 className="text-xl mb-2">주민등록번호를 입력해주세요</h1>
-              <p className="text-sm mb-8">금융 서비스 이용을 위해 필요해요.</p>
-              <div className="space-y-2">
+            <div className="w-full flex-shrink-0">
+              <h1 className="text-xl font-light mb-8">
+                주민등록번호를 입력해주세요
+              </h1>
+              <p className="text-gray-500 text-sm mb-2">
+                금융 서비스 이용을 위해 필요해요.
+              </p>
+              <div className="">
                 <CustomInput
                   type="text"
                   thin={true}
@@ -264,12 +298,14 @@ export default function RegisterForm() {
               </div>
             </div>
 
-            <div className="w-full flex-shrink-0 font-light">
-              <h1 className="text-xl mb-2">인증번호를 입력해주세요.</h1>
-              <p className="text-gray-500 text-sm mb-8">
+            <div className="w-full flex-shrink-0">
+              <h1 className="text-xl mb-8 font-light">
+                인증번호를 입력해주세요.
+              </h1>
+              <p className="text-gray-500 text-sm mb-2">
                 본인 확인을 위해 필요해요.
               </p>
-              <div className="space-y-4">
+              <div className="">
                 <div className="flex gap-2 ">
                   <div className="flex-1">
                     <CustomInput
@@ -290,8 +326,8 @@ export default function RegisterForm() {
                     인증번호 전송
                   </Button>
                 </div>
-                <div className="space-y-2">
-                  <p className="text-gray-500 text-sm">인증 번호</p>
+                <div className="">
+                  <p className="text-gray-500 text-sm mb-2">인증 번호</p>
                   <CustomInput
                     type="number"
                     thin={true}
@@ -305,9 +341,9 @@ export default function RegisterForm() {
               </div>
             </div>
 
-            <div className="w-full flex-shrink-0 font-light">
-              <h1 className="text-xl mb-2">주소를 입력해주세요.</h1>
-              <p className="text-gray-500 text-sm mb-8">
+            <div className="w-full flex-shrink-0">
+              <h1 className="text-xl  mb-8 font-light">주소를 입력해주세요.</h1>
+              <p className="text-gray-500 text-sm mb-2">
                 본인 확인을 위해 필요해요.
               </p>
               <div className="space-y-2">
@@ -325,9 +361,11 @@ export default function RegisterForm() {
               </div>
             </div>
 
-            <div className="w-full flex-shrink-0 font-light">
-              <h1 className="text-xl mb-2">본인 인증을 완료해주세요.</h1>
-              <p className="text-gray-500 text-sm mb-8">
+            <div className="w-full flex-shrink-0">
+              <h1 className="text-xl mb-2 font-light">
+                본인 인증을 완료해주세요.
+              </h1>
+              <p className="text-gray-500 text-sm mb-2">
                 마지막 단계에요! 거의 다 왔어요.
               </p>
               <div className="space-y-6">
