@@ -10,7 +10,7 @@ interface Props {
 }
 
 const CONTENT_MAX = 768; // 본문 최대 폭 (px)
-const SIDEBAR_W = 256; // w-64 → 16 rem = 256 px
+const SIDEBAR_W = 320; // w-64 → 16 rem = 256 px
 
 /* 컨테이너의 left offset 계산 (768px 콘텐츠 영역의 시작점) */
 const calcContainerLeft = () => {
@@ -49,7 +49,7 @@ export default function Sidebar({ isOpen, onClose }: Props) {
         <>
           {/* 오버레이 - 전체 화면 덮음 */}
           <motion.div
-            className={`fixed inset-0 z-30 bg-[#424242]/50 ${
+            className={`fixed inset-0 z-30 bg-black/40 ${
               isMobile ? '' : 'max-w-[768px]'
             }`}
             style={
@@ -70,7 +70,7 @@ export default function Sidebar({ isOpen, onClose }: Props) {
           {isMobile ? (
             /* 모바일: 전체 화면 오른쪽에서 슬라이드 */
             <motion.aside
-              className='fixed inset-y-0 right-0 z-40 w-64 bg-white shadow-xl'
+              className='fixed inset-y-0 right-0 z-40 w-80 bg-white shadow-xl'
               initial={{ x: SIDEBAR_W }}
               animate={{ x: 0 }}
               exit={{ x: SIDEBAR_W }}
@@ -85,13 +85,13 @@ export default function Sidebar({ isOpen, onClose }: Props) {
           ) : (
             /* 데스크톱: 768px 마스킹 컨테이너 내에서 슬라이드 */
             <div
-              className='fixed inset-y-0 z-40 w-full max-w-[768px] overflow-hidden'
+              className='fixed inset-y-0 z-40 w-full max-w-[768px] overflow-hidden pointer-events-none'
               style={{
                 left: `${containerLeft}px`,
               }}
             >
               <motion.aside
-                className='absolute inset-y-0 w-64 bg-white shadow-xl'
+                className='absolute inset-y-0 w-80 bg-white shadow-xl'
                 initial={{
                   x: CONTENT_MAX,
                 }}
@@ -120,67 +120,107 @@ export default function Sidebar({ isOpen, onClose }: Props) {
 /* 사이드바 콘텐츠 컴포넌트 분리 */
 function SidebarContent({ onClose }: { onClose: () => void }) {
   return (
-    <>
-      {/* 헤더 */}
-      <div className='flex items-center justify-between p-4 border-b border-gray-200'>
-        <h2 className='text-lg font-semibold text-gray-800'>메뉴</h2>
+    <div className='h-full bg-white flex flex-col overflow-y-auto scrollbar-hide'>
+      {/* 프로필 헤더 */}
+      <div className='bg-primary text-white p-4 relative'>
         <button
           aria-label='닫기'
           onClick={onClose}
-          className='text-gray-500 hover:text-gray-700 text-xl font-light w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors'
+          className='absolute top-4 right-4 text-white hover:text-gray-200 text-xl w-6 h-6 flex items-center justify-center'
         >
           ✕
         </button>
+        <div className='flex items-center space-x-3 mb-3'>
+          <div className='w-12 h-12 bg-white rounded-full flex items-center justify-center overflow-hidden'>
+            <div className='w-10 h-10 bg-orange-200 rounded-full flex items-center justify-center text-orange-600 text-sm font-medium'>
+              🐶
+            </div>
+          </div>
+          <div>
+            <div className='font-medium text-lg'>000님</div>
+            <div className='text-teal-100 text-sm'>안녕하세요</div>
+          </div>
+        </div>
       </div>
 
-      {/* 메뉴 리스트 */}
-      <nav className='flex flex-col py-4'>
-        <Link
-          href='/'
-          onClick={onClose}
-          className='px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors border-l-4 border-transparent hover:border-blue-500'
-        >
-          홈
-        </Link>
-        <a
-          href='/mypage'
-          onClick={onClose}
-          className='px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors border-l-4 border-transparent hover:border-blue-500'
-        >
-          마이페이지
-        </a>
-        <a
-          href='/about'
-          onClick={onClose}
-          className='px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors border-l-4 border-transparent hover:border-blue-500'
-        >
-          소개
-        </a>
-        <a
-          href='/contact'
-          onClick={onClose}
-          className='px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors border-l-4 border-transparent hover:border-blue-500'
-        >
-          연락처
-        </a>
-        <div className='px-6 py-4'>
-          <div className='border-t border-gray-200'></div>
+      {/* 메뉴 섹션 */}
+      <div className='flex-1 bg-gray-50'>
+        {/* 내 정보 섹션 */}
+        <div className='bg-white mb-2'>
+          <div className='px-4 py-3 text-xs font-medium text-gray-500 border-b border-gray-100'>
+            내 정보
+          </div>
+          <MenuItem icon='👤' label='내 정보 보기' onClick={onClose} />
         </div>
-        <a
-          href='/settings'
-          onClick={onClose}
-          className='px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors border-l-4 border-transparent hover:border-blue-500'
-        >
-          설정
-        </a>
-        <a
-          href='/logout'
-          onClick={onClose}
-          className='px-6 py-3 text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors border-l-4 border-transparent hover:border-red-500'
-        >
-          로그아웃
-        </a>
-      </nav>
-    </>
+
+        {/* ISA 섹션 */}
+        <div className='bg-white mb-2'>
+          <div className='px-4 py-3 text-xs font-medium text-gray-500 border-b border-gray-100'>
+            ISA
+          </div>
+          <MenuItem icon='📚' label='금융초보가이드' onClick={onClose} />
+          <MenuItem icon='📈' label='상품 추천' onClick={onClose} />
+          <MenuItem icon='📊' label='절세 계산기' onClick={onClose} />
+        </div>
+
+        {/* ETF 섹션 */}
+        <div className='bg-white mb-2'>
+          <div className='px-4 py-3 text-xs font-medium text-gray-500 border-b border-gray-100'>
+            ETF
+          </div>
+          <MenuItem icon='⏰' label='테마 추천' onClick={onClose} />
+          <MenuItem icon='📊' label='백테스팅' onClick={onClose} />
+        </div>
+
+        {/* 하단 메뉴 */}
+        <div className='bg-white'>
+          <MenuItem icon='⚙️' label='설정' onClick={onClose} />
+          <MenuItem
+            icon='🚪'
+            label='로그아웃'
+            onClick={onClose}
+            className='text-red-500'
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* 메뉴 아이템 컴포넌트 */
+function MenuItem({
+  icon,
+  label,
+  onClick,
+  className = '',
+}: {
+  icon: string;
+  label: string;
+  onClick: () => void;
+  className?: string;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`w-full flex items-center justify-between px-4 py-4 hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-b-0 ${className}`}
+    >
+      <div className='flex items-center space-x-3'>
+        <span className='text-lg'>{icon}</span>
+        <span className='text-gray-800 font-medium'>{label}</span>
+      </div>
+      <svg
+        className='w-4 h-4 text-gray-400'
+        fill='none'
+        stroke='currentColor'
+        viewBox='0 0 24 24'
+      >
+        <path
+          strokeLinecap='round'
+          strokeLinejoin='round'
+          strokeWidth={2}
+          d='M9 5l7 7-7 7'
+        />
+      </svg>
+    </button>
   );
 }
