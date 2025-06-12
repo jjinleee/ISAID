@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { redirect } from 'next/navigation';
 import ArrowLeft from '@/public/images/arrow-left.svg';
 import { CustomInput } from '@/components/input';
 import { Button } from '@/components/ui/button';
@@ -14,6 +15,7 @@ export interface FormData {
   phone: string;
   verificationCode: string;
   address: string;
+  telNo: string;
   email: string;
   password: string;
   passwordConfirm: string;
@@ -25,6 +27,7 @@ interface ValidationErrors {
   phone: boolean;
   verificationCode: boolean;
   address: boolean;
+  telNo: boolean;
   email: boolean;
   password: boolean;
   passwordConfirm: boolean;
@@ -39,6 +42,7 @@ export default function RegisterForm() {
     phone: '',
     verificationCode: '',
     address: '',
+    telNo: '',
     email: '',
     password: '',
     passwordConfirm: '',
@@ -50,6 +54,7 @@ export default function RegisterForm() {
     phone: false,
     verificationCode: false,
     address: false,
+    telNo: false,
     email: false,
     password: false,
     passwordConfirm: false,
@@ -58,6 +63,8 @@ export default function RegisterForm() {
 
   const [showPasswordError, setShowPasswordError] = useState(false);
   const [isCodeSent, setIsCodeSent] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const steps: (keyof FormData)[] = [
     'name',
@@ -89,6 +96,9 @@ export default function RegisterForm() {
       case 'address':
         return value.trim().length > 0;
 
+      case 'telNo':
+        return value === '' || /^\d{2,10}$/.test(value);
+
       case 'email':
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
@@ -104,16 +114,6 @@ export default function RegisterForm() {
   };
 
   const handleInputChange = (field: keyof FormData, value: string) => {
-    if (field === 'nameEng') {
-      const raw = value.replace(/[^A-Za-z ]/g, '').toUpperCase();
-      setFormData((prev) => ({ ...prev, nameEng: raw }));
-      setValidationErrors((prev) => ({
-        ...prev,
-        nameEng: !validateField('nameEng', raw),
-      }));
-      return;
-    }
-
     if (field === 'phone') {
       const raw = value.replace(/\D/g, ''); // 숫자만 추출
       setFormData((prev) => ({ ...prev, [field]: raw }));
@@ -166,10 +166,46 @@ export default function RegisterForm() {
     return validateField(currentField, formData[currentField]);
   };
 
-  const handleNext = () => {
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      const res = await fetch('/api/auth/join', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name,
+          eng_name: formData.nameEng,
+          email: formData.email,
+          password: formData.password,
+          rrn: formData.rrn,
+          phone: formData.phone,
+          address: formData.address,
+          telno: formData.telNo,
+        }),
+      });
+
+      const result = await res.json();
+      if (!res.ok) {
+        throw new Error(result.error || '알 수 없는 서버 오류');
+      }
+
+      console.log('회원가입 성공:', result.user_id);
+      redirect('/');
+    } catch (err: any) {
+      setSubmitError(err.message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleNext = async () => {
     if (currentStep < steps.length - 1) {
       setCurrentStep((prev) => prev + 1);
     } else {
+      const res = await handleSubmit();
+      console.log('res : ', res);
       console.log('Form submitted:', formData);
     }
   };
@@ -212,6 +248,28 @@ export default function RegisterForm() {
     if (numbers.length <= 7)
       return `${numbers.slice(0, 3)}-${numbers.slice(3)}`;
     return `${numbers.slice(0, 3)}-${numbers.slice(3, 7)}-${numbers.slice(7, 11)}`;
+  };
+
+  const formatTelNo = (value: string) => {
+    const digits = value.replace(/\D/g, '').slice(0, 10);
+    if (!digits) return '';
+
+    const areaLen = digits.startsWith('02') ? 2 : 3;
+    const area = digits.slice(0, areaLen);
+    const rest = digits.slice(areaLen);
+
+    const len = rest.length;
+    if (len <= 4) {
+      return area + rest;
+    }
+
+    if (len <= 6) {
+      return `${area}-${rest.slice(0, 4)}-${rest.slice(4)}`;
+    }
+
+    const prefix = rest.slice(0, len - 4);
+    const suffix = rest.slice(len - 4);
+    return `${area}-${prefix}-${suffix}`;
   };
 
   return (
@@ -263,7 +321,7 @@ export default function RegisterForm() {
               </div>
               <div className="flex flex-col gap-1">
                 <p className="text-gray-500 text-sm ">
-                  영문 이름을 입력해주세요.
+                  영문 이름을 입력해주세요. (선택)
                 </p>
                 <CustomInput
                   type="text"
@@ -359,6 +417,22 @@ export default function RegisterForm() {
                   />
                 </div>
               </div>
+
+              <div className="space-y-2">
+                <span className="text-gray-500 text-sm">
+                  자택 번호를 입력해주세요. (선택)
+                </span>
+                <CustomInput
+                  type="number"
+                  thin={true}
+                  placeholder="02-913-9112"
+                  name="telNo"
+                  field="telNo"
+                  value={formData.telNo}
+                  displayValue={formatTelNo(formData.telNo)}
+                  onChange={handleInputChange}
+                />
+              </div>
             </div>
 
             <div className="w-full flex-shrink-0">
@@ -444,13 +518,16 @@ export default function RegisterForm() {
 
       <Button
         onClick={handleNext}
-        disabled={!isCurrentStepValid()}
+        disabled={!isCurrentStepValid() || isSubmitting}
         className={`w-full py-4 font-medium 
           fixed bottom-0 left-0 right-0 pt-5 pb-10  hover:bg-primary 
           ${isCurrentStepValid() ? 'bg-primary text-white' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}
       >
         {currentStep === steps.length - 1 ? '시작하기' : '다음으로'}
       </Button>
+      {submitError && (
+        <p className="mt-2 text-center text-sm text-red-500">{submitError}</p>
+      )}
 
       {showAddressModal && (
         <AddressSearch

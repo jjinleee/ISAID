@@ -1,23 +1,19 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
+import { prisma } from '@/lib/prisma';
 
 export async function POST(req: Request) {
   try {
     const data = await req.json();
-    const {
-      name,
-      eng_name,
-      email,
-      password,
-      rrn,
-      phone,
-      address,
-      telno,
-    } = data;
+    const { name, eng_name, email, password, rrn, phone, address, telno } =
+      data;
+    console.log('data : ', data);
 
     if (!name || !email || !password || !rrn || !phone || !address) {
-      return NextResponse.json({ error: '필수 항목이 누락되었습니다.' }, { status: 400 });
+      return NextResponse.json(
+        { error: '필수 항목이 누락되었습니다.' },
+        { status: 400 }
+      );
     }
 
     // 중복 이메일 체크
@@ -25,7 +21,10 @@ export async function POST(req: Request) {
       where: { email },
     });
     if (existingUser) {
-      return NextResponse.json({ error: '이미 존재하는 이메일입니다.' }, { status: 409 });
+      return NextResponse.json(
+        { error: '이미 존재하는 이메일입니다.' },
+        { status: 409 }
+      );
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -43,7 +42,10 @@ export async function POST(req: Request) {
       },
     });
 
-    return NextResponse.json({ message: '회원가입 성공', user_id: newUser.user_id }, { status: 201 });
+    return NextResponse.json(
+      { message: '회원가입 성공', user_id: newUser.user_id },
+      { status: 201 }
+    );
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
