@@ -13,6 +13,8 @@ export type InputProps = {
   placeholder: string;
   name: string;
   field: keyof FormData;
+  value?: string;
+  displayValue?: string;
   onChange: (field: keyof FormData, value: string) => void;
 };
 

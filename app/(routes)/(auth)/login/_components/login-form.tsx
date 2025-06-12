@@ -1,10 +1,11 @@
 'use client';
+
 import { useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { login } from '@/app/actions/login';
-import Input from '@/components/input';
 import StarBoy from '@/public/images/star-boy.svg';
 import Button from '@/components/button';
+import { Input } from '@/components/ui/input';
 
 function SubmitButton() {
   const { pending } = useFormStatus();
