@@ -2,7 +2,6 @@ import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import { AuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { prisma } from './prisma';
-import { LoginSchema } from './schemas/auth';
 import { getUserByEmail } from '@/data/user';
 import bcrypt from 'bcryptjs';
 
@@ -16,23 +15,18 @@ export const authOptions: AuthOptions = {
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
-        console.log("함수호출");
-        const result = LoginSchema.safeParse(credentials);
-        if (!result.success) {
-          console.log('❌ 유효성 검사 실패:', result.error);
+        console.log('🔍 받은 credentials:', credentials);
+        const email = credentials?.email?.toLowerCase().trim();
+        const password = credentials?.password?.trim();
+
+        if (!email || !password) {
+          console.log('❌ 이메일 또는 비밀번호 누락');
           return null;
         }
 
-        const { email, password } = result.data;
         const user = await getUserByEmail(email);
-
-        if (!user) {
-          console.log('❌ 사용자 없음:', email);
-          return null;
-        }
-
-        if (!user.password) {
-          console.log('❌ 사용자에 비밀번호 없음');
+        if (!user || !user.password) {
+          console.log('❌ 사용자 없음 또는 비밀번호 미설정');
           return null;
         }
 
@@ -42,7 +36,6 @@ export const authOptions: AuthOptions = {
           return null;
         }
 
-        console.log('✅ 로그인 성공:', email);
         return {
           id: user.user_id,
           name: user.name,
@@ -51,9 +44,9 @@ export const authOptions: AuthOptions = {
       },
     }),
   ],
-  // pages: {
-  //   signIn: '/login',
-  // },
+  pages: {
+    signIn: '/login',
+  },
   secret: process.env.AUTH_SECRET,
   session: {
     strategy: 'jwt',
