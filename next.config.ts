@@ -1,4 +1,4 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
 
@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
       use: ['@svgr/webpack'],
     });
     return config;
-  }
+  },
 };
 
 export default nextConfig;

@@ -1,6 +1,6 @@
-name: "[ Feat ] 기능 추가"
+name: '[ Feat ] 기능 추가'
 description: 기능 추가 작업 사항을 작성해주세요.
-title: "[ Feat ] "
+title: '[ Feat ] '
 body:
   - type: markdown
     attributes:

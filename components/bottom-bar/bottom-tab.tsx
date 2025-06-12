@@ -1,4 +1,5 @@
 import type { BottomTabProps } from '@/types/components.ts';
+
 export const BottomTab = ({ Icon, text, active, onClick }: BottomTabProps) => {
   return (
     <div
