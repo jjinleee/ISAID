@@ -7,7 +7,6 @@ export async function POST(req: Request) {
     const data = await req.json();
     const { name, eng_name, email, password, rrn, phone, address, telno } =
       data;
-    console.log('data : ', data);
 
     if (!name || !email || !password || !rrn || !phone || !address) {
       return NextResponse.json(

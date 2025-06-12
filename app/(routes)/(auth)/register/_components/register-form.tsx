@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { redirect } from 'next/navigation';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import ArrowLeft from '@/public/images/arrow-left.svg';
 import { CustomInput } from '@/components/input';
 import { Button } from '@/components/ui/button';
@@ -65,6 +65,8 @@ export default function RegisterForm() {
   const [isCodeSent, setIsCodeSent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const router = useRouter();
 
   const steps: (keyof FormData)[] = [
     'name',
@@ -191,8 +193,7 @@ export default function RegisterForm() {
         throw new Error(result.error || '알 수 없는 서버 오류');
       }
 
-      console.log('회원가입 성공:', result.user_id);
-      redirect('/');
+      router.push('/');
     } catch (err: any) {
       setSubmitError(err.message);
     } finally {
@@ -204,9 +205,7 @@ export default function RegisterForm() {
     if (currentStep < steps.length - 1) {
       setCurrentStep((prev) => prev + 1);
     } else {
-      const res = await handleSubmit();
-      console.log('res : ', res);
-      console.log('Form submitted:', formData);
+      await handleSubmit();
     }
   };
 
