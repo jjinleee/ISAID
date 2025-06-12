@@ -2,7 +2,14 @@
 import type { InputProps } from '@/types/components.ts';
 
 // ex) <Input type="number" thin={true} placeholder={'input placeholder'} />
-export const Input = ({ thin, type, placeholder, name }: InputProps) => {
+export const Input = ({
+  thin,
+  type,
+  placeholder,
+  name,
+  field,
+  onChange,
+}: InputProps) => {
   // type : number 일 경우 -> 좌측에 스크롤 버튼이 뜨지 않도록
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (type === 'number') {
@@ -43,6 +50,12 @@ export const Input = ({ thin, type, placeholder, name }: InputProps) => {
       }
     }
   };
+  const handleChange = (
+    field: string,
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    onChange(field, e.target.value);
+  };
 
   return (
     <input
@@ -51,6 +64,7 @@ export const Input = ({ thin, type, placeholder, name }: InputProps) => {
       placeholder={placeholder}
       onKeyDown={handleKeyDown}
       onInput={handleInput}
+      onChange={(e) => handleChange(field, e)}
       className={`outline-0 border border-gray-2 w-full
       placeholder-gray  text-black rounded-xl
       focus:border-primary

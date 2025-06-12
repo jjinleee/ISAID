@@ -1,4 +1,5 @@
 import type { ComponentType, SVGProps } from 'react';
+import type { FormData } from '@/app/(routes)/(auth)/register/_components/register-form';
 
 export type TabProps = {
   text: string;
@@ -11,6 +12,8 @@ export type InputProps = {
   type: string;
   placeholder: string;
   name: string;
+  field: keyof FormData;
+  onChange: (field: keyof FormData, value: string) => void;
 };
 
 export type ButtonProps = {
