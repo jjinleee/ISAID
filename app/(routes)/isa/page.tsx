@@ -1,11 +1,7 @@
 import ISAPageContainer from './_components/ISAPageContainer';
 
 const ISAPage = () => {
-  return (
-    <>
-      <ISAPageContainer />
-    </>
-  );
+  return <ISAPageContainer />;
 };
 
 export default ISAPage;
