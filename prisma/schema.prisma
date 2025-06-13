@@ -201,7 +201,7 @@ model Instrument {
 
 model Holding {
   id              Int      @id
-  instrumentId    Int      @map("instrumnet_id")
+  instrumentId    Int      @map("instrument_id")
   accountId       Int      @map("account_id")
   quantity        Int?
   avgCost         Int      @map("avg_cost")
@@ -221,7 +221,7 @@ model Holding {
 
 model Transaction {
   id            Int      @id
-  instrumentId  Int      @map("instrumnet_id")
+  instrumentId  Int      @map("instrument_id")
   accountId     Int      @map("account_id")
   etfId         Int?     @map("etf_id")
   type          String

@@ -176,7 +176,7 @@ CREATE TABLE `instrument` (
 -- CreateTable
 CREATE TABLE `holding` (
     `id` INTEGER NOT NULL,
-    `instrumnet_id` INTEGER NOT NULL,
+    `instrument_id` INTEGER NOT NULL,
     `account_id` INTEGER NOT NULL,
     `quantity` INTEGER NULL,
     `avg_cost` INTEGER NOT NULL,
@@ -195,7 +195,7 @@ CREATE TABLE `holding` (
 -- CreateTable
 CREATE TABLE `transaction` (
     `id` INTEGER NOT NULL,
-    `instrumnet_id` INTEGER NOT NULL,
+    `instrument_id` INTEGER NOT NULL,
     `account_id` INTEGER NOT NULL,
     `etf_id` INTEGER NULL,
     `type` VARCHAR(191) NOT NULL,
@@ -249,10 +249,10 @@ ALTER TABLE `answer` ADD CONSTRAINT `answer_question_id_fkey` FOREIGN KEY (`ques
 ALTER TABLE `isa_ccount` ADD CONSTRAINT `isa_ccount_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `holding` ADD CONSTRAINT `holding_instrumnet_id_fkey` FOREIGN KEY (`instrumnet_id`) REFERENCES `instrument`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `holding` ADD CONSTRAINT `holding_instrument_id_fkey` FOREIGN KEY (`instrument_id`) REFERENCES `instrument`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `transaction` ADD CONSTRAINT `transaction_instrumnet_id_fkey` FOREIGN KEY (`instrumnet_id`) REFERENCES `instrument`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `transaction` ADD CONSTRAINT `transaction_instrument_id_fkey` FOREIGN KEY (`instrument_id`) REFERENCES `instrument`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `transaction` ADD CONSTRAINT `transaction_etf_id_fkey` FOREIGN KEY (`etf_id`) REFERENCES `etf`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
