@@ -19,10 +19,10 @@ CREATE TABLE `User` (
 -- CreateTable
 CREATE TABLE `etf_category` (
     `id` INTEGER NOT NULL,
-    `asset_class` VARCHAR(100) NOT NULL,
-    `asset_type` VARCHAR(100) NULL,
-    `asset_subtype` VARCHAR(100) NULL,
-    `full_path` VARCHAR(100) NOT NULL,
+    `asset_class` VARCHAR(50) NOT NULL,
+    `asset_type` VARCHAR(50) NULL,
+    `asset_subtype` VARCHAR(50) NULL,
+    `full_path` VARCHAR(50) NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -30,14 +30,16 @@ CREATE TABLE `etf_category` (
 -- CreateTable
 CREATE TABLE `etf` (
     `id` INTEGER NOT NULL,
-    `category_id` INTEGER NOT NULL,
+    `etf_category_id` INTEGER NOT NULL,
     `issue_std_code` VARCHAR(191) NULL,
     `issue_code` VARCHAR(191) NULL,
     `issue_name` VARCHAR(191) NULL,
+    `issue_name_ko` VARCHAR(191) NULL,
     `issue_name_abbrv` VARCHAR(191) NULL,
     `issue_name_en` VARCHAR(191) NULL,
     `list_date` DATETIME(3) NULL,
     `etf_obj_index_name` VARCHAR(191) NULL,
+    `idx_obj_index_name` VARCHAR(191) NULL,
     `idx_calc_inst_nm1` VARCHAR(191) NULL,
     `idx_calc_inst_nm2` VARCHAR(191) NULL,
     `etf_replication_method` VARCHAR(191) NULL,
@@ -46,7 +48,7 @@ CREATE TABLE `etf` (
     `list_shrs` BIGINT NULL,
     `com_abbrv` VARCHAR(191) NULL,
     `cu_qtv` INTEGER NULL,
-    `eft_total_fee` DECIMAL(5, 2) NULL,
+    `etf_total_fee` DECIMAL(5, 2) NULL,
     `tax_type` VARCHAR(191) NULL,
     `return_1y` DECIMAL(5, 2) NULL,
     `trace_err_rate` DECIMAL(5, 2) NULL,
@@ -86,7 +88,7 @@ CREATE TABLE `etf_daily_trading` (
     `tdd_high_price` DECIMAL(10, 2) NULL,
     `tdd_low_price` DECIMAL(10, 2) NULL,
     `acc_trade_volume` BIGINT NULL,
-    `acc_total_vaule` BIGINT NULL,
+    `acc_total_value` BIGINT NULL,
     `market_cap` BIGINT NULL,
     `net_asset_total_amount` BIGINT NULL,
     `list_shrs` BIGINT NULL,
@@ -220,7 +222,7 @@ CREATE TABLE `daily_snapshot` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey
-ALTER TABLE `etf` ADD CONSTRAINT `etf_category_id_fkey` FOREIGN KEY (`category_id`) REFERENCES `etf_category`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `etf` ADD CONSTRAINT `etf_etf_category_id_fkey` FOREIGN KEY (`etf_category_id`) REFERENCES `etf_category`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `etf_pdf` ADD CONSTRAINT `etf_pdf_etf_id_fkey` FOREIGN KEY (`etf_id`) REFERENCES `etf`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

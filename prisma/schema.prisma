@@ -27,10 +27,10 @@ model User {
 
 model EtfCategory {
   id           Int     @id
-  assetClass   String  @map("asset_class") @db.VarChar(100)
-  assetType    String? @map("asset_type") @db.VarChar(100)
-  assetSubtype String? @map("asset_subtype") @db.VarChar(100)
-  fullPath     String  @map("full_path") @db.VarChar(100)
+  assetClass   String  @map("asset_class") @db.VarChar(50)
+  assetType    String? @map("asset_type") @db.VarChar(50)
+  assetSubtype String? @map("asset_subtype") @db.VarChar(50)
+  fullPath     String  @map("full_path") @db.VarChar(50)
 
   etfs      Etf[]
   userLinks UserEtfCategory[]
@@ -40,14 +40,16 @@ model EtfCategory {
 
 model Etf {
   id                   Int       @id
-  etfCategoryId        Int       @map("category_id")
+  etfCategoryId        Int       @map("etf_category_id")
   issueStdCode         String?   @map("issue_std_code")
   issueCode            String?   @map("issue_code")
   issueName            String?   @map("issue_name")
+  issueNameKo          String?   @map("issue_name_ko")
   issueNameAbbrv       String?   @map("issue_name_abbrv")
   issueNameEn          String?   @map("issue_name_en")
   listDate             DateTime? @map("list_date")
   etfObjIndexName      String?   @map("etf_obj_index_name")
+  idxObjIndexName      String?   @map("idx_obj_index_name")
   idxCalcInstNm1       String?   @map("idx_calc_inst_nm1")
   idxCalcInstNm2       String?   @map("idx_calc_inst_nm2")
   etfReplicationMethod String?   @map("etf_replication_method")
@@ -56,7 +58,7 @@ model Etf {
   listShrs             BigInt?   @map("list_shrs")
   comAbbrv             String?   @map("com_abbrv")
   cuQtv                Int?      @map("cu_qtv")
-  etfTotalFee          Decimal?  @map("eft_total_fee") @db.Decimal(5, 2)
+  etfTotalFee          Decimal?  @map("etf_total_fee") @db.Decimal(5, 2)
   taxType              String?   @map("tax_type")
   return1y             Decimal?  @map("return_1y") @db.Decimal(5, 2)
   traceErrRate         Decimal?  @map("trace_err_rate") @db.Decimal(5, 2)
@@ -101,7 +103,7 @@ model EtfDailyTrading {
   tddHighPrice        Decimal?  @map("tdd_high_price") @db.Decimal(10, 2)
   tddLowPrice         Decimal?  @map("tdd_low_price") @db.Decimal(10, 2)
   accTradeVolume      BigInt?   @map("acc_trade_volume")
-  accTotalValue       BigInt?   @map("acc_total_vaule")
+  accTotalValue       BigInt?   @map("acc_total_value")
   marketCap           BigInt?   @map("market_cap")
   netAssetTotalAmount BigInt?   @map("net_asset_total_amount")
   listShrs            BigInt?   @map("list_shrs")
