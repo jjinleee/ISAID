@@ -37,7 +37,7 @@ export const authOptions: AuthOptions = {
         }
 
         return {
-          id: user.user_id,
+          id: String(user.id),
           name: user.name,
           email: user.email,
         };
@@ -66,7 +66,8 @@ export const authOptions: AuthOptions = {
       return token;
     },
     async session({ session, token }) {
-      session.user.id = token.id;
+      session.user.id =
+        typeof token.id === 'string' ? token.id : String(token.id ?? '');
       session.user.name = token.name;
       session.user.email = token.email ?? '';
       return session;
