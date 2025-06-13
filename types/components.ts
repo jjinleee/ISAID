@@ -15,7 +15,7 @@ export type InputProps = {
   field: keyof FormData;
   value?: string;
   displayValue?: string;
-  onChange: (field: keyof FormData, value: string) => void;
+  onChange?: (field: keyof FormData, value: string) => void;
 };
 
 export type ButtonProps = {
