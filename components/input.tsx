@@ -53,13 +53,16 @@ export const CustomInput = ({
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!onChange) {
+      return;
+    }
     onChange(field, e.target.value);
   };
 
   // displayValue가 있으면 오버레이 패턴 적용
   if (displayValue != null) {
     return (
-      <div className="relative w-full">
+      <div className='relative w-full'>
         <input
           name={name}
           type={type !== 'number' ? type : 'text'}
@@ -76,7 +79,7 @@ export const CustomInput = ({
     `}
         />
         <div
-          aria-hidden="true"
+          aria-hidden='true'
           className={`
       absolute inset-0 flex items-center 
       ${thin ? 'px-4' : 'px-5'} 

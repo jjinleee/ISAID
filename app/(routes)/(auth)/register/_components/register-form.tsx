@@ -539,8 +539,8 @@ export default function RegisterForm() {
 
       {showAddressModal && (
         <AddressSearch
-          onComplete={(addr) => handleAddressSelect(addr)}
-          onClose={() => setShowAddressModal(false)}
+          onCompleteAction={(addr) => handleAddressSelect(addr)}
+          onCloseAction={() => setShowAddressModal(false)}
           openState={showAddressModal}
         />
       )}
