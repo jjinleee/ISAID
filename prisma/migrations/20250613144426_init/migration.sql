@@ -77,8 +77,8 @@ CREATE TABLE `etf_pdf` (
 CREATE TABLE `etf_daily_trading` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `etf_id` INTEGER NOT NULL,
-    `base_date` DATETIME(3) NULL,
-    `issue_code` VARCHAR(191) NULL,
+    `base_date` DATETIME(3) NOT NULL,
+    `issue_code` VARCHAR(191) NOT NULL,
     `issue_name` VARCHAR(191) NULL,
     `cmp_prevdd_price` DECIMAL(10, 2) NULL,
     `fluc_rate` DECIMAL(5, 2) NULL,
@@ -97,15 +97,17 @@ CREATE TABLE `etf_daily_trading` (
     `cmpprevdd_idx` DECIMAL(10, 2) NULL,
     `fluc_rt_idx` DECIMAL(5, 2) NULL,
 
+    UNIQUE INDEX `etf_daily_trading_issue_code_key`(`issue_code`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `invest_type` (
-    `id` VARCHAR(191) NOT NULL,
+CREATE TABLE `investment_profile` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
     `user_id` INTEGER NOT NULL,
-    `invest_type` VARCHAR(191) NOT NULL,
+    `invest_type` ENUM('CONSERVATIVE', 'MODERATE', 'NEUTRAL', 'ACTIVE', 'AGGRESSIVE') NOT NULL,
 
+    UNIQUE INDEX `investment_profile_user_id_key`(`user_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -130,11 +132,10 @@ CREATE TABLE `question_category` (
 -- CreateTable
 CREATE TABLE `question` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `category` INTEGER NOT NULL,
+    `question_category_id` INTEGER NULL,
     `question_order` INTEGER NOT NULL,
     `question_text` VARCHAR(100) NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `questionCategoryId` INTEGER NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -151,7 +152,7 @@ CREATE TABLE `answer` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `isa_ccount` (
+CREATE TABLE `isa_account` (
     `id` INTEGER NOT NULL,
     `user_id` INTEGER NOT NULL,
     `bank_code` VARCHAR(30) NOT NULL,
@@ -161,6 +162,7 @@ CREATE TABLE `isa_ccount` (
     `account_type` VARCHAR(191) NOT NULL,
     `account_kind` VARCHAR(191) NOT NULL,
 
+    UNIQUE INDEX `isa_account_user_id_key`(`user_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -210,7 +212,7 @@ CREATE TABLE `transaction` (
 
 -- CreateTable
 CREATE TABLE `daily_snapshot` (
-    `id` VARCHAR(191) NOT NULL,
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
     `user_id` INTEGER NOT NULL,
     `date` DATETIME(3) NULL,
     `total_asset_value` VARCHAR(191) NULL,
@@ -231,7 +233,7 @@ ALTER TABLE `etf_pdf` ADD CONSTRAINT `etf_pdf_etf_id_fkey` FOREIGN KEY (`etf_id`
 ALTER TABLE `etf_daily_trading` ADD CONSTRAINT `etf_daily_trading_etf_id_fkey` FOREIGN KEY (`etf_id`) REFERENCES `etf`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `invest_type` ADD CONSTRAINT `invest_type_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `investment_profile` ADD CONSTRAINT `investment_profile_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `user_etf_category` ADD CONSTRAINT `user_etf_category_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -240,13 +242,13 @@ ALTER TABLE `user_etf_category` ADD CONSTRAINT `user_etf_category_user_id_fkey` 
 ALTER TABLE `user_etf_category` ADD CONSTRAINT `user_etf_category_etf_category_id_fkey` FOREIGN KEY (`etf_category_id`) REFERENCES `etf_category`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `question` ADD CONSTRAINT `question_questionCategoryId_fkey` FOREIGN KEY (`questionCategoryId`) REFERENCES `question_category`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `question` ADD CONSTRAINT `question_question_category_id_fkey` FOREIGN KEY (`question_category_id`) REFERENCES `question_category`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `answer` ADD CONSTRAINT `answer_question_id_fkey` FOREIGN KEY (`question_id`) REFERENCES `question`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `isa_ccount` ADD CONSTRAINT `isa_ccount_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `isa_account` ADD CONSTRAINT `isa_account_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `holding` ADD CONSTRAINT `holding_instrument_id_fkey` FOREIGN KEY (`instrument_id`) REFERENCES `instrument`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

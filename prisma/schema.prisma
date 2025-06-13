@@ -19,9 +19,9 @@ model User {
   telno      String?  @db.VarChar(20)
   created_at DateTime @default(now())
 
-  isaAccounts       ISAAccount[]
+  isaAccount        IsaAccount?
   dailySnapshots    DailySnapshot[]
-  investTypes       InvestType[]
+  investmentProfile InvestmentProfile?
   userEtfCategories UserEtfCategory[]
 }
 
@@ -90,41 +90,49 @@ model EtfPdf {
 }
 
 model EtfDailyTrading {
-  id                  Int       @id @default(autoincrement())
-  etfId               Int       @map("etf_id")
-  baseDate            DateTime? @map("base_date")
-  issueCode           String?   @map("issue_code")
-  issueName           String?   @map("issue_name")
-  cmpPrevddPrice      Decimal?  @map("cmp_prevdd_price") @db.Decimal(10, 2)
-  flucRate            Decimal?  @map("fluc_rate") @db.Decimal(5, 2)
-  tddClosePrice       Decimal?  @map("tdd_close_price") @db.Decimal(10, 2)
-  nav                 Decimal?  @db.Decimal(10, 2)
-  tddOpenPrice        Decimal?  @map("tdd_open_price") @db.Decimal(10, 2)
-  tddHighPrice        Decimal?  @map("tdd_high_price") @db.Decimal(10, 2)
-  tddLowPrice         Decimal?  @map("tdd_low_price") @db.Decimal(10, 2)
-  accTradeVolume      BigInt?   @map("acc_trade_volume")
-  accTotalValue       BigInt?   @map("acc_total_value")
-  marketCap           BigInt?   @map("market_cap")
-  netAssetTotalAmount BigInt?   @map("net_asset_total_amount")
-  listShrs            BigInt?   @map("list_shrs")
-  idxIndNm            String?   @map("idx_ind_nm")
-  objStkprcIdx        Decimal?  @map("obj_stkprc_idx") @db.Decimal(10, 2)
-  cmpprevddIdx        Decimal?  @map("cmpprevdd_idx") @db.Decimal(10, 2)
-  flucRtIdx           Decimal?  @map("fluc_rt_idx") @db.Decimal(5, 2)
+  id                  Int      @id @default(autoincrement())
+  etfId               Int      @map("etf_id")
+  baseDate            DateTime @map("base_date")
+  issueCode           String   @unique @map("issue_code")
+  issueName           String?  @map("issue_name")
+  cmpPrevddPrice      Decimal? @map("cmp_prevdd_price") @db.Decimal(10, 2)
+  flucRate            Decimal? @map("fluc_rate") @db.Decimal(5, 2)
+  tddClosePrice       Decimal? @map("tdd_close_price") @db.Decimal(10, 2)
+  nav                 Decimal? @db.Decimal(10, 2)
+  tddOpenPrice        Decimal? @map("tdd_open_price") @db.Decimal(10, 2)
+  tddHighPrice        Decimal? @map("tdd_high_price") @db.Decimal(10, 2)
+  tddLowPrice         Decimal? @map("tdd_low_price") @db.Decimal(10, 2)
+  accTradeVolume      BigInt?  @map("acc_trade_volume")
+  accTotalValue       BigInt?  @map("acc_total_value")
+  marketCap           BigInt?  @map("market_cap")
+  netAssetTotalAmount BigInt?  @map("net_asset_total_amount")
+  listShrs            BigInt?  @map("list_shrs")
+  idxIndNm            String?  @map("idx_ind_nm")
+  objStkprcIdx        Decimal? @map("obj_stkprc_idx") @db.Decimal(10, 2)
+  cmpprevddIdx        Decimal? @map("cmpprevdd_idx") @db.Decimal(10, 2)
+  flucRtIdx           Decimal? @map("fluc_rt_idx") @db.Decimal(5, 2)
 
   etf Etf @relation(fields: [etfId], references: [id])
 
   @@map("etf_daily_trading")
 }
 
-model InvestType {
-  id         String @id
-  userId     Int    @map("user_id")
-  investType String @map("invest_type")
+enum InvestType {
+  CONSERVATIVE // 안정형
+  MODERATE // 안정추구형
+  NEUTRAL // 위험중립형
+  ACTIVE // 적극투자형
+  AGGRESSIVE // 공격투자형
+}
+
+model InvestmentProfile {
+  id         Int        @id @default(autoincrement())
+  userId     Int        @unique @map("user_id")
+  investType InvestType @map("invest_type")
 
   user User @relation(fields: [userId], references: [id])
 
-  @@map("invest_type")
+  @@map("investment_profile")
 }
 
 model UserEtfCategory {
@@ -149,15 +157,14 @@ model QuestionCategory {
 }
 
 model Question {
-  id            Int      @id @default(autoincrement())
-  category      Int
-  questionOrder Int      @map("question_order")
-  questionText  String   @map("question_text") @db.VarChar(100)
-  createdAt     DateTime @default(now()) @map("created_at")
+  id                 Int      @id @default(autoincrement())
+  questionCategoryId Int?     @map("question_category_id")
+  questionOrder      Int      @map("question_order")
+  questionText       String   @map("question_text") @db.VarChar(100)
+  createdAt          DateTime @default(now()) @map("created_at")
 
-  answers            Answer[]
-  QuestionCategory   QuestionCategory? @relation(fields: [questionCategoryId], references: [id])
-  questionCategoryId Int?
+  answers          Answer[]
+  QuestionCategory QuestionCategory? @relation(fields: [questionCategoryId], references: [id])
 
   @@map("question")
 }
@@ -174,9 +181,9 @@ model Answer {
   @@map("answer")
 }
 
-model ISAAccount {
+model IsaAccount {
   id             Int      @id
-  userId         Int      @map("user_id")
+  userId         Int      @unique @map("user_id")
   bankCode       String   @map("bank_code") @db.VarChar(30)
   accountNum     String   @map("account_num")
   connectedAt    DateTime @map("connected_at")
@@ -186,7 +193,7 @@ model ISAAccount {
 
   user User @relation(fields: [userId], references: [id])
 
-  @@map("isa_ccount")
+  @@map("isa_account")
 }
 
 model Instrument {
@@ -238,7 +245,7 @@ model Transaction {
 }
 
 model DailySnapshot {
-  id               String    @id
+  id               Int       @id @default(autoincrement())
   userId           Int       @map("user_id")
   date             DateTime?
   totalAssetValue  String?   @map("total_asset_value")
