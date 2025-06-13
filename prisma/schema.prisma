@@ -8,7 +8,7 @@ datasource db {
 }
 
 model User {
-  id    Int      @id @default(autoincrement())
+  id         Int      @id @default(autoincrement())
   name       String   @db.VarChar(20)
   eng_name   String?  @db.VarChar(20)
   email      String   @unique @db.VarChar(30)
@@ -18,4 +18,233 @@ model User {
   address    String   @db.VarChar(100)
   telno      String?  @db.VarChar(20)
   created_at DateTime @default(now())
+
+  isaAccounts       ISAAccount[]
+  dailySnapshots    DailySnapshot[]
+  investTypes       InvestType[]
+  userEtfCategories UserEtfCategory[]
+}
+
+model EtfCategory {
+  id           Int     @id
+  assetClass   String  @map("asset_class") @db.VarChar(100)
+  assetType    String? @map("asset_type") @db.VarChar(100)
+  assetSubtype String? @map("asset_subtype") @db.VarChar(100)
+  fullPath     String  @map("full_path") @db.VarChar(100)
+
+  etfs      Etf[]
+  userLinks UserEtfCategory[]
+
+  @@map("etf_category")
+}
+
+model Etf {
+  id                   Int       @id
+  etfCategoryId        Int       @map("category_id")
+  issueStdCode         String?   @map("issue_std_code")
+  issueCode            String?   @map("issue_code")
+  issueName            String?   @map("issue_name")
+  issueNameAbbrv       String?   @map("issue_name_abbrv")
+  issueNameEn          String?   @map("issue_name_en")
+  listDate             DateTime? @map("list_date")
+  etfObjIndexName      String?   @map("etf_obj_index_name")
+  idxCalcInstNm1       String?   @map("idx_calc_inst_nm1")
+  idxCalcInstNm2       String?   @map("idx_calc_inst_nm2")
+  etfReplicationMethod String?   @map("etf_replication_method")
+  idxMarketType        String?   @map("idx_market_type")
+  idxAssetType         String?   @map("idx_asset_type")
+  listShrs             BigInt?   @map("list_shrs")
+  comAbbrv             String?   @map("com_abbrv")
+  cuQtv                Int?      @map("cu_qtv")
+  etfTotalFee          Decimal?  @map("eft_total_fee") @db.Decimal(5, 2)
+  taxType              String?   @map("tax_type")
+  return1y             Decimal?  @map("return_1y") @db.Decimal(5, 2)
+  traceErrRate         Decimal?  @map("trace_err_rate") @db.Decimal(5, 2)
+  netAssetTotalAmount  BigInt?   @map("net_asset_total_amount")
+  divergenceRate       Decimal?  @map("divergence_rate") @db.Decimal(5, 2)
+  volatility           String?
+
+  category     EtfCategory       @relation(fields: [etfCategoryId], references: [id])
+  pdfs         EtfPdf[]
+  tradings     EtfDailyTrading[]
+  transactions Transaction[]
+
+  @@map("etf")
+}
+
+model EtfPdf {
+  id                   Int      @id @default(autoincrement())
+  etfId                Int      @map("etf_id")
+  compstIssueCode      String?  @map("compst_issue_code")
+  compstIssueName      String?  @map("compst_issue_name")
+  compstIssueCu1Shares Decimal? @map("compst_issue_cu1_shares") @db.Decimal(15, 2)
+  valueAmount          BigInt?  @map("value_amount")
+  compstAmount         BigInt?  @map("compst_amount")
+  compstRatio          Decimal? @map("compst_ratio") @db.Decimal(5, 2)
+
+  etf Etf @relation(fields: [etfId], references: [id])
+
+  @@map("etf_pdf")
+}
+
+model EtfDailyTrading {
+  id                  Int       @id @default(autoincrement())
+  etfId               Int       @map("etf_id")
+  baseDate            DateTime? @map("base_date")
+  issueCode           String?   @map("issue_code")
+  issueName           String?   @map("issue_name")
+  cmpPrevddPrice      Decimal?  @map("cmp_prevdd_price") @db.Decimal(10, 2)
+  flucRate            Decimal?  @map("fluc_rate") @db.Decimal(5, 2)
+  tddClosePrice       Decimal?  @map("tdd_close_price") @db.Decimal(10, 2)
+  nav                 Decimal?  @db.Decimal(10, 2)
+  tddOpenPrice        Decimal?  @map("tdd_open_price") @db.Decimal(10, 2)
+  tddHighPrice        Decimal?  @map("tdd_high_price") @db.Decimal(10, 2)
+  tddLowPrice         Decimal?  @map("tdd_low_price") @db.Decimal(10, 2)
+  accTradeVolume      BigInt?   @map("acc_trade_volume")
+  accTotalValue       BigInt?   @map("acc_total_vaule")
+  marketCap           BigInt?   @map("market_cap")
+  netAssetTotalAmount BigInt?   @map("net_asset_total_amount")
+  listShrs            BigInt?   @map("list_shrs")
+  idxIndNm            String?   @map("idx_ind_nm")
+  objStkprcIdx        Decimal?  @map("obj_stkprc_idx") @db.Decimal(10, 2)
+  cmpprevddIdx        Decimal?  @map("cmpprevdd_idx") @db.Decimal(10, 2)
+  flucRtIdx           Decimal?  @map("fluc_rt_idx") @db.Decimal(5, 2)
+
+  etf Etf @relation(fields: [etfId], references: [id])
+
+  @@map("etf_daily_trading")
+}
+
+model InvestType {
+  id         String @id
+  userId     Int    @map("user_id")
+  investType String @map("invest_type")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("invest_type")
+}
+
+model UserEtfCategory {
+  id            Int @id @default(autoincrement())
+  userId        Int @map("user_id")
+  etfCategoryId Int @map("etf_category_id")
+
+  user        User        @relation(fields: [userId], references: [id])
+  etfCategory EtfCategory @relation(fields: [etfCategoryId], references: [id])
+
+  @@map("user_etf_category")
+}
+
+model QuestionCategory {
+  id          Int     @id
+  name        String  @db.VarChar(50)
+  description String? @db.VarChar(100)
+
+  questions Question[]
+
+  @@map("question_category")
+}
+
+model Question {
+  id            Int      @id @default(autoincrement())
+  category      Int
+  questionOrder Int      @map("question_order")
+  questionText  String   @map("question_text") @db.VarChar(100)
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  answers            Answer[]
+  QuestionCategory   QuestionCategory? @relation(fields: [questionCategoryId], references: [id])
+  questionCategoryId Int?
+
+  @@map("question")
+}
+
+model Answer {
+  id          Int      @id @default(autoincrement())
+  questionId  Int      @map("question_id")
+  answerOrder Int      @map("answer_order")
+  answerText  String   @map("answer_text") @db.VarChar(100)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  question Question @relation(fields: [questionId], references: [id])
+
+  @@map("answer")
+}
+
+model ISAAccount {
+  id             Int      @id
+  userId         Int      @map("user_id")
+  bankCode       String   @map("bank_code") @db.VarChar(30)
+  accountNum     String   @map("account_num")
+  connectedAt    DateTime @map("connected_at")
+  currentBalance Int      @map("current_balance")
+  accountType    String   @map("account_type")
+  accountKind    String   @map("account_kind")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("isa_ccount")
+}
+
+model Instrument {
+  id           Int           @id
+  name         String
+  type         String
+  holdings     Holding[]
+  transactions Transaction[]
+
+  @@map("instrument")
+}
+
+model Holding {
+  id              Int      @id
+  instrumentId    Int      @map("instrumnet_id")
+  accountId       Int      @map("account_id")
+  quantity        Int?
+  avgCost         Int      @map("avg_cost")
+  evaluatedAmount String?  @map("evaluated_amount")
+  marketPrice     String?  @map("market_price")
+  principal       Decimal  @db.Decimal(20, 2)
+  marketValue     Decimal  @map("market_value") @db.Decimal(20, 2)
+  unrealGain      Decimal  @map("unreal_gain") @db.Decimal(20, 2)
+  returnRate      Decimal? @map("return_rate") @db.Decimal(7, 4)
+  acquiredAt      DateTime @map("acquired_at")
+  updatedAt       DateTime @map("updated_at")
+
+  instrument Instrument @relation(fields: [instrumentId], references: [id])
+
+  @@map("holding")
+}
+
+model Transaction {
+  id            Int      @id
+  instrumentId  Int      @map("instrumnet_id")
+  accountId     Int      @map("account_id")
+  etfId         Int?     @map("etf_id")
+  type          String
+  quantity      Decimal? @db.Decimal(20, 6)
+  price         Decimal? @db.Decimal(20, 6)
+  amountWon     Decimal  @map("amount_won") @db.Decimal(20, 6)
+  transactionAt DateTime @map("transaction_at")
+  fee           Decimal  @db.Decimal(20, 6)
+
+  instrument Instrument @relation(fields: [instrumentId], references: [id])
+  etf        Etf?       @relation(fields: [etfId], references: [id])
+
+  @@map("transaction")
+}
+
+model DailySnapshot {
+  id               String    @id
+  userId           Int       @map("user_id")
+  date             DateTime?
+  totalAssetValue  String?   @map("total_asset_value")
+  cumulativeReturn String?   @map("cumulative_return")
+  dailyReturn      String?   @map("daily_return")
+  memo             String?
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("daily_snapshot")
 }
