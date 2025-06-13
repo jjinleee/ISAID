@@ -362,8 +362,8 @@ export default function RegisterForm() {
               <p className="text-gray-500 text-sm mb-2">
                 본인 확인을 위해 필요해요.
               </p>
-              <div className="">
-                <div className="flex gap-2 ">
+              <div className="mb-2">
+                <div className="flex gap-2">
                   <div className="flex-1">
                     <CustomInput
                       type="number"
@@ -376,25 +376,25 @@ export default function RegisterForm() {
                       onChange={handleInputChange}
                     />
                   </div>
-                  <Button
+                  <button
                     onClick={handleSendCode}
-                    className="bg-primary text-white px-4 py-2 rounded-xl !h-[50px]"
+                    className="bg-primary text-white px-4 py-2 rounded-xl "
                   >
                     인증번호 전송
-                  </Button>
+                  </button>
                 </div>
-                <div className="">
-                  <p className="text-gray-500 text-sm mb-2">인증 번호</p>
-                  <CustomInput
-                    type="number"
-                    thin={true}
-                    placeholder="인증번호 3자리 입력"
-                    name="verificationCode"
-                    field="verificationCode"
-                    value={formData.verificationCode}
-                    onChange={handleInputChange}
-                  />
-                </div>
+              </div>
+              <div className="">
+                <p className="text-gray-500 text-sm mb-2">인증 번호</p>
+                <CustomInput
+                  type="number"
+                  thin={true}
+                  placeholder="인증번호 3자리 입력"
+                  name="verificationCode"
+                  field="verificationCode"
+                  value={formData.verificationCode}
+                  onChange={handleInputChange}
+                />
               </div>
             </div>
 
