@@ -4,6 +4,7 @@
     "@ianvs/prettier-plugin-sort-imports"
   ],
   "semi": true,
+  "jsxSingleQuote": true,
   "singleQuote": true,
   "tabWidth": 2,
   "trailingComma": "es5",

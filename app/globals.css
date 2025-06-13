@@ -10,7 +10,7 @@ body {
   max-height: 100vh;
   /*overflow-y: hidden;*/
   word-break: keep-all;
-  border: 1px solid red;
+  /* border: 1px solid red; */
 }
 * {
   box-sizing: border-box;
@@ -45,7 +45,6 @@ body {
 }
 
 @layer utilities {
-  /* 키프레임 정의 */
   @keyframes accordion-down {
     from {
       height: 0;
@@ -92,5 +91,20 @@ body {
 
   .animate-slide-down {
     animation: slide-down 0.3s ease-in;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE */
+    scrollbar-width: none; /* Firefox */
   }
 }

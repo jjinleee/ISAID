@@ -43,3 +43,20 @@ export type BottomTabProps = {
   active: boolean;
   onClick?: () => void;
 };
+
+export type MainHeaderProps = {
+  title: string;
+  subtitle?: string;
+  onMenuClick: () => void;
+};
+
+export type HeaderBarProps = {
+  title: string;
+  subtitle?: string;
+  onMenuClick: () => void;
+};
+
+export type SidebarProps = {
+  isOpen: boolean;
+  onClose: () => void;
+};
