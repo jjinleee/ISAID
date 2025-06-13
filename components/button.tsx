@@ -9,8 +9,14 @@ import type { ButtonProps } from '@/types/components.ts';
 //     console.log('gungun');
 //   }}
 // />
-export const Button = ({ text, thin, active, onClick }: ButtonProps) => {
-  const className = `w-full text-center font-semibold rounded-xl cursor-pointer
+export const Button = ({
+  text,
+  thin,
+  active,
+  onClick,
+  disabled,
+}: ButtonProps) => {
+  const className = `w-full text-center font-semibold rounded-md cursor-pointer
         ${
           active
             ? 'bg-primary text-white py-4'
@@ -19,9 +25,13 @@ export const Button = ({ text, thin, active, onClick }: ButtonProps) => {
               : 'py-4 bg-hana-green text-white'
         }`;
   return (
-    <div className={className.trim()} {...(onClick && { onClick })}>
+    <button
+      disabled={disabled}
+      className={className.trim()}
+      {...(onClick && { onClick })}
+    >
       {text}
-    </div>
+    </button>
   );
 };
 export default Button;

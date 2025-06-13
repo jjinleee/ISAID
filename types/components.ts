@@ -1,4 +1,5 @@
 import type { ComponentType, SVGProps } from 'react';
+import type { FormData } from '@/app/(routes)/(auth)/register/_components/register-form';
 
 export type TabProps = {
   text: string;
@@ -10,13 +11,20 @@ export type InputProps = {
   thin: boolean;
   type: string;
   placeholder: string;
+  name: string;
+  field: keyof FormData;
+  value?: string;
+  displayValue?: string;
+  onChange?: (field: keyof FormData, value: string) => void;
 };
 
 export type ButtonProps = {
   text: string;
   thin: boolean;
   active: boolean;
+  disabled?: boolean;
   onClick?: () => void;
+  type?: string;
 };
 
 export type QuestionOptionProps = {
