@@ -15,9 +15,6 @@ export default function AddressSearch({
   openState,
 }: AddressSearchProps) {
   const [isClosing, setIsClosing] = useState(false);
-  useEffect(() => {
-    console.log('openState', openState);
-  }, []);
 
   useEffect(() => {
     const container = document.getElementById('address-search-container');
@@ -43,8 +40,6 @@ export default function AddressSearch({
           'width: 100%; min-height: 600px; max-height: 600px;'
         );
         iframe?.setAttribute('style', 'width: 100%; height: 100vh');
-        console.log('firstChild', firstChild);
-        console.log('iframe', iframe);
       }
     }
   }, [openState]);
