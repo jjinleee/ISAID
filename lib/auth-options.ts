@@ -14,7 +14,9 @@ export const authOptions: AuthOptions = {
         email: { label: 'Email', type: 'text' },
         password: { label: 'Password', type: 'password' },
       },
-      async authorize(credentials) {
+      async authorize(
+        credentials: Record<'email' | 'password', string> | undefined
+      ) {
         console.log('🔍 받은 credentials:', credentials);
         const email = credentials?.email?.toLowerCase().trim();
         const password = credentials?.password?.trim();
