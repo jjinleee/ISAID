@@ -15,11 +15,20 @@ const items = [
 
 export const BottomBar = () => {
   const pathname = usePathname();
+
+  const hiddenPaths = ['/register', '/login'];
+  if (hiddenPaths.includes(pathname)) {
+    return null;
+  }
+
   return (
     <div
-      className="fixed bottom-0 w-full flex justify-around inset-x-0
-      items-center border-t border-t-hana-green bg-white
-      "
+      className='
+      fixed bottom-0 inset-x-0
+      mx-auto max-w-[768px] w-full
+      flex justify-around space-x-8 items-center
+      border-t border-t-hana-green bg-white
+      '
     >
       {items.map(({ to, text, icon: Icon }) => {
         const isActive =

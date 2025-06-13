@@ -1,5 +1,4 @@
 import '@/app/globals.css';
-import AuthHeader from '@/app/(routes)/(auth)/_component/header';
 
 export default function AuthLayout({
   children,
@@ -7,11 +6,8 @@ export default function AuthLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className="pt-14">
-        {/*<AuthHeader />*/}
-        {children}
-      </body>
+    <html lang='en'>
+      <body className='pt-14'>{children}</body>
     </html>
   );
 }
