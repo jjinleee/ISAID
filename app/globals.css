@@ -10,7 +10,7 @@ body {
   max-height: 100vh;
   /*overflow-y: hidden;*/
   word-break: keep-all;
-  border: 1px solid red;
+  /* border: 1px solid red; */
 }
 * {
   box-sizing: border-box;
@@ -41,4 +41,21 @@ body {
   --color-blue: #155dfc;
   --color-blue-light: #dde8ff;
   --color-green-light: #2ebf72;
+}
+
+@layer utilities {
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE */
+    scrollbar-width: none; /* Firefox */
+  }
 }
