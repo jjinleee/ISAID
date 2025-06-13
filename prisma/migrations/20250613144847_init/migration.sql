@@ -97,7 +97,6 @@ CREATE TABLE `etf_daily_trading` (
     `cmpprevdd_idx` DECIMAL(10, 2) NULL,
     `fluc_rt_idx` DECIMAL(5, 2) NULL,
 
-    UNIQUE INDEX `etf_daily_trading_issue_code_key`(`issue_code`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 

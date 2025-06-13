@@ -93,7 +93,7 @@ model EtfDailyTrading {
   id                  Int      @id @default(autoincrement())
   etfId               Int      @map("etf_id")
   baseDate            DateTime @map("base_date")
-  issueCode           String   @unique @map("issue_code")
+  issueCode           String   @map("issue_code")
   issueName           String?  @map("issue_name")
   cmpPrevddPrice      Decimal? @map("cmp_prevdd_price") @db.Decimal(10, 2)
   flucRate            Decimal? @map("fluc_rate") @db.Decimal(5, 2)
