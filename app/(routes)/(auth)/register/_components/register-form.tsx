@@ -194,8 +194,14 @@ export default function RegisterForm() {
       }
 
       router.push('/');
-    } catch (err: any) {
-      setSubmitError(err.message);
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : typeof err === 'string'
+            ? err
+            : '알 수 없는 오류가 발생했습니다.';
+      setSubmitError(message);
     } finally {
       setIsSubmitting(false);
     }
