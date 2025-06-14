@@ -26,8 +26,11 @@ const CategoryPageContainer = () => {
 
   if (category.subCategories.length === 0) {
     return (
-      <div className='py-8 px-6'>
-        <h1 className='text-xl font-bold mb-4'>{category.displayName}</h1>
+      <div className='flex flex-col gap-5 py-8 px-6'>
+        <div className='flex gap-2 items-end'>
+          <h1 className='font-semibold text-xl'>{category.displayName}</h1>
+          <p className='text-sm text-gray'>{etfData.length} 종목</p>
+        </div>
         <EtfTable data={etfData} />
       </div>
     );
@@ -40,11 +43,11 @@ const CategoryPageContainer = () => {
   if (!subCategory) {
     return (
       <div className='py-8 px-6'>
-        <div className='w-full flex flex-col gap-5'>
+        <div className='flex flex-col gap-5'>
           <div className='flex gap-2 items-end'>
             <h1 className='font-semibold text-xl'>{category.displayName}</h1>
             <p className='text-sm text-gray'>
-              {category.subCategories.length} 분류
+              {category.subCategories.length} 종목
             </p>
           </div>
           <div className='flex flex-col text-sm font-semibold '>
@@ -66,10 +69,10 @@ const CategoryPageContainer = () => {
   }
 
   return (
-    <div className='py-8 px-6'>
-      <div className='flex justify-between items-center mb-4'>
-        <h1 className='text-xl font-bold'>{category.displayName}</h1>
-        <p className='text-sm text-gray'>{subCategory}</p>
+    <div className='flex flex-col gap-5 py-8 px-6'>
+      <div className='flex gap-2 items-end'>
+        <h1 className='font-semibold text-xl'>{category.displayName}</h1>
+        <p className='text-sm text-gray'>{etfData.length} 종목</p>
       </div>
       <EtfTable data={etfData} />
     </div>
