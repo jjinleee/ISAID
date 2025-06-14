@@ -69,4 +69,6 @@ export type SlideCardProps = {
   subtitle: string;
   description: string;
   children: React.ReactNode;
+  category: string;
+  onClick?: () => void;
 };

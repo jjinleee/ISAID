@@ -5,9 +5,13 @@ export const SlideCard = ({
   subtitle,
   description,
   children,
+  onClick,
 }: SlideCardProps) => {
   return (
-    <div className='flex flex-col p-5 justify-between shadow-md w-[240px] h-[240px] relative'>
+    <div
+      className='flex flex-col p-5 justify-between shadow-md w-[240px] h-[240px] relative cursor-pointer'
+      onClick={onClick}
+    >
       <div className='flex flex-col gap-5'>
         <div className='flex flex-col gap-3'>
           <div className='flex flex-col gap-2'>

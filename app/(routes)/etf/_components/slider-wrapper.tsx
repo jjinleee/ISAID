@@ -4,12 +4,14 @@ import { Pagination } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/pagination';
+import { useRouter } from 'next/navigation';
 
 interface SliderWrapperProps {
   cards: SlideCardProps[];
 }
 
 export const SliderWrapper = ({ cards }: SliderWrapperProps) => {
+  const router = useRouter();
   return (
     <>
       <Swiper
@@ -31,6 +33,8 @@ export const SliderWrapper = ({ cards }: SliderWrapperProps) => {
               title={card.title}
               subtitle={card.subtitle}
               description={card.description}
+              category={card.category}
+              onClick={() => router.push(`/etf/category/${card.category}`)}
             >
               {card.children}
             </SlideCard>
