@@ -2,9 +2,9 @@
 
 import { useEffect } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import EtfTable from '@/app/(routes)/etf/category/[category-id]/_components/etf-table';
 import { useHeader } from '@/context/header-context';
 import ArrowIcon from '@/public/images/arrow-icon';
+import EtfTable from '../_components/etf-table';
 import { categoryMap, etfData } from '../data/category-data';
 
 const CategoryPageContainer = () => {
@@ -17,7 +17,6 @@ const CategoryPageContainer = () => {
   const subCategory = searchParams.get('sub') ?? '';
 
   const category = categoryMap[rawCategoryId as keyof typeof categoryMap];
-  console.log('category : ', category);
   useEffect(() => {
     setHeader('맞춤 테마 ETF', '당신의 투자 성향에 맞는 테마');
   }, []);
@@ -40,6 +39,7 @@ const CategoryPageContainer = () => {
     const encoded = encodeURIComponent(sub);
     router.push(`/etf/category/${rawCategoryId}?sub=${encoded}`);
   };
+
   if (!subCategory) {
     return (
       <div className='py-8 px-6'>

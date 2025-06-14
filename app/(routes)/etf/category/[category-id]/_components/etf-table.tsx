@@ -1,3 +1,5 @@
+import { useRouter } from 'next/navigation';
+
 interface EtfItem {
   name: string;
   code: string;
@@ -11,6 +13,7 @@ interface EtfTableProps {
 }
 
 export default function EtfTable({ data }: EtfTableProps) {
+  const router = useRouter();
   return (
     <div className='w-full'>
       <div className='grid grid-cols-3 bg-primary text-white text-sm font-semibold px-4 py-2'>
@@ -23,6 +26,7 @@ export default function EtfTable({ data }: EtfTableProps) {
         <div
           key={index}
           className='grid grid-cols-3 items-center px-4 py-3 border-b border-hana-green cursor-pointer'
+          onClick={() => router.push(`/etf/detail/${item.code}`)}
         >
           <div>
             <div className='font-medium text-sm'>{item.name}</div>

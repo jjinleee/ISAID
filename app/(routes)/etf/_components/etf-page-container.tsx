@@ -2,7 +2,6 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { SliderWrapper } from '@/app/(routes)/etf/_components/slider-wrapper';
 import { useHeader } from '@/context/header-context';
 import ArrowIcon from '@/public/images/arrow-icon';
 import { ETFArrow } from '@/public/images/etf-rate';
@@ -15,6 +14,7 @@ import {
 } from '@/public/images/etf-slide';
 import StarBoyFinger from '@/public/images/star-boy-finger.svg';
 import { SlideCardProps } from '@/types/components';
+import { SliderWrapper } from '../_components/slider-wrapper';
 
 const ETFPageContainer = () => {
   const { setHeader } = useHeader();

@@ -1,7 +1,7 @@
-import { SlideCard } from '@/app/(routes)/etf/_components/slide-card';
 import { SlideCardProps } from '@/types/components';
 import { Pagination } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
+import { SlideCard } from '../_components/slide-card';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import { useRouter } from 'next/navigation';
