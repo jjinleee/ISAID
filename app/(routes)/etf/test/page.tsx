@@ -1,4 +1,4 @@
-import TestStartContainer from '../_components/test-start-container';
+import TestStartContainer from '../_components/test-page-container';
 
 const TestPage = () => {
   return <TestStartContainer />;
