@@ -9,9 +9,10 @@ export const CustomInput = ({
   placeholder,
   name,
   field,
-  onChange,
+  onChangeField,
   value,
   displayValue,
+  onChange,
 }: InputProps) => {
   // type : number 일 경우 -> 좌측에 스크롤 버튼이 뜨지 않도록
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -53,10 +54,11 @@ export const CustomInput = ({
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!onChange) {
-      return;
+    if (field && onChangeField) {
+      onChangeField(field, e.target.value);
+    } else if (onChange) {
+      onChange(e.target.value);
     }
-    onChange(field, e.target.value);
   };
 
   // displayValue가 있으면 오버레이 패턴 적용

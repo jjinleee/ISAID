@@ -12,10 +12,11 @@ export type InputProps = {
   type: string;
   placeholder: string;
   name: string;
-  field: keyof FormData;
+  field?: keyof FormData;
   value?: string;
   displayValue?: string;
-  onChange?: (field: keyof FormData, value: string) => void;
+  onChangeField?: (field: keyof FormData, value: string) => void;
+  onChange?: (value: string) => void;
 };
 
 export type ButtonProps = {
