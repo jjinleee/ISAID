@@ -4,4 +4,4 @@ const ETFPage = () => {
   return <ETFPageContainer />;
 };
 
-export default ETFPageContainer;
+export default ETFPage;

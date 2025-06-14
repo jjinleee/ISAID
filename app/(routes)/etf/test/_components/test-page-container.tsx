@@ -4,9 +4,9 @@ import { useEffect, useState } from 'react';
 import { useHeader } from '@/context/header-context';
 import Button from '@/components/button';
 import QuestionOption from '@/components/question-option';
-import ProgressBar from '../_components/progress-bar';
-import { TestEndContainer } from '../_components/test-end-container';
-import { TestStartContainer } from '../_components/test-start-container';
+import ProgressBar from './progress-bar';
+import { TestEndContainer } from './test-end-container';
+import { TestStartContainer } from './test-start-container';
 
 type Question = {
   id: number;

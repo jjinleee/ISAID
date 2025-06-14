@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { SliderWrapper } from '@/app/(routes)/etf/_components/slider-wrapper';
 import { useHeader } from '@/context/header-context';
 import ArrowIcon from '@/public/images/arrow-icon';
@@ -17,6 +18,7 @@ import { SlideCardProps } from '@/types/components';
 
 const ETFPageContainer = () => {
   const { setHeader } = useHeader();
+  const router = useRouter();
 
   useEffect(() => {
     setHeader('ETF 맞춤 추천', '당신의 투자 성향에 맞는 테마');
@@ -73,6 +75,7 @@ const ETFPageContainer = () => {
         <div
           className='flex px-5 py-8 text-white bg-hana-green cursor-pointer
         gap-5 rounded-2xl relative'
+          onClick={() => router.push('etf/test')}
         >
           <StarBoyFinger />
           <div className='flex flex-col justify-center gap-2'>
