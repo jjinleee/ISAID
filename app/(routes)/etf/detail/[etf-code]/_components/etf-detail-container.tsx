@@ -5,17 +5,22 @@ import { useParams } from 'next/navigation';
 import ArrowCross from '@/public/images/arrow-cross';
 import Tab from '@/components/tab';
 import { formatComma } from '@/lib/utils';
+import EftDetailChart from '../_components/etf-detail-chart-2';
 import EtfDetailTable from '../_components/etf-detail-table';
 import { etfDetailMap } from '../data/etf-detail-data';
 
+// Todo : 헤더 설정
 const EtfDetailContainer = () => {
   const params = useParams();
   const etfCode = params['etf-code'] as string;
   const etf = etfDetailMap[etfCode as keyof typeof etfDetailMap];
 
   const [selectedTab, setSelectedTab] = useState(0);
+  const [selectedPeriod, setSelectedPeriod] = useState(0);
 
   if (!etf) return <div>해당 ETF가 존재하지 않습니다.</div>;
+  const periods = ['1주일', '1개월', '3개월', '1년', '3년'];
+  const tabs = ['기본정보', '수익률', '구성 비중'];
 
   return (
     <>
@@ -59,26 +64,30 @@ const EtfDetailContainer = () => {
           </div>
         </div>
         <div className='flex justify-between w-full'>
-          <Tab
-            text='기본정보'
-            active={selectedTab === 0}
-            rounded={false}
-            onClick={() => setSelectedTab(0)}
-          />
-          <Tab
-            text='수익률'
-            active={selectedTab === 1}
-            rounded={false}
-            onClick={() => setSelectedTab(1)}
-          />
-          <Tab
-            text='구성 비중'
-            active={selectedTab === 2}
-            rounded={false}
-            onClick={() => setSelectedTab(2)}
-          />
+          {periods.map((label, idx) => (
+            <Tab
+              key={idx}
+              text={label}
+              active={selectedPeriod === idx}
+              rounded={false}
+              onClick={() => setSelectedPeriod(idx)}
+            />
+          ))}
         </div>
-
+        <div className='border w-full '>
+          <EftDetailChart selectedPeriod={selectedPeriod} />
+        </div>
+        <div className='flex justify-between w-full'>
+          {tabs.map((label, idx) => (
+            <Tab
+              key={idx}
+              text={label}
+              active={selectedTab === idx}
+              rounded={false}
+              onClick={() => setSelectedTab(idx)}
+            />
+          ))}
+        </div>
         {selectedTab === 0 && <EtfDetailTable etf={etf} />}
       </div>
     </>
