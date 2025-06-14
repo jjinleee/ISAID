@@ -3,9 +3,10 @@
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import ArrowLeft from '@/public/images/arrow-left.svg';
 import StarBoy from '@/public/images/star-boy.svg';
 import Button from '@/components/button';
-import { Input } from '@/components/ui/input';
+import { CustomInput } from '@/components/input';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -37,8 +38,17 @@ export default function LoginPage() {
   return (
     <form
       onSubmit={handleLogin}
-      className='border pt-10 px-7 flex flex-col gap-10 max-w-sm mx-auto'
+      className='pt-20 px-7 flex flex-col gap-10 max-w-sm mx-auto'
     >
+      <div
+        className='
+        fixed top-0 left-0 right-0
+        w-full max-w-[768px] mx-auto
+        py-3 px-6'
+        onClick={() => router.push('/')}
+      >
+        <ArrowLeft />
+      </div>
       <div className='flex flex-col font-semibold text-subtitle'>
         <StarBoy />
         <p className='text-primary text-[20px]'>ISAID</p>
@@ -48,22 +58,24 @@ export default function LoginPage() {
       <div className='flex flex-col gap-6'>
         <label className='flex flex-col gap-2 text-gray'>
           이메일
-          <Input
+          <CustomInput
+            thin={false}
             name='email'
             type='email'
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(value) => setEmail(value)}
             placeholder='example@test.com'
           />
         </label>
 
         <label className='flex flex-col gap-2 text-gray'>
           비밀번호
-          <Input
+          <CustomInput
+            thin={false}
             name='password'
             type='password'
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(value) => setPassword(value)}
             placeholder='비밀번호를 입력해주세요.'
           />
         </label>

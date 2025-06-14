@@ -116,8 +116,14 @@ export default function RegisterForm() {
   };
 
   const handleInputChange = (field: keyof FormData, value: string) => {
+    if (field === 'rrn') {
+      const raw = value.replace(/\D/g, '').slice(0, 13);
+      setFormData((prev) => ({ ...prev, rrn: raw }));
+      return;
+    }
+
     if (field === 'phone') {
-      const raw = value.replace(/\D/g, ''); // 숫자만 추출
+      const raw = value.replace(/\D/g, '').slice(0, 11);
       setFormData((prev) => ({ ...prev, [field]: raw }));
 
       setValidationErrors((prev) => ({
@@ -127,9 +133,14 @@ export default function RegisterForm() {
       return;
     }
 
-    if (field === 'rrn') {
-      const raw = value.replace(/\D/g, '').slice(0, 13);
-      setFormData((prev) => ({ ...prev, rrn: raw }));
+    if (field === 'verificationCode') {
+      const raw = value.replace(/\D/g, '').slice(0, 3); // ✅ 3자리로 제한
+      setFormData((prev) => ({ ...prev, verificationCode: raw }));
+
+      setValidationErrors((prev) => ({
+        ...prev,
+        verificationCode: !validateField('verificationCode', raw),
+      }));
       return;
     }
 
@@ -193,7 +204,7 @@ export default function RegisterForm() {
         throw new Error(result.error || '알 수 없는 서버 오류');
       }
 
-      router.push('/');
+      router.push('/login');
     } catch (err: unknown) {
       const message =
         err instanceof Error
@@ -288,7 +299,7 @@ export default function RegisterForm() {
       >
         <ArrowLeft />
       </div>
-      <div className='flex pt-10 gap-2 px-4 mb-12'>
+      <div className='flex pt-20 gap-2 px-4 mb-12'>
         {steps.map((_, index) => (
           <div
             key={index}
@@ -324,7 +335,7 @@ export default function RegisterForm() {
                   name='name'
                   field='name'
                   value={formData.name}
-                  onChange={handleInputChange}
+                  onChangeField={handleInputChange}
                 />
               </div>
               <div className='flex flex-col gap-1'>
@@ -338,7 +349,7 @@ export default function RegisterForm() {
                   name='nameEng'
                   field='nameEng'
                   value={formData.nameEng}
-                  onChange={handleInputChange}
+                  onChangeField={handleInputChange}
                 />
               </div>
             </div>
@@ -359,7 +370,7 @@ export default function RegisterForm() {
                   field='rrn'
                   value={formData.rrn}
                   displayValue={formatRRN(formData.rrn)}
-                  onChange={handleInputChange}
+                  onChangeField={handleInputChange}
                 />
               </div>
             </div>
@@ -382,7 +393,7 @@ export default function RegisterForm() {
                       field='phone'
                       value={formData.phone}
                       displayValue={formatPhoneNumber(formData.phone)}
-                      onChange={handleInputChange}
+                      onChangeField={handleInputChange}
                     />
                   </div>
                   <button
@@ -402,7 +413,7 @@ export default function RegisterForm() {
                   name='verificationCode'
                   field='verificationCode'
                   value={formData.verificationCode}
-                  onChange={handleInputChange}
+                  onChangeField={handleInputChange}
                 />
               </div>
             </div>
@@ -421,7 +432,7 @@ export default function RegisterForm() {
                     name='address'
                     field='address'
                     value={formData.address}
-                    onChange={handleInputChange}
+                    onChangeField={handleInputChange}
                   />
                 </div>
               </div>
@@ -438,7 +449,7 @@ export default function RegisterForm() {
                   field='telNo'
                   value={formData.telNo}
                   displayValue={formatTelNo(formData.telNo)}
-                  onChange={handleInputChange}
+                  onChangeField={handleInputChange}
                 />
               </div>
             </div>
@@ -462,7 +473,7 @@ export default function RegisterForm() {
                     name='email'
                     field='email'
                     value={formData.email}
-                    onChange={handleInputChange}
+                    onChangeField={handleInputChange}
                   />
                 </div>
                 <div className='space-y-2'>
@@ -476,7 +487,7 @@ export default function RegisterForm() {
                     name='password'
                     field='password'
                     value={formData.password}
-                    onChange={handleInputChange}
+                    onChangeField={handleInputChange}
                   />
 
                   <p
@@ -503,7 +514,7 @@ export default function RegisterForm() {
                     name='passwordConfirm'
                     field='passwordConfirm'
                     value={formData.passwordConfirm}
-                    onChange={handleInputChange}
+                    onChangeField={handleInputChange}
                   />
 
                   <p
