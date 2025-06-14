@@ -61,3 +61,11 @@ export type SidebarProps = {
   isOpen: boolean;
   onClose: () => void;
 };
+
+export type SlideCardProps = {
+  id?: number;
+  title: string;
+  subtitle: string;
+  description: string;
+  children: React.ReactNode;
+};

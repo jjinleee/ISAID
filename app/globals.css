@@ -108,3 +108,20 @@ body {
     scrollbar-width: none; /* Firefox */
   }
 }
+
+/* carousel 설정 */
+.custom-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #d9d9d9;
+  margin: 0 4px;
+  transition: all 0.3s ease;
+}
+
+.swiper-pagination-bullet-active.custom-dot {
+  width: 32px;
+  border-radius: 9999px;
+  background-color: #4c525d;
+}
