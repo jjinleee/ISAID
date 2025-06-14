@@ -5,24 +5,21 @@ interface StartProps {
   btnClick: () => void;
 }
 
-export const TestStartContainer = ({ btnClick }: StartProps) => {
+export const TestEndContainer = ({ btnClick }: StartProps) => {
   return (
     <>
       <div className='flex flex-col gap-4 items-center'>
-        <h1 className='text-2xl font-bold'>ETF 투자 성향 테스트</h1>
+        <h1 className='text-2xl font-bold'>ETF 투자 성향 테스트 결과</h1>
         <span className='text-sm font-light text-center text-subtitle'>
-          간단한 테스트로 투자 성향을 파악하고,
-          <br />
-          맞춤형 ETF 테마를 추천받으세요
+          OO님의 투자 성향 테스트 결과는 다음과 같습니다
         </span>
       </div>
       <StayBoyTest />
       <Button
-        text='테스트 시작하기'
+        text='테스트 다시 하기'
         thin={false}
         active={true}
         onClick={btnClick}
-        className='!bg-gray'
       />
     </>
   );
