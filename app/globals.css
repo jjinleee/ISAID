@@ -7,8 +7,8 @@ body {
   max-width: 768px;
   margin: 0 auto;
   min-height: 100vh;
-  max-height: 100vh;
-  /*overflow-y: hidden;*/
+  /*max-height: 100vh;*/
+  overflow-y: scroll;
   word-break: keep-all;
   /* border: 1px solid red; */
 }

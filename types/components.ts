@@ -5,6 +5,7 @@ export type TabProps = {
   text: string;
   active: boolean;
   rounded: boolean;
+  onClick: () => void;
 };
 
 export type InputProps = {

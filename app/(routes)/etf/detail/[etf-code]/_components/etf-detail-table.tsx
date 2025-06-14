@@ -6,7 +6,7 @@ interface EtfDetailTableProps {
 
 export default function EtfDetailTable({ etf }: EtfDetailTableProps) {
   return (
-    <>
+    <div className='w-full'>
       <h1 className='text-xl font-semibold'>ETF 개요</h1>
 
       <div className='flex items-center justify-between p-3 text-sm bg-[#F3F4F6] border-b border-b-gray-2'>
@@ -53,6 +53,6 @@ export default function EtfDetailTable({ etf }: EtfDetailTableProps) {
         <span>복제방법</span>
         <span className='font-semibold'>{etf.replicationMethod}</span>
       </div>
-    </>
+    </div>
   );
 }
