@@ -17,7 +17,10 @@ export default function PageHeader() {
   const closeSidebar = () => setSidebarOpen(false);
 
   return (
-    <div className='fixed top-0 left-0 w-full z-50'>
+    <div
+      className='fixed top-0 left-0 z-50 inset-x-0
+      mx-auto max-w-[768px] w-full'
+    >
       {pathname === '/login' || pathname === '/register' ? null : pathname ===
         '/' ? (
         <MainHeader

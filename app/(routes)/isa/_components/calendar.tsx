@@ -11,6 +11,18 @@ const Calendar = () => {
   const today = new Date();
   const [selected, setSelected] = useState<Date | undefined>();
 
+  const transactionDates = [
+    new Date(2025, 5, 3), // 6월 3일
+    new Date(2025, 5, 9), // 6월 9일
+    new Date(2025, 5, 15), // 6월 15일
+  ];
+
+  const transactionData: Record<string, string[]> = {
+    '2025-06-03': ['ISA 입금 500,000원'],
+    '2025-06-09': ['매수 - 삼성전자 10주'],
+    '2025-06-15': ['매도 - LG화학 5주'],
+  };
+
   return (
     <div className='flex flex-col mt-3'>
       <div className='flex gap-2 mb-4'>
@@ -23,21 +35,17 @@ const Calendar = () => {
           selected={selected}
           onSelect={setSelected}
           defaultMonth={today}
-          modifiers={{ today }}
           locale={ko}
           navLayout='around'
           animate
           formatters={{
             formatCaption: (date) => format(date, 'yyyy년 M월', { locale: ko }),
           }}
-          className='w-full'
-          classNames={{
-            /* ② 네비게이션 래퍼 재정의: 가운데 정렬 + 4px 간격 */
-            nav: 'flex items-center justify-center gap-1',
-
-            /* 필요하면 화살표·캡션에 추가 스타일 */
-            nav_button: 'p-1 rounded hover:bg-gray-100',
-            caption_label: 'font-semibold mx-1',
+          modifiers={{
+            hasTransaction: transactionDates,
+          }}
+          modifiersClassNames={{
+            hasTransaction: 'rdp-day_hasTx',
           }}
         />
       </div>
