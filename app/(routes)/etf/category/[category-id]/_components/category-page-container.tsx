@@ -1,17 +1,32 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useHeader } from '@/context/header-context';
+import { useDebounce } from '@/hooks/useDebounce';
 import ArrowIcon from '@/public/images/arrow-icon';
 import EtfTable from '../_components/etf-table';
+import SearchBar from '../_components/search-bar';
 import { categoryMap, etfData } from '../data/category-data';
+
+type Filter = 'name' | 'code' | 'company';
 
 const CategoryPageContainer = () => {
   const { setHeader } = useHeader();
   const params = useParams();
   const searchParams = useSearchParams();
   const router = useRouter();
+
+  // 검색
+  const [keyword, setKeyword] = useState('');
+  const [filter, setFilter] = useState<Filter>('name');
+  const debounced = useDebounce(keyword, 400);
+
+  const filteredData = useMemo(() => {
+    const kw = debounced.trim().toLowerCase();
+    if (!kw) return etfData;
+    return etfData.filter((etf) => etf[filter].toLowerCase().includes(kw));
+  }, [debounced, filter]);
 
   const rawCategoryId = params['category-id'] as string;
   const subCategory = searchParams.get('sub') ?? '';
@@ -28,9 +43,16 @@ const CategoryPageContainer = () => {
       <div className='flex flex-col gap-5 py-8 px-6'>
         <div className='flex gap-2 items-end'>
           <h1 className='font-semibold text-xl'>{category.displayName}</h1>
-          <p className='text-sm text-gray'>{etfData.length} 종목</p>
+          <p className='text-sm text-gray'>{filteredData.length} 종목</p>
         </div>
-        <EtfTable data={etfData} />
+        <SearchBar
+          onChangeAction={(kw, f) => {
+            setKeyword(kw);
+            setFilter(f);
+          }}
+        />
+
+        <EtfTable data={filteredData} />
       </div>
     );
   }
@@ -72,9 +94,16 @@ const CategoryPageContainer = () => {
     <div className='flex flex-col gap-5 py-8 px-6'>
       <div className='flex gap-2 items-end'>
         <h1 className='font-semibold text-xl'>{category.displayName}</h1>
-        <p className='text-sm text-gray'>{etfData.length} 종목</p>
+        <p className='text-sm text-gray'>{filteredData.length} 종목</p>
       </div>
-      <EtfTable data={etfData} />
+      <SearchBar
+        onChangeAction={(kw, f) => {
+          setKeyword(kw);
+          setFilter(f);
+        }}
+      />
+
+      <EtfTable data={filteredData} />
     </div>
   );
 };
