@@ -1,22 +1,33 @@
 'use client';
 
-import { useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { useHeader } from '@/context/header-context';
 import ArrowCross from '@/public/images/arrow-cross';
 import Tab from '@/components/tab';
 import { formatComma } from '@/lib/utils';
 import EftDetailChart from '../_components/etf-detail-chart';
+import EtfDetailRatioChart from '../_components/etf-detail-ratio-chart';
 import EtfDetailTable from '../_components/etf-detail-table';
+import Skeleton from '../_components/skeleton';
 import { etfDetailMap } from '../data/etf-detail-data';
+import { etfRatioData } from '../data/etf-detail-ratio-data';
 
-// Todo : 헤더 설정
 const EtfDetailContainer = () => {
   const params = useParams();
+
+  const { setHeader } = useHeader();
+
+  useEffect(() => {
+    setHeader(etf.categoryId, '당신의 투자 성향에 맞는 테마');
+  }, []);
+
   const etfCode = params['etf-code'] as string;
   const etf = etfDetailMap[etfCode as keyof typeof etfDetailMap];
 
   const [selectedTab, setSelectedTab] = useState(0);
   const [selectedPeriod, setSelectedPeriod] = useState(0);
+  const [chartReady, setChartReady] = useState(false);
 
   if (!etf) return <div>해당 ETF가 존재하지 않습니다.</div>;
   const periods = ['1주일', '1개월', '3개월', '1년', '3년'];
@@ -74,8 +85,18 @@ const EtfDetailContainer = () => {
             />
           ))}
         </div>
-        <div className='border w-full '>
-          <EftDetailChart selectedPeriod={selectedPeriod} />
+        <div className='w-full'>
+          <div className='relative w-full h-[350px]'>
+            {!chartReady && (
+              <div className='absolute top-0 left-0 w-full h-full z-10'>
+                <Skeleton height={350} />
+              </div>
+            )}
+            <EftDetailChart
+              selectedPeriod={selectedPeriod}
+              onReady={() => setChartReady(true)}
+            />
+          </div>
         </div>
         <div className='flex justify-between w-full'>
           {tabs.map((label, idx) => (
@@ -89,6 +110,12 @@ const EtfDetailContainer = () => {
           ))}
         </div>
         {selectedTab === 0 && <EtfDetailTable etf={etf} />}
+        {selectedTab === 1 && (
+          <EtfDetailRatioChart
+            labels={etfRatioData.labels}
+            series={etfRatioData.series}
+          />
+        )}
       </div>
     </>
   );

@@ -6,12 +6,13 @@ import { etfPriceData } from '../data/etf-price-data';
 
 export const EftDetailChart = ({
   selectedPeriod,
+  onReady,
 }: {
   selectedPeriod: number;
+  onReady?: () => void;
 }) => {
   const chartRef = useRef<HTMLDivElement>(null);
   const chartInstanceRef = useRef<ApexCharts | null>(null);
-
   // 최초 렌더링: 3년치 전체 데이터를 기반으로 생성
   useEffect(() => {
     if (!chartRef.current) return;
@@ -37,7 +38,7 @@ export const EftDetailChart = ({
       dataLabels: { enabled: false },
       series: [
         {
-          name: '수익률',
+          name: '가격',
           data: seriesData,
         },
       ],
@@ -58,9 +59,28 @@ export const EftDetailChart = ({
         },
       },
     };
+    if (!chartRef.current) {
+      onReady?.();
+      return;
+    }
+
+    if (!fullSet || fullSet.categories.length === 0) {
+      onReady?.();
+      return;
+    }
 
     const chart = new ApexCharts(chartRef.current, options);
-    chart.render();
+    chart
+      .render()
+      .then(() => {
+        chartInstanceRef.current = chart;
+        onReady?.();
+      })
+      .catch((err) => {
+        console.error('차트 렌더링 실패:', err);
+        onReady?.();
+      });
+
     chartInstanceRef.current = chart;
 
     return () => chart.destroy();
