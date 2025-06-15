@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useHeader } from '@/context/header-context';
 import Account from './account';
+import ContributionLimit from './contribution-limit';
 
 const ISAPageContainer = () => {
   const { setHeader } = useHeader();
@@ -12,8 +13,9 @@ const ISAPageContainer = () => {
   }, []);
 
   return (
-    <div className='flex-col p-5 flex flex-1/2'>
+    <div className='flex-col p-5 flex flex-1/2 pt-21'>
       <Account />
+      <ContributionLimit />
     </div>
   );
 };

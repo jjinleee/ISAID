@@ -149,3 +149,91 @@ body {
   border-radius: 9999px;
   background-color: #4c525d;
 }
+
+/* calendar 설정 */
+.rdp-root {
+  width: 100% !important;
+}
+
+.rdp-months {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.rdp-month {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.rdp-month_grid {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.rdp-month_caption {
+  align-items: center;
+}
+
+.rdp-weekday,
+.rdp-weekday abbr,
+.rdp-weekday span {
+  font-weight: 700 !important;
+  font-size: 15px !important;
+  color: #000000;
+  text-align: center;
+}
+
+.rdp-button_previous svg polygon,
+.rdp-button_next svg polygon {
+  fill: #4c525d;
+}
+
+.rdp-day {
+  color: #9ca3af;
+  font-weight: 600;
+}
+
+.rdp-day_selected {
+  background-color: transparent !important;
+  color: #000000 !important;
+  font-weight: 600;
+}
+
+.rdp-day.rdp-today {
+  color: #000 !important;
+  font-weight: 600 !important;
+}
+
+.rdp-day.rdp-today button {
+  color: #000 !important;
+  font-weight: 600 !important;
+}
+
+.rdp-day_selected.rdp-today {
+  color: #000 !important;
+  background-color: transparent !important;
+  font-weight: 600 !important;
+}
+
+.rdp-day_button {
+  margin: 0 auto !important;
+
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+.rdp-selected .rdp-day_button {
+  background-color: rgba(0, 145, 120, 1) !important;
+  color: #ffffff !important;
+  border-radius: 9999px !important;
+
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.rdp-selected.rdp-today .rdp-day_button {
+  background-color: rgba(0, 145, 120, 1) !important;
+  color: #ffffff !important;
+}
