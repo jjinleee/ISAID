@@ -20,7 +20,7 @@ const EtfDetailContainer = () => {
 
   if (!etf) return <div>해당 ETF가 존재하지 않습니다.</div>;
   const periods = ['1주일', '1개월', '3개월', '1년', '3년'];
-  const tabs = ['기본정보', '수익률', '구성 비중'];
+  const tabs = ['기본정보', '구성 비중'];
 
   return (
     <>
@@ -36,7 +36,7 @@ const EtfDetailContainer = () => {
           </div>
           <div className='flex items-end'>
             <span className='text-xl font-bold mr-2 leading-none'>
-              {etf.price}
+              {formatComma(etf.price)}
             </span>
             <ArrowCross direction={`${etf.rate > 0 ? 'up' : 'down'}`} />
             <span

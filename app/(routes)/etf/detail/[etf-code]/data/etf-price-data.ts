@@ -5,7 +5,7 @@ export interface EtfPriceSet {
 
 export type EtfPeriod = '1주일' | '1개월' | '3개월' | '1년' | '3년';
 
-function generatePriceSeries(days: number, startPrice = 100): EtfPriceSet {
+function generatePriceSeries(days: number, startPrice = 9300): EtfPriceSet {
   const categories: string[] = [];
   const data: number[] = [];
 
@@ -16,11 +16,11 @@ function generatePriceSeries(days: number, startPrice = 100): EtfPriceSet {
     const date = new Date(today);
     date.setDate(today.getDate() - i);
 
-    const iso = date.toISOString().split('T')[0]; // ✅ ISO 형식 (YYYY-MM-DD)
+    const iso = date.toISOString().split('T')[0];
     categories.push(iso);
 
-    const fluctuation = (Math.random() - 0.5) * 2; // -1% ~ +1%
-    currentPrice = +(currentPrice * (1 + fluctuation / 100)).toFixed(2);
+    const fluctuation = (Math.random() - 0.5) * 2;
+    currentPrice = Math.round(currentPrice * (1 + fluctuation / 100)); // 정수화
     data.push(currentPrice);
   }
 
