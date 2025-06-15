@@ -7,8 +7,8 @@ body {
   max-width: 768px;
   margin: 0 auto;
   min-height: 100vh;
-  max-height: 100vh;
-  /*overflow-y: hidden;*/
+  /*max-height: 100vh;*/
+  overflow-y: scroll;
   word-break: keep-all;
   /* border: 1px solid red; */
 }
@@ -107,4 +107,45 @@ body {
     -ms-overflow-style: none; /* IE */
     scrollbar-width: none; /* Firefox */
   }
+
+  /* Chart Skeleton 관련 스타일링 */
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  .animate-shimmer::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background-image: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.5) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    animation: shimmer 1.5s infinite;
+  }
+}
+
+/* carousel 설정 */
+.custom-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #d9d9d9;
+  margin: 0 4px;
+  transition: all 0.3s ease;
+}
+
+.swiper-pagination-bullet-active.custom-dot {
+  width: 32px;
+  border-radius: 9999px;
+  background-color: #4c525d;
 }

@@ -5,6 +5,7 @@ export type TabProps = {
   text: string;
   active: boolean;
   rounded: boolean;
+  onClick: () => void;
 };
 
 export type InputProps = {
@@ -26,6 +27,7 @@ export type ButtonProps = {
   disabled?: boolean;
   onClick?: () => void;
   type?: string;
+  className?: string;
 };
 
 export type QuestionOptionProps = {
@@ -60,4 +62,14 @@ export type HeaderBarProps = {
 export type SidebarProps = {
   isOpen: boolean;
   onClose: () => void;
+};
+
+export type SlideCardProps = {
+  id?: number;
+  title: string;
+  subtitle: string;
+  description: string;
+  children: React.ReactNode;
+  category: string;
+  onClick?: () => void;
 };
