@@ -1,75 +1,102 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import ApexCharts from 'apexcharts';
-import { EtfPeriod, etfPriceData } from '../data/etf-price-data';
+import { etfPriceData } from '../data/etf-price-data';
 
-const periodLabels: EtfPeriod[] = ['1주일', '1개월', '3개월', '1년', '3년'];
-
-export const EtfDetailChart = ({
+export const EftDetailChart = ({
   selectedPeriod,
 }: {
   selectedPeriod: number;
 }) => {
   const chartRef = useRef<HTMLDivElement>(null);
-  const [chart, setChart] = useState<ApexCharts | null>(null);
+  const chartInstanceRef = useRef<ApexCharts | null>(null);
 
+  // 최초 렌더링: 3년치 전체 데이터를 기반으로 생성
   useEffect(() => {
     if (!chartRef.current) return;
-    const period = periodLabels[selectedPeriod];
 
-    const priceSet = etfPriceData[period];
-    if (!priceSet) return;
-
-    const { categories, data } = etfPriceData[period];
+    const fullSet = etfPriceData['3년'];
+    const seriesData = fullSet.categories.map((dateStr, i) => {
+      const timestamp = new Date(dateStr).getTime();
+      return [timestamp, fullSet.data[i]];
+    });
+    console.log(seriesData.filter(([x, y]) => isNaN(x) || isNaN(y)));
 
     const options = {
       chart: {
+        id: 'etf-area',
         type: 'area',
         height: 350,
-        toolbar: { show: false },
         zoom: { enabled: false },
+        toolbar: { show: false },
+        selection: {
+          enabled: false,
+        },
       },
-      dataLabels: {
-        enabled: false, // 🔹 데이터 위 숫자 숨김
-      },
-
+      dataLabels: { enabled: false },
       series: [
         {
           name: '수익률',
-          data,
+          data: seriesData,
         },
       ],
       xaxis: {
-        categories,
+        type: 'datetime',
         labels: {
-          show: true,
-          rotate: 0,
-          hideOverlappingLabels: true,
-          trim: true,
+          rotate: -30,
+          style: { fontSize: '10px' },
         },
         tickAmount: 6,
       },
-
       tooltip: {
         enabled: true,
         theme: 'light',
+        x: { format: 'MM/dd' },
         y: {
           formatter: (val: number) => `${val.toFixed(2)}원`,
         },
       },
     };
 
-    const chartInstance = new ApexCharts(chartRef.current, options);
-    chartInstance.render();
-    setChart(chartInstance);
+    const chart = new ApexCharts(chartRef.current, options);
+    chart.render();
+    chartInstanceRef.current = chart;
 
-    return () => {
-      chartInstance.destroy();
-    };
+    return () => chart.destroy();
+  }, []);
+
+  useEffect(() => {
+    const chart = chartInstanceRef.current;
+    if (!chart) return;
+
+    const fullDates = etfPriceData['3년'].categories;
+    const end = new Date(fullDates[fullDates.length - 1]).getTime();
+    let start: number;
+
+    switch (selectedPeriod) {
+      case 0:
+        start = end - 7 * 86400000;
+        break; // 1주일
+      case 1:
+        start = end - 30 * 86400000;
+        break; // 1개월
+      case 2:
+        start = end - 90 * 86400000;
+        break; // 3개월
+      case 3:
+        start = end - 365 * 86400000;
+        break; // 1년
+      case 4:
+      default:
+        start = new Date(fullDates[0]).getTime();
+        break; // 3년 (전체)
+    }
+
+    chart.zoomX(start, end);
   }, [selectedPeriod]);
 
   return <div ref={chartRef} />;
 };
 
-export default EtfDetailChart;
+export default EftDetailChart;

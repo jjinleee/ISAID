@@ -1,4 +1,9 @@
-// ../data/etf-price-data.ts
+export interface EtfPriceSet {
+  categories: string[];
+  data: number[];
+}
+
+export type EtfPeriod = '1주일' | '1개월' | '3개월' | '1년' | '3년';
 
 function generatePriceSeries(days: number, startPrice = 100): EtfPriceSet {
   const categories: string[] = [];
@@ -10,23 +15,17 @@ function generatePriceSeries(days: number, startPrice = 100): EtfPriceSet {
   for (let i = days - 1; i >= 0; i--) {
     const date = new Date(today);
     date.setDate(today.getDate() - i);
-    const label = `${date.getMonth() + 1}/${date.getDate()}`;
-    categories.push(label);
 
-    const fluctuation = (Math.random() - 0.5) * 2;
+    const iso = date.toISOString().split('T')[0]; // ✅ ISO 형식 (YYYY-MM-DD)
+    categories.push(iso);
+
+    const fluctuation = (Math.random() - 0.5) * 2; // -1% ~ +1%
     currentPrice = +(currentPrice * (1 + fluctuation / 100)).toFixed(2);
     data.push(currentPrice);
   }
 
   return { categories, data };
 }
-
-export interface EtfPriceSet {
-  categories: string[];
-  data: number[];
-}
-
-export type EtfPeriod = '1주일' | '1개월' | '3개월' | '1년' | '3년';
 
 export const etfPriceData: Record<EtfPeriod, EtfPriceSet> = {
   '1주일': generatePriceSeries(7),

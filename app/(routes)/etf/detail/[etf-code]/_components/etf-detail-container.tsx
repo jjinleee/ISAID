@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation';
 import ArrowCross from '@/public/images/arrow-cross';
 import Tab from '@/components/tab';
 import { formatComma } from '@/lib/utils';
-import EftDetailChart from '../_components/etf-detail-chart-2';
+import EftDetailChart from '../_components/etf-detail-chart';
 import EtfDetailTable from '../_components/etf-detail-table';
 import { etfDetailMap } from '../data/etf-detail-data';
 
