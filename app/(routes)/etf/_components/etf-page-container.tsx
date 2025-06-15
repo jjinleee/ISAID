@@ -89,9 +89,13 @@ const ETFPageContainer = () => {
               몇 가지 질문에 답하면, 당신에게 어울리는 테마를 추천해드릴게요
             </span>
           </div>
-          <div className='flex gap-2 justify-center items-center absolute top-3 right-3'>
+          <div className='flex gap-1 justify-center items-center absolute top-3 right-3'>
             <span>테스트 하러 가기 </span>
-            <ArrowIcon direction='right' className='text-white' />
+            <ArrowIcon
+              direction='right'
+              className='text-white'
+              viewBox='0 0 11 28'
+            />
           </div>
         </div>
         <div className='flex items-center justify-between'>

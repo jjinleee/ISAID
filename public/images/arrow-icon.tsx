@@ -10,6 +10,7 @@ interface ArrowIconProps {
   direction?: 'left' | 'right' | 'top' | 'bottom';
   color?: string;
   className?: string;
+  viewBox?: string;
 }
 
 const rotationMap = {
@@ -23,6 +24,7 @@ export const ArrowIcon = ({
   direction = 'left',
   color = 'currentColor',
   className,
+  viewBox,
 }: ArrowIconProps) => {
   const rotationClass = rotationMap[direction];
 
@@ -30,7 +32,7 @@ export const ArrowIcon = ({
     <svg
       width='28'
       height='28'
-      viewBox='0 0 28 28'
+      viewBox={viewBox || '0 0 28 28'}
       fill='none'
       xmlns='http://www.w3.org/2000/svg'
       className={cn('transition-transform', rotationClass, className)}
