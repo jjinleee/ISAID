@@ -82,7 +82,7 @@ const ETFPageContainer = () => {
         gap-5 rounded-2xl relative'
           onClick={() => router.push('etf/test')}
         >
-          <StarBoyFinger />
+          <StarBoyFinger className='flex-none shrink-0' />
           <div className='flex flex-col justify-center gap-2'>
             <h1 className='font-bold text-xl'>ETF, 뭐부터 시작하지?</h1>
             <span>
