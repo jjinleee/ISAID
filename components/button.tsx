@@ -5,9 +5,11 @@ import type { ButtonProps } from '@/types/components.ts';
 //   text={'thin={true} active={true}'}
 //   thin={true}
 //   active={true}
+//   disabled={false}
 //   onClick={() => {
 //     console.log('gungun');
 //   }}
+//   className='!bg-gray'
 // />
 export const Button = ({
   text,
@@ -15,19 +17,26 @@ export const Button = ({
   active,
   onClick,
   disabled,
+  className = '',
 }: ButtonProps) => {
-  const className = `w-full text-center font-semibold rounded-md cursor-pointer
-        ${
-          active
-            ? 'bg-primary text-white py-4'
-            : thin
-              ? 'py-3 bg-white border border-primary text-primary'
-              : 'py-4 bg-hana-green text-white'
-        }`;
+  const computedClassName = `
+  w-full text-center font-semibold rounded-md cursor-pointer
+  ${
+    disabled
+      ? 'bg-subtitle text-white py-4 cursor-not-allowed'
+      : active
+        ? 'bg-primary text-white py-4'
+        : thin
+          ? 'py-3 bg-white border border-primary text-primary'
+          : 'py-4 bg-hana-green text-white'
+  }
+  ${className}
+`.trim();
+
   return (
     <button
       disabled={disabled}
-      className={className.trim()}
+      className={computedClassName}
       {...(onClick && { onClick })}
     >
       {text}

@@ -28,6 +28,7 @@ export const BottomBar = () => {
       mx-auto max-w-[768px] w-full
       flex justify-around space-x-8 items-center
       border-t border-t-hana-green bg-white
+      z-50
       '
     >
       {items.map(({ to, text, icon: Icon }) => {

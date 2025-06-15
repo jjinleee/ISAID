@@ -19,16 +19,16 @@ export const QuestionOption = ({
   return (
     <Button
       variant={active ? 'default' : 'outline'}
-      className="w-full text-left justify-start h-auto p-4 border border-gray-2 py-2 font-normal"
+      className='w-full text-left justify-start h-auto p-4 border border-gray-2 py-2 font-normal rounded-xl'
       onClick={onClick}
     >
       <div
         className={`flex items-center gap-3 ${active ? 'text-white' : 'text-black'}`}
       >
         {active ? (
-          <CircleCheck className="!w-6 !h-6" />
+          <CircleCheck className='!w-6 !h-6' />
         ) : (
-          <CircleEmpty className="!w-6 !h-6" />
+          <CircleEmpty className='!w-6 !h-6' />
         )}
 
         <span>{text}</span>
