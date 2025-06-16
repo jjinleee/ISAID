@@ -13,80 +13,123 @@ export async function GET(
   }
 
   try {
-    const rows = await prisma.etfDailyTrading.findMany({
-      where: { etfId }, // 반드시 해당 ETF만
+    // ── 오늘 데이터 ─────────────────────────────────────
+    const today = await prisma.etfDailyTrading.findFirst({
+      where: { etfId },
+      orderBy: { baseDate: 'desc' },
       select: {
-        etfId: true, // ETF ID
-        issueCode: true, // 종목코드
-        issueName: true, // 한글종목명
-        tddClosePrice: true, // 종가
-        accTradeVolume: true, // 거래량
-        flucRate: true, // 수익률(등락률)
-        etf: {
-          select: {
-            category: {
-              select: { fullPath: true }, // 전체 카테고리
-            },
-          },
-        },
+        baseDate: true,
+        tddClosePrice: true,
+        issueCode: true,
+        issueName: true,
+        flucRate: true,
+        accTradeVolume: true,
+        nav: true,
+        objStkprcIdx: true,
+        etf: { select: { category: { select: { fullPath: true } } } },
       },
     });
-
-    const sanitizedTrading = rows.map((d) => ({
-      category: d.etf?.category?.fullPath ?? null, // 전체 카테고리
-      issueName: d.issueName, // 한글종목명
-      issueCode: d.issueCode, // 종목코드
-      closePrice: d.tddClosePrice ? Number(d.tddClosePrice) : null, // 종가
-      tradeVolume: d.accTradeVolume !== null ? Number(d.accTradeVolume) : null, // 거래량
-      yield: d.flucRate !== null ? Number(d.flucRate) : null, // 수익률
-    }));
-
-    let pdfData: {
-      compstIssueCu1Shares: Decimal | null;
-      valueAmount: bigint | null;
-    }[] = [];
-    if (etfId) {
-      pdfData = await prisma.etfPdf.findMany({
-        where: { etfId },
-        select: {
-          compstIssueCu1Shares: true,
-          valueAmount: true,
-        },
-      });
+    
+    if (!today) {
+      return NextResponse.json(
+        { message: 'No trading data for this etfId' },
+        { status: 404 },
+      );
     }
+    
+    // ── 오늘보다 과거 중 가장 최근 1건 ───────────────────
+    const yesterday = await prisma.etfDailyTrading.findFirst({
+      where: {
+        etfId,
+        baseDate: { lt: today.baseDate },   // 오늘보다 이전
+      },
+      orderBy: { baseDate: 'desc' },        // 가장 가까운 과거
+      select: { baseDate: true, tddClosePrice: true, nav: true, objStkprcIdx: true },
+    });
+    
+    let changeAbs: number | null = null;
+    let changePct: number | null = null;
+    
+    if (yesterday?.tddClosePrice) {
+      const prev = Number(yesterday.tddClosePrice);
+      const curr = Number(today.tddClosePrice);
+      changeAbs = curr - prev;
+      changePct = prev !== 0 ? (changeAbs / prev) * 100 : null;
+    }
+    
+    const sanitizedTrading = [
+      {
+        date: today.baseDate.toISOString().split('T')[0],
+        category: today.etf?.category?.fullPath ?? null,
+        issueName: today.issueName,
+        issueCode: today.issueCode,
+        todayClose: today.tddClosePrice ? Number(today.tddClosePrice) : null,
+        prevClose: yesterday?.tddClosePrice
+          ? Number(yesterday.tddClosePrice)
+          : null,
+        change: changeAbs,
+        changePct: changePct,
+        tradeVolume:
+          today.accTradeVolume !== null ? Number(today.accTradeVolume) : null,
+      },
+    ];
 
-    // iNAV 계산
+    // iNAV 계산-1
     let iNav: number | null = null;
-    if (pdfData.length) {
-      const sumShares = pdfData.reduce((acc, cur) => {
-        const v = cur.compstIssueCu1Shares
-          ? Number(cur.compstIssueCu1Shares)
-          : 0;
-        return acc + v;
-      }, 0);
-
-      const sumValue = pdfData.reduce((acc, cur) => {
-        const v = cur.valueAmount !== null ? Number(cur.valueAmount) : 0;
-        return acc + v;
-      }, 0);
-
-      if (sumValue !== 0) {
-        iNav = sumValue / sumShares;
+    // if (pdfData.length) {
+    //   const sumShares = pdfData.reduce((acc, cur) => {
+    //     const v = cur.compstIssueCu1Shares
+    //       ? Number(cur.compstIssueCu1Shares)
+    //       : 0;
+    //     return acc + v;
+    //   }, 0);
+    //
+    //   const sumValue = pdfData.reduce((acc, cur) => {
+    //     const v = cur.valueAmount !== null ? Number(cur.valueAmount) : 0;
+    //     return acc + v;
+    //   }, 0);
+    //
+    //   if (sumValue !== 0) {
+    //     iNav = sumValue / sumShares;
+    //   }
+    // }
+    
+    // iNAV 계산-2
+    // let iNav: number | null = null;
+    //
+    // if (pdfData.length && sanitizedTrading[0].tradeVolume) {
+    //   const sumValue = pdfData.reduce((acc, cur) => {
+    //     const v = cur.valueAmount !== null ? Number(cur.valueAmount) : 0;
+    //     return acc + v;
+    //   }, 0);
+    //
+    //   const volume = sanitizedTrading[0].tradeVolume; // 오늘 거래량
+    //
+    //   if (volume !== 0) {
+    //     iNav = sumValue / volume;
+    //   }
+    // }
+    
+    // iNav 계산 지수 연동식
+    if (
+      yesterday?.nav !== null &&
+      yesterday?.objStkprcIdx !== null &&
+      today?.objStkprcIdx !== null
+    ) {
+      const navPrev = Number(yesterday.nav);
+      const idxPrev = Number(yesterday.objStkprcIdx);
+      const idxCurr = Number(today.objStkprcIdx);
+      
+      if (idxPrev !== 0) {
+        iNav = (navPrev * idxCurr) / idxPrev;
       }
     }
 
-    const sanitizedPdf = pdfData.map((d) => ({
-      compstIssueCu1Shares: d.compstIssueCu1Shares
-        ? Number(d.compstIssueCu1Shares)
-        : null,
-      valueAmount: d.valueAmount !== null ? Number(d.valueAmount) : null,
-    }));
-
     return NextResponse.json({
       trading: sanitizedTrading,
-      pdf: sanitizedPdf,
       iNav,
     });
+    
   } catch (err) {
     console.error(err);
     return NextResponse.json({ message: 'DB Error' }, { status: 500 });
