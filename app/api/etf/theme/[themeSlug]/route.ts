@@ -18,47 +18,55 @@ const themeToDisplayName: Record<string, string> = {
 };
 
 export async function GET(req: NextRequest) {
-  const url = new URL(req.url);
-  const pathnameParts = url.pathname.split('/');
-  const themeSlug = pathnameParts[pathnameParts.length - 1];
-  const ids = themeToCategoryIds[themeSlug];
-  const displayName = themeToDisplayName[themeSlug];
+  try {
+    const url = new URL(req.url);
+    const pathnameParts = url.pathname.split('/');
+    const themeSlug = pathnameParts[pathnameParts.length - 1];
+    const ids = themeToCategoryIds[themeSlug];
+    const displayName = themeToDisplayName[themeSlug];
 
-  if (!ids) {
-    return NextResponse.json({ error: 'Invalid themeSlug' }, { status: 400 });
+    if (!ids) {
+      return NextResponse.json({ error: 'Invalid themeSlug' }, { status: 400 });
+    }
+
+    const categories = await prisma.etfCategory.findMany({
+      where: { id: { in: ids } },
+      select: {
+        id: true,
+        assetType: true,
+        assetSubtype: true,
+        fullPath: true,
+      },
+      orderBy: { id: 'asc' },
+    });
+
+    const renamed = categories.map((c) => {
+      const isMixedAssets = themeSlug === 'mixed-assets';
+      const rawName = isMixedAssets ? c.assetType : c.assetSubtype;
+
+      return {
+        id: c.id,
+        name: rawName ?? 'etc',
+        fullname: c.fullPath,
+      };
+    });
+
+    // etc를 맨 뒤로 정렬
+    renamed.sort((a, b) => {
+      if (a.name === 'etc' && b.name !== 'etc') return 1;
+      if (a.name !== 'etc' && b.name === 'etc') return -1;
+      return 0;
+    });
+
+    return NextResponse.json({
+      displayName,
+      categories: renamed,
+    });
+  } catch (error) {
+    console.error('GET /api/etf/theme/[themeSlug] error:', error);
+    return NextResponse.json(
+      { error: 'Internal Server Error' },
+      { status: 500 }
+    );
   }
-
-  const categories = await prisma.etfCategory.findMany({
-    where: { id: { in: ids } },
-    select: {
-      id: true,
-      assetType: true,
-      assetSubtype: true,
-      fullPath: true,
-    },
-    orderBy: { id: 'asc' },
-  });
-
-  const renamed = categories.map((c) => {
-    const isMixedAssets = themeSlug === 'mixed-assets';
-    const rawName = isMixedAssets ? c.assetType : c.assetSubtype;
-
-    return {
-      id: c.id,
-      name: rawName ?? 'etc',
-      fullname: c.fullPath,
-    };
-  });
-
-  // etc를 맨 뒤로 정렬
-  renamed.sort((a, b) => {
-    if (a.name === 'etc' && b.name !== 'etc') return 1;
-    if (a.name !== 'etc' && b.name === 'etc') return -1;
-    return 0;
-  });
-
-  return NextResponse.json({
-    displayName,
-    categories: renamed,
-  });
 }
