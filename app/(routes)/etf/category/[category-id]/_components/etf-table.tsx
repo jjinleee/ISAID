@@ -1,13 +1,5 @@
 import { useRouter } from 'next/navigation';
-import Spinner from '@/public/images//spinner.svg';
-
-interface EtfItem {
-  name: string;
-  code: string;
-  volume: string;
-  price: string;
-  changeRate: string;
-}
+import { EtfItem } from '@/lib/utils';
 
 interface EtfTableProps {
   data: EtfItem[];
@@ -26,7 +18,7 @@ export default function EtfTable({ data }: EtfTableProps) {
         <div
           key={index}
           className='grid grid-cols-3 items-center px-4 py-3 border-b border-hana-green cursor-pointer'
-          onClick={() => router.push(`/etf/detail/${item.code}`)}
+          onClick={() => router.push(`/etf/detail/${item.etfId}`)}
         >
           <div>
             <div className='font-medium text-sm'>{item.name}</div>

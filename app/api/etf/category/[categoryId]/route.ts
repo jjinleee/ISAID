@@ -51,6 +51,7 @@ export async function GET(req: NextRequest) {
         take: size,
         orderBy: { id: 'asc' },
         select: {
+          id: true,
           issueCode: true,
           issueName: true,
           tradings: {
@@ -90,6 +91,7 @@ export async function GET(req: NextRequest) {
 
     // 응답 구조 가공
     const data = etfs.map((etf) => ({
+      etfId: etf.id,
       issueCode: etf.issueCode,
       issueName: etf.issueName,
       accTradeVolume: etf.tradings[0]?.accTradeVolume

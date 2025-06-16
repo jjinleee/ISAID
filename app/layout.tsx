@@ -28,7 +28,7 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased pb-20 scrollbar-hide`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased pb-20 scrollbar-hide pt-20`}
       >
         <HeaderProvider>
           <PageHeader />

@@ -87,6 +87,19 @@ const CategoryPageContainer = () => {
   useEffect(() => {
     if (!category) return;
 
+    if (subCategory && selectedSubId === null) {
+      const targetSub = category.categories.find(
+        (cat) => cat.name === decodeURIComponent(subCategory)
+      );
+      if (targetSub) {
+        setSelectedSubId(targetSub.id);
+      }
+    }
+  }, [category, subCategory, selectedSubId]);
+
+  useEffect(() => {
+    if (!category) return;
+
     const targetId =
       selectedSubId ??
       (category.categories.length ? category.categories[0].id : null);
@@ -154,7 +167,6 @@ const CategoryPageContainer = () => {
 
   if (category.categories.length === 1) {
     return (
-
       <>
         <EtfSection
           title={tableName || category.displayName}
@@ -168,7 +180,6 @@ const CategoryPageContainer = () => {
           totalPages={totalPages}
         />
 
-        {/* 추가 페이지 로딩 중일 때 하단 인디케이터만 표시 */}
         {loadingItems && page > 1 && (
           <div className='py-4 text-center text-sm text-gray'>로딩 중…</div>
         )}
@@ -186,7 +197,7 @@ const CategoryPageContainer = () => {
 
   if (!subCategory) {
     return (
-      <div className='py-8 px-6'>
+      <div className='px-6'>
         <div className='flex flex-col gap-5'>
           <div className='flex gap-2 items-end'>
             <h1 className='font-semibold text-xl'>
