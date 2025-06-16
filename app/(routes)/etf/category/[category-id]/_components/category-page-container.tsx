@@ -7,9 +7,20 @@ import { useDebounce } from '@/hooks/useDebounce';
 import ArrowIcon from '@/public/images/arrow-icon';
 import EtfTable from '../_components/etf-table';
 import SearchBar from '../_components/search-bar';
-import { categoryMap, etfData } from '../data/category-data';
+import { etfData } from '../data/category-data';
 
 type Filter = 'name' | 'code' | 'company';
+
+interface SubCategory {
+  id: number;
+  name: string;
+  fullname: string;
+}
+
+interface Category {
+  displayName: string;
+  subCategories: SubCategory[];
+}
 
 const CategoryPageContainer = () => {
   const { setHeader } = useHeader();
@@ -31,14 +42,41 @@ const CategoryPageContainer = () => {
   const rawCategoryId = params['category-id'] as string;
   const subCategory = searchParams.get('sub') ?? '';
 
-  const category = categoryMap[rawCategoryId as keyof typeof categoryMap];
+  // const category = categoryMap[rawCategoryId as keyof typeof categoryMap];
+  const [category, setCategory] = useState<Category | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
   useEffect(() => {
     setHeader('맞춤 테마 ETF', '당신의 투자 성향에 맞는 테마');
   }, []);
 
+  useEffect(() => {
+    const fetchCategory = async () => {
+      try {
+        setLoading(true);
+        const res = await fetch(`/api/etf/theme/${rawCategoryId}`);
+        if (!res.ok)
+          throw new Error('카테고리 정보를 불러오는 데 실패했습니다.');
+        const data = await res.json();
+        setCategory({
+          displayName: data.displayName,
+          subCategories: data.categories,
+        });
+      } catch (e: any) {
+        setError(e.message || '알 수 없는 오류가 발생했습니다.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCategory();
+  }, [rawCategoryId]);
+
+  if (loading) return <div className='px-6 py-8'>로딩 중...</div>;
+  if (error) return <div className='px-6 py-8 text-red-500'>{error}</div>;
   if (!category) return <div>존재하지 않는 카테고리입니다.</div>;
 
-  if (category.subCategories.length === 0) {
+  if (category.subCategories.length === 1) {
     return (
       <div className='flex flex-col gap-5 py-8 px-6'>
         <div className='flex gap-2 items-end'>
@@ -76,11 +114,11 @@ const CategoryPageContainer = () => {
             <div className='bg-teal-500 text-white px-4 py-2'>분류</div>
             {category.subCategories.map((sub) => (
               <div
-                key={sub}
+                key={sub.id}
                 className='flex justify-between items-center px-4 py-3 border-b border-b-gray-2 cursor-pointer'
-                onClick={() => handleClick(sub)}
+                onClick={() => handleClick(sub.name)}
               >
-                {sub}
+                {sub.name}
                 <ArrowIcon direction='right' className='text-gray w-6 h-6' />
               </div>
             ))}
