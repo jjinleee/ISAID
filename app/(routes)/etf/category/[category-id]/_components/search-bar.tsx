@@ -5,25 +5,24 @@ import { useDebounce } from '@/hooks/useDebounce';
 import Input from '@/components/input';
 import CustomSelect from './custom-select';
 
-type Filter = 'name' | 'code' | 'company';
+type Filter = 'name' | 'code';
 
 interface Props {
-  onChangeAction: (keyword: string, filter: Filter) => void;
+  keyword: string;
+  filter: Filter;
+  onKeywordChangeAction: (kw: string) => void;
+  onFilterChangeAction: (f: Filter) => void;
 }
 
-export default function SearchBar({ onChangeAction }: Props) {
-  const [keyword, setKeyword] = useState('');
-  const [filter, setFilter] = useState<Filter>('name');
-  const debounced = useDebounce(keyword, 400);
-
-  useEffect(() => {
-    onChangeAction(debounced, filter);
-  }, [debounced, filter, onChangeAction]);
-
+export default function SearchBar({
+  keyword,
+  filter,
+  onKeywordChangeAction,
+  onFilterChangeAction,
+}: Props) {
   const filterOptions = [
     { label: '종목명', value: 'name' },
     { label: '종목코드', value: 'code' },
-    { label: '운용사', value: 'company' },
   ];
 
   return (
@@ -31,7 +30,7 @@ export default function SearchBar({ onChangeAction }: Props) {
       <CustomSelect
         value={filter}
         options={filterOptions}
-        onChangeAction={setFilter}
+        onChangeAction={(v: Filter) => onFilterChangeAction(v)}
       />
 
       <Input
@@ -39,8 +38,8 @@ export default function SearchBar({ onChangeAction }: Props) {
         type='text'
         placeholder='검색어 입력'
         value={keyword}
-        onChange={(keyword) => setKeyword(keyword)}
-        name={'search'}
+        onChange={(v) => onKeywordChangeAction(v)}
+        name='search'
       />
     </div>
   );

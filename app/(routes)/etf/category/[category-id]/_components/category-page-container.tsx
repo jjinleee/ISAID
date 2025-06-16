@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import EtfSection from '@/app/(routes)/etf/category/[category-id]/_components/etf-section';
 import { useHeader } from '@/context/header-context';
 import { useDebounce } from '@/hooks/useDebounce';
 import ArrowIcon from '@/public/images/arrow-icon';
@@ -11,7 +12,7 @@ import { EtfItem, mapApiToRow } from '@/lib/utils';
 import EtfTable from '../_components/etf-table';
 import SearchBar from '../_components/search-bar';
 
-type Filter = 'name' | 'code' | 'company';
+type Filter = 'name' | 'code';
 
 const CategoryPageContainer = () => {
   const { setHeader } = useHeader();
@@ -85,6 +86,10 @@ const CategoryPageContainer = () => {
     }
   }, [category, subCategory, debounced, filter, rawCategoryId]);
 
+  useEffect(() => {
+    console.log('filter : ', filter);
+  }, [filter]);
+
   if (loadingCategory)
     return <div className='px-6 py-8'>카테고리 불러오는 중...</div>;
   if (error) return <div className='px-6 py-8 text-red-500'>{error}</div>;
@@ -92,27 +97,27 @@ const CategoryPageContainer = () => {
   if (!category) return <div>존재하지 않는 카테고리입니다.</div>;
   if (loadingItems)
     return (
-      <div className='px-6 py-8'>
-        <h1 className='font-semibold text-xl'>{category!.displayName}</h1>
-        <div className='mt-6'>종목 데이터 불러오는 중...</div>
-      </div>
+      <EtfSection
+        title={category.displayName}
+        count={0}
+        keyword={keyword}
+        filter={filter}
+        data={[]}
+        onKeywordChangeAction={setKeyword}
+        onFilterChangeAction={setFilter}
+      />
     );
   if (category.categories.length === 1) {
     return (
-      <div className='flex flex-col gap-5 py-8 px-6'>
-        <div className='flex gap-2 items-end'>
-          <h1 className='font-semibold text-xl'>{category.displayName}</h1>
-          <p className='text-sm text-gray'>{etfData.length} 종목</p>
-        </div>
-        <SearchBar
-          onChangeAction={(kw, f) => {
-            setKeyword(kw);
-            setFilter(f);
-          }}
-        />
-
-        <EtfTable data={etfData} />
-      </div>
+      <EtfSection
+        title={category.displayName}
+        count={etfData.length}
+        keyword={keyword}
+        filter={filter}
+        data={etfData}
+        onKeywordChangeAction={setKeyword}
+        onFilterChangeAction={setFilter}
+      />
     );
   }
 
@@ -150,20 +155,15 @@ const CategoryPageContainer = () => {
   }
 
   return (
-    <div className='flex flex-col gap-5 py-8 px-6'>
-      <div className='flex gap-2 items-end'>
-        <h1 className='font-semibold text-xl'>{category.displayName}</h1>
-        <p className='text-sm text-gray'>{etfData.length} 종목</p>
-      </div>
-      <SearchBar
-        onChangeAction={(kw, f) => {
-          setKeyword(kw);
-          setFilter(f);
-        }}
-      />
-
-      <EtfTable data={etfData} />
-    </div>
+    <EtfSection
+      title={category.displayName}
+      count={etfData.length}
+      keyword={keyword}
+      filter={filter}
+      data={etfData}
+      onKeywordChangeAction={setKeyword}
+      onFilterChangeAction={setFilter}
+    />
   );
 };
 export default CategoryPageContainer;
