@@ -21,3 +21,5 @@ export interface EtfApiResponse {
   total: number;
   etfCategoryFullPath: string;
 }
+
+export type Filter = 'name' | 'code';

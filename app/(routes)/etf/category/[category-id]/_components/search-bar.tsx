@@ -1,11 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useDebounce } from '@/hooks/useDebounce';
+import { Filter } from '@/types/etf';
 import Input from '@/components/input';
 import CustomSelect from './custom-select';
-
-type Filter = 'name' | 'code';
 
 interface Props {
   keyword: string;

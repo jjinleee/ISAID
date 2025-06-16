@@ -1,11 +1,10 @@
 'use client';
 
 import { useEffect } from 'react';
+import { Filter } from '@/types/etf';
 import { EtfItem } from '@/lib/utils';
 import EtfTable from './etf-table';
 import SearchBar from './search-bar';
-
-type Filter = 'name' | 'code';
 
 interface Props {
   title: string;
@@ -16,6 +15,7 @@ interface Props {
   onKeywordChangeAction: (v: string) => void;
   onFilterChangeAction: (v: Filter) => void;
   cleanUp?: () => void;
+  totalPages: number;
 }
 
 export default function EtfSection({
@@ -27,6 +27,7 @@ export default function EtfSection({
   onKeywordChangeAction,
   onFilterChangeAction,
   cleanUp,
+  totalPages,
 }: Props) {
   useEffect(() => {
     return () => {
@@ -37,7 +38,7 @@ export default function EtfSection({
     <div className='flex flex-col gap-5 py-8 px-6'>
       <div className='flex gap-2 items-end'>
         <h1 className='font-semibold text-xl'>{title}</h1>
-        <p className='text-sm text-gray'>{count} 종목</p>
+        <p className='text-sm text-gray'>{totalPages} 종목</p>
       </div>
 
       <SearchBar

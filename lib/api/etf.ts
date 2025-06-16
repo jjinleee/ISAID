@@ -19,11 +19,15 @@ export const fetchEtfCategory = async (
 export const fetchEtfItems = async (
   rawCategoryId: string,
   keyword: string = '',
-  filter: 'name' | 'code' = 'name'
+  filter: 'name' | 'code' = 'name',
+  page: number = 1,
+  size: number = 20
 ): Promise<EtfApiResponse> => {
   const searchParams = new URLSearchParams({
     keyword,
     filter,
+    page: String(page),
+    size: String(size),
   });
 
   const res = await fetch(
@@ -33,6 +37,5 @@ export const fetchEtfItems = async (
   if (!res.ok) {
     throw new Error('ETF 데이터를 불러오는 데 실패했습니다.');
   }
-
-  return await res.json();
+  return res.json();
 };
