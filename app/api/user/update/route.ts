@@ -1,7 +1,8 @@
 import { getServerSession } from 'next-auth';
+import { NextResponse } from 'next/server';
+import { hash } from 'bcryptjs';
 import { authOptions } from '@/lib/auth-options';
 import { prisma } from '@/lib/prisma';
-import { NextResponse } from 'next/server';
 
 export async function PATCH(req: Request) {
   const session = await getServerSession(authOptions);
@@ -10,23 +11,42 @@ export async function PATCH(req: Request) {
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
   }
 
+  const existingUser = await prisma.user.findUnique({
+    where: { email: session.user.email },
+  });
+
+  if (!existingUser) {
+    return NextResponse.json(
+      { error: '해당 이메일의 사용자가 존재하지 않습니다.' },
+      { status: 404 }
+    );
+  }
+
   const body = await req.json();
-  const { name, eng_name, phone, address, telno } = body;
 
   try {
+    const data: any = {};
+
+    for (const [key, value] of Object.entries(body)) {
+      if (value !== undefined && key !== 'password') {
+        data[key] = value;
+      }
+    }
+
+    if (body.password !== undefined) {
+      data.password = await hash(body.password, 10);
+    }
+
     const updatedUser = await prisma.user.update({
       where: { email: session.user.email },
-      data: {
-        name,
-        eng_name,
-        phone,
-        address,
-        telno,
-      },
+      data,
     });
 
     return NextResponse.json({ message: '정보 수정 완료', user: updatedUser });
   } catch (error: any) {
-    return NextResponse.json({ error: '수정 실패: ' + error.message }, { status: 500 });
+    return NextResponse.json(
+      { error: '수정 실패: ' + error.message },
+      { status: 500 }
+    );
   }
 }
