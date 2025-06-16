@@ -12,7 +12,7 @@ export async function PATCH(req: Request) {
   }
 
   const existingUser = await prisma.user.findUnique({
-    where: { email: session.user.email },
+    where: { id: parseInt(session.user.id) },
   });
 
   if (!existingUser) {
@@ -38,7 +38,7 @@ export async function PATCH(req: Request) {
     }
 
     const updatedUser = await prisma.user.update({
-      where: { email: session.user.email },
+      where: { id: parseInt(session.user.id) },
       data,
     });
 
