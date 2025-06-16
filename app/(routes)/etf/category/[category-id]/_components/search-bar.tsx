@@ -26,14 +26,6 @@ export default function SearchBar({ onChangeAction }: Props) {
     { label: '운용사', value: 'company' },
   ];
 
-  useEffect(() => {
-    console.log('filter : ', filter);
-  }, [filter]);
-
-  useEffect(() => {
-    console.log('keyword : ', keyword);
-  }, [keyword]);
-
   return (
     <div className='flex gap-2 mb-4'>
       <CustomSelect

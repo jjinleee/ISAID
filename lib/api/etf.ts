@@ -1,0 +1,38 @@
+import { Category } from '@/types/etf';
+import type { EtfApiResponse } from '@/types/etf';
+
+export const fetchEtfCategory = async (
+  rawCategoryId: string
+): Promise<Category> => {
+  const res = await fetch(`/api/etf/theme/${rawCategoryId}`);
+  if (!res.ok) {
+    throw new Error('카테고리 정보를 불러오는 데 실패했습니다.');
+  }
+  const data = await res.json();
+
+  return {
+    displayName: data.displayName,
+    categories: data.categories,
+  };
+};
+
+export const fetchEtfItems = async (
+  rawCategoryId: string,
+  keyword: string = '',
+  filter: 'name' | 'code' | 'company' = 'name'
+): Promise<EtfApiResponse> => {
+  const searchParams = new URLSearchParams({
+    keyword,
+    filter,
+  });
+
+  const res = await fetch(
+    `/api/etf/category/${rawCategoryId}?${searchParams.toString()}`
+  );
+
+  if (!res.ok) {
+    throw new Error('ETF 데이터를 불러오는 데 실패했습니다.');
+  }
+
+  return await res.json();
+};

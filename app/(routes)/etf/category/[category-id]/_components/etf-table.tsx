@@ -37,7 +37,11 @@ export default function EtfTable({ data }: EtfTableProps) {
 
           <div className='text-right'>
             <div className='text-sm font-medium'>{item.price}</div>
-            <div className='text-xs text-hana-red'>{item.changeRate}</div>
+            <div
+              className={`text-xs ${parseFloat(item.changeRate.trim()) > 0 ? 'text-hana-red' : 'text-blue'}`}
+            >
+              {item.changeRate}
+            </div>
           </div>
         </div>
       ))}

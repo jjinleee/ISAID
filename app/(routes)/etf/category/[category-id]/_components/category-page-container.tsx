@@ -5,22 +5,13 @@ import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useHeader } from '@/context/header-context';
 import { useDebounce } from '@/hooks/useDebounce';
 import ArrowIcon from '@/public/images/arrow-icon';
+import { Category } from '@/types/etf';
+import { fetchEtfCategory, fetchEtfItems } from '@/lib/api/etf';
+import { EtfItem, mapApiToRow } from '@/lib/utils';
 import EtfTable from '../_components/etf-table';
 import SearchBar from '../_components/search-bar';
-import { etfData } from '../data/category-data';
 
 type Filter = 'name' | 'code' | 'company';
-
-interface SubCategory {
-  id: number;
-  name: string;
-  fullname: string;
-}
-
-interface Category {
-  displayName: string;
-  subCategories: SubCategory[];
-}
 
 const CategoryPageContainer = () => {
   const { setHeader } = useHeader();
@@ -32,19 +23,15 @@ const CategoryPageContainer = () => {
   const [keyword, setKeyword] = useState('');
   const [filter, setFilter] = useState<Filter>('name');
   const debounced = useDebounce(keyword, 400);
-
-  const filteredData = useMemo(() => {
-    const kw = debounced.trim().toLowerCase();
-    if (!kw) return etfData;
-    return etfData.filter((etf) => etf[filter].toLowerCase().includes(kw));
-  }, [debounced, filter]);
+  const [etfData, setEtfData] = useState<EtfItem[]>([]);
 
   const rawCategoryId = params['category-id'] as string;
   const subCategory = searchParams.get('sub') ?? '';
 
-  // const category = categoryMap[rawCategoryId as keyof typeof categoryMap];
   const [category, setCategory] = useState<Category | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loadingCategory, setLoadingCategory] = useState(true);
+  const [loadingItems, setLoadingItems] = useState(false);
+
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -54,34 +41,68 @@ const CategoryPageContainer = () => {
   useEffect(() => {
     const fetchCategory = async () => {
       try {
-        setLoading(true);
-        const res = await fetch(`/api/etf/theme/${rawCategoryId}`);
-        if (!res.ok)
-          throw new Error('카테고리 정보를 불러오는 데 실패했습니다.');
-        const data = await res.json();
+        setLoadingCategory(true);
+        const data = await fetchEtfCategory(rawCategoryId);
         setCategory({
           displayName: data.displayName,
-          subCategories: data.categories,
+          categories: data.categories,
         });
       } catch (e: any) {
-        setError(e.message || '알 수 없는 오류가 발생했습니다.');
+        setError(e.message || '카테고리 정보를 불러오는 데 실패했습니다.');
       } finally {
-        setLoading(false);
+        setLoadingCategory(false);
       }
     };
     fetchCategory();
   }, [rawCategoryId]);
 
-  if (loading) return <div className='px-6 py-8'>로딩 중...</div>;
-  if (error) return <div className='px-6 py-8 text-red-500'>{error}</div>;
-  if (!category) return <div>존재하지 않는 카테고리입니다.</div>;
+  useEffect(() => {
+    if (!category) return;
 
-  if (category.subCategories.length === 1) {
+    if (category.categories.length === 1 || subCategory) {
+      const loadEtfData = async () => {
+        setLoadingItems(true);
+        try {
+          const res = await fetchEtfItems(
+            String(category.categories[0].id),
+            debounced,
+            filter
+          );
+          const rows = res.data.map(mapApiToRow);
+          setEtfData(rows);
+        } catch (e: any) {
+          setError(
+            e.message || 'ETF 데이터를 불러오는 중 오류가 발생했습니다.'
+          );
+        } finally {
+          setLoadingItems(false);
+        }
+      };
+
+      loadEtfData();
+    } else {
+      setEtfData([]);
+    }
+  }, [category, subCategory, debounced, filter, rawCategoryId]);
+
+  if (loadingCategory)
+    return <div className='px-6 py-8'>카테고리 불러오는 중...</div>;
+  if (error) return <div className='px-6 py-8 text-red-500'>{error}</div>;
+
+  if (!category) return <div>존재하지 않는 카테고리입니다.</div>;
+  if (loadingItems)
+    return (
+      <div className='px-6 py-8'>
+        <h1 className='font-semibold text-xl'>{category!.displayName}</h1>
+        <div className='mt-6'>종목 데이터 불러오는 중...</div>
+      </div>
+    );
+  if (category.categories.length === 1) {
     return (
       <div className='flex flex-col gap-5 py-8 px-6'>
         <div className='flex gap-2 items-end'>
           <h1 className='font-semibold text-xl'>{category.displayName}</h1>
-          <p className='text-sm text-gray'>{filteredData.length} 종목</p>
+          <p className='text-sm text-gray'>{etfData.length} 종목</p>
         </div>
         <SearchBar
           onChangeAction={(kw, f) => {
@@ -90,7 +111,7 @@ const CategoryPageContainer = () => {
           }}
         />
 
-        <EtfTable data={filteredData} />
+        <EtfTable data={etfData} />
       </div>
     );
   }
@@ -107,12 +128,12 @@ const CategoryPageContainer = () => {
           <div className='flex gap-2 items-end'>
             <h1 className='font-semibold text-xl'>{category.displayName}</h1>
             <p className='text-sm text-gray'>
-              {category.subCategories.length} 종목
+              {category.categories.length} 종목
             </p>
           </div>
           <div className='flex flex-col text-sm font-semibold '>
             <div className='bg-teal-500 text-white px-4 py-2'>분류</div>
-            {category.subCategories.map((sub) => (
+            {category.categories.map((sub) => (
               <div
                 key={sub.id}
                 className='flex justify-between items-center px-4 py-3 border-b border-b-gray-2 cursor-pointer'
@@ -132,7 +153,7 @@ const CategoryPageContainer = () => {
     <div className='flex flex-col gap-5 py-8 px-6'>
       <div className='flex gap-2 items-end'>
         <h1 className='font-semibold text-xl'>{category.displayName}</h1>
-        <p className='text-sm text-gray'>{filteredData.length} 종목</p>
+        <p className='text-sm text-gray'>{etfData.length} 종목</p>
       </div>
       <SearchBar
         onChangeAction={(kw, f) => {
@@ -141,7 +162,7 @@ const CategoryPageContainer = () => {
         }}
       />
 
-      <EtfTable data={filteredData} />
+      <EtfTable data={etfData} />
     </div>
   );
 };
