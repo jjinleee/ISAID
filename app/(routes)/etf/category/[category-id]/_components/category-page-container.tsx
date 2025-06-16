@@ -40,7 +40,7 @@ const CategoryPageContainer = () => {
 
   if (category.subCategories.length === 0) {
     return (
-      <div className='flex flex-col gap-5 py-8 px-6'>
+      <div className='flex flex-col gap-5 pb-8 pt-21 px-6'>
         <div className='flex gap-2 items-end'>
           <h1 className='font-semibold text-xl'>{category.displayName}</h1>
           <p className='text-sm text-gray'>{filteredData.length} 종목</p>

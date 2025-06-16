@@ -8,7 +8,7 @@ interface StartProps {
 export const TestEndContainer = ({ btnClick }: StartProps) => {
   return (
     <>
-      <div className='flex flex-col gap-4 items-center'>
+      <div className='flex flex-col gap-4 items-center pt-21'>
         <h1 className='text-2xl font-bold'>ETF 투자 성향 테스트 결과</h1>
         <span className='text-sm font-light text-center text-subtitle'>
           OO님의 투자 성향 테스트 결과는 다음과 같습니다

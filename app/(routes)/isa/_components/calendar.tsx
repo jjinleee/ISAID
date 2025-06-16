@@ -82,7 +82,7 @@ const Calendar = () => {
       </div>
 
       {transactions && (
-        <div className='mt-6 px-2'>
+        <div className='mt-3 px-2'>
           <p className='font-semibold text-lg mb-2'>
             {format(selected!, 'M월 d일 (E)', { locale: ko })}
           </p>
