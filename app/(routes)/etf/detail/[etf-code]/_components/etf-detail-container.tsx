@@ -35,7 +35,7 @@ const EtfDetailContainer = () => {
 
   return (
     <>
-      <div className='p-6 flex flex-col items-center gap-5 w-full'>
+      <div className='p-6 flex flex-col items-center gap-5 w-full pt-21'>
         {/* 헤더 */}
         <div className='flex flex-col gap-5 w-full'>
           <div className='flex flex-col gap-2'>

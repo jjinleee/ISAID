@@ -154,6 +154,7 @@ const CategoryPageContainer = () => {
 
   if (category.categories.length === 1) {
     return (
+
       <>
         <EtfSection
           title={tableName || category.displayName}

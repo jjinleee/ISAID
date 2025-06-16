@@ -17,7 +17,10 @@ export default function PageHeader() {
   const closeSidebar = () => setSidebarOpen(false);
 
   return (
-    <>
+    <div
+      className='fixed top-0 left-0 z-50 inset-x-0
+      mx-auto max-w-[768px] w-full'
+    >
       {pathname === '/login' || pathname === '/register' ? null : pathname ===
         '/' ? (
         <MainHeader
@@ -41,6 +44,6 @@ export default function PageHeader() {
 
       {/* 사이드바 */}
       <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} />
-    </>
+    </div>
   );
 }

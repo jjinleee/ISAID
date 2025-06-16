@@ -42,29 +42,29 @@ model Etf {
   id                   Int       @id
   etfCategoryId        Int       @map("etf_category_id")
   issueStdCode         String?   @map("issue_std_code")
-  issueCode            String?   @map("issue_code")
-  issueName            String?   @map("issue_name")
-  issueNameKo          String?   @map("issue_name_ko")
-  issueNameAbbrv       String?   @map("issue_name_abbrv")
-  issueNameEn          String?   @map("issue_name_en")
-  listDate             DateTime? @map("list_date")
-  etfObjIndexName      String?   @map("etf_obj_index_name")
-  idxObjIndexName      String?   @map("idx_obj_index_name")
-  idxCalcInstNm1       String?   @map("idx_calc_inst_nm1")
-  idxCalcInstNm2       String?   @map("idx_calc_inst_nm2")
-  etfReplicationMethod String?   @map("etf_replication_method")
-  idxMarketType        String?   @map("idx_market_type")
-  idxAssetType         String?   @map("idx_asset_type")
-  listShrs             BigInt?   @map("list_shrs")
-  comAbbrv             String?   @map("com_abbrv")
-  cuQtv                Int?      @map("cu_qtv")
-  etfTotalFee          Decimal?  @map("etf_total_fee") @db.Decimal(5, 2)
-  taxType              String?   @map("tax_type")
-  return1y             Decimal?  @map("return_1y") @db.Decimal(5, 2)
-  traceErrRate         Decimal?  @map("trace_err_rate") @db.Decimal(5, 2)
-  netAssetTotalAmount  BigInt?   @map("net_asset_total_amount")
-  divergenceRate       Decimal?  @map("divergence_rate") @db.Decimal(5, 2)
-  volatility           String?
+  issueCode            String?   @map("issue_code") // 종목코드
+  issueName            String?   @map("issue_name") // 종목명
+  issueNameKo          String?   @map("issue_name_ko") // 한글종목명
+  issueNameAbbrv       String?   @map("issue_name_abbrv") // 한글종목약명
+  issueNameEn          String?   @map("issue_name_en") // 영문종목명
+  listDate             DateTime? @map("list_date") // 상장일
+  etfObjIndexName      String?   @map("etf_obj_index_name") // 기초지수
+  idxObjIndexName      String?   @map("idx_obj_index_name") // 기초지수명 -> 위와 통일, 추후 제거
+  idxCalcInstNm1       String?   @map("idx_calc_inst_nm1") // 지수산출기관
+  idxCalcInstNm2       String?   @map("idx_calc_inst_nm2") // 추적배수
+  etfReplicationMethod String?   @map("etf_replication_method") // 복제방법
+  idxMarketType        String?   @map("idx_market_type") // 기초시장분류
+  idxAssetType         String?   @map("idx_asset_type") // 기초자산분류
+  listShrs             BigInt?   @map("list_shrs") // 상장좌수
+  comAbbrv             String?   @map("com_abbrv") // 운용사
+  cuQtv                Int?      @map("cu_qtv") // CU수량
+  etfTotalFee          Decimal?  @map("etf_total_fee") @db.Decimal(5, 2) // 총보수
+  taxType              String?   @map("tax_type") // 과세유형
+  return1y             Decimal?  @map("return_1y") @db.Decimal(5, 2) // 수익률(최근1년)
+  traceErrRate         Decimal?  @map("trace_err_rate") @db.Decimal(5, 2) // 추적오차
+  netAssetTotalAmount  BigInt?   @map("net_asset_total_amount") // 순자산총액
+  divergenceRate       Decimal?  @map("divergence_rate") @db.Decimal(5, 2) //괴리율
+  volatility           String? // 변동성
 
   category     EtfCategory       @relation(fields: [etfCategoryId], references: [id])
   pdfs         EtfPdf[]
@@ -77,12 +77,12 @@ model Etf {
 model EtfPdf {
   id                   Int      @id @default(autoincrement())
   etfId                Int      @map("etf_id")
-  compstIssueCode      String?  @map("compst_issue_code")
-  compstIssueName      String?  @map("compst_issue_name")
-  compstIssueCu1Shares Decimal? @map("compst_issue_cu1_shares") @db.Decimal(15, 2)
-  valueAmount          BigInt?  @map("value_amount")
-  compstAmount         BigInt?  @map("compst_amount")
-  compstRatio          Decimal? @map("compst_ratio") @db.Decimal(5, 2)
+  compstIssueCode      String?  @map("compst_issue_code") // 구성종목코드
+  compstIssueName      String?  @map("compst_issue_name") // 구성종목명
+  compstIssueCu1Shares Decimal? @map("compst_issue_cu1_shares") @db.Decimal(15, 2) // 주식수(계약수)
+  valueAmount          BigInt?  @map("value_amount") // 평가금액
+  compstAmount         BigInt?  @map("compst_amount") // 시가총액
+  compstRatio          Decimal? @map("compst_ratio") @db.Decimal(5, 2) // 시가총액기준 구성비중
 
   etf Etf @relation(fields: [etfId], references: [id])
 
