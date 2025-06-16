@@ -39,9 +39,6 @@ const CategoryPageContainer = () => {
   useEffect(() => {
     setHeader('맞춤 테마 ETF', '당신의 투자 성향에 맞는 테마');
   }, []);
-  useEffect(() => {
-    console.log('category : ', category);
-  }, [category]);
 
   useEffect(() => {
     const fetchCategory = async () => {
@@ -71,17 +68,14 @@ const CategoryPageContainer = () => {
     if (!targetId) return;
 
     const needFetch =
-      category.categories.length === 1 || subCategory || selectedSubId !== null;
+      category.categories.length === 1 ||
+      (Boolean(subCategory) && selectedSubId !== null);
 
     if (needFetch) {
       const loadEtfData = async () => {
         setLoadingItems(true);
         try {
-          const res = await fetchEtfItems(
-            String(targetId), // ⬅︎ 여기서 targetId 사용
-            debounced,
-            filter
-          );
+          const res = await fetchEtfItems(String(targetId), debounced, filter);
           setTableName(res.etfCategoryFullPath);
           setEtfData(res.data.map(mapApiToRow));
         } catch (e: any) {
@@ -98,14 +92,17 @@ const CategoryPageContainer = () => {
       setEtfData([]);
     }
   }, [category, subCategory, debounced, filter, rawCategoryId, selectedSubId]);
-
   useEffect(() => {
-    console.log('filter : ', filter);
-  }, [filter]);
+    if (!subCategory) setSelectedSubId(null);
+  }, [subCategory]);
+
+  const cleanUp = () => {
+    setTableName('');
+  };
 
   if (loadingCategory)
     return <div className='px-6 py-8'>카테고리 불러오는 중...</div>;
-  if (error) return <div className='px-6 py-8 text-red-500'>{error}</div>;
+  if (error) return <div className='px-6 py-8 text-hana-red'>{error}</div>;
 
   if (!category) return <div>존재하지 않는 카테고리입니다.</div>;
   if (loadingItems)
@@ -118,7 +115,7 @@ const CategoryPageContainer = () => {
         data={[]}
         onKeywordChangeAction={setKeyword}
         onFilterChangeAction={setFilter}
-        isLoading={loadingItems}
+        cleanUp={cleanUp}
       />
     );
   if (category.categories.length === 1) {
@@ -131,13 +128,13 @@ const CategoryPageContainer = () => {
         data={etfData}
         onKeywordChangeAction={setKeyword}
         onFilterChangeAction={setFilter}
+        cleanUp={cleanUp}
       />
     );
   }
 
   const handleClick = (id: number, sub: string, fullName: string) => {
     setSelectedSubId(id);
-    setTableName(fullName);
     const encoded = encodeURIComponent(sub);
     router.push(`/etf/category/${rawCategoryId}?sub=${encoded}`);
   };
@@ -181,6 +178,7 @@ const CategoryPageContainer = () => {
       data={etfData}
       onKeywordChangeAction={setKeyword}
       onFilterChangeAction={setFilter}
+      cleanUp={cleanUp}
     />
   );
 };

@@ -19,7 +19,7 @@ export const fetchEtfCategory = async (
 export const fetchEtfItems = async (
   rawCategoryId: string,
   keyword: string = '',
-  filter: 'name' | 'code' | 'company' = 'name'
+  filter: 'name' | 'code' = 'name'
 ): Promise<EtfApiResponse> => {
   const searchParams = new URLSearchParams({
     keyword,

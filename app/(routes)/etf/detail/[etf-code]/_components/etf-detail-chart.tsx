@@ -22,7 +22,6 @@ export const EftDetailChart = ({
       const timestamp = new Date(dateStr).getTime();
       return [timestamp, fullSet.data[i]];
     });
-    console.log(seriesData.filter(([x, y]) => isNaN(x) || isNaN(y)));
 
     const options = {
       chart: {

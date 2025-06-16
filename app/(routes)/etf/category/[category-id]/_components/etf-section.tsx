@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { EtfItem } from '@/lib/utils';
 import EtfTable from './etf-table';
 import SearchBar from './search-bar';
@@ -14,7 +15,7 @@ interface Props {
   data: EtfItem[];
   onKeywordChangeAction: (v: string) => void;
   onFilterChangeAction: (v: Filter) => void;
-  isLoading?: boolean;
+  cleanUp?: () => void;
 }
 
 export default function EtfSection({
@@ -25,8 +26,13 @@ export default function EtfSection({
   data,
   onKeywordChangeAction,
   onFilterChangeAction,
-  isLoading,
+  cleanUp,
 }: Props) {
+  useEffect(() => {
+    return () => {
+      cleanUp?.();
+    };
+  }, []);
   return (
     <div className='flex flex-col gap-5 py-8 px-6'>
       <div className='flex gap-2 items-end'>
@@ -41,7 +47,7 @@ export default function EtfSection({
         onFilterChangeAction={onFilterChangeAction}
       />
 
-      <EtfTable data={data} isLoading={isLoading} />
+      <EtfTable data={data} />
     </div>
   );
 }

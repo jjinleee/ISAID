@@ -11,10 +11,9 @@ interface EtfItem {
 
 interface EtfTableProps {
   data: EtfItem[];
-  isLoading?: boolean;
 }
 
-export default function EtfTable({ data, isLoading }: EtfTableProps) {
+export default function EtfTable({ data }: EtfTableProps) {
   const router = useRouter();
   return (
     <div className='w-full'>
@@ -23,11 +22,6 @@ export default function EtfTable({ data, isLoading }: EtfTableProps) {
         <div className='text-right'>거래량</div>
         <div className='text-right'>현재가</div>
       </div>
-      {isLoading && (
-        <div className='flex justify-center items-center pt-5'>
-          <Spinner />
-        </div>
-      )}
       {data.map((item, index) => (
         <div
           key={index}
