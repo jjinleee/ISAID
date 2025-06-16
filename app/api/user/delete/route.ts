@@ -11,11 +11,20 @@ export async function DELETE(req: Request) {
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
   }
 
+  const userIdStr = session.user.id;
+  if (!userIdStr) {
+    return NextResponse.json(
+      { error: 'Invalid session user id' },
+      { status: 400 }
+    );
+  }
+  const userId = parseInt(userIdStr);
+
   const body = await req.json();
   const { password } = body;
 
   const existingUser = await prisma.user.findUnique({
-    where: { id: parseInt(session.user.id) },
+    where: { id: userId },
   });
 
   if (!existingUser) {
@@ -30,7 +39,7 @@ export async function DELETE(req: Request) {
 
   await prisma.user.delete({
     where: {
-      id: existingUser.id,
+      id: userId,
     },
   });
 
