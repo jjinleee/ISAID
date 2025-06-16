@@ -1,9 +1,14 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { toast } from 'react-hot-toast';
 import Image from 'next/image';
 import { useHeader } from '@/context/header-context';
-import { MessageSquareWarning, ShieldCheck } from 'lucide-react';
+import {
+  MessageSquareWarning,
+  ShieldCheck,
+  SquareCheckBig,
+} from 'lucide-react';
 import Button from '@/components/button';
 import AccountSelectSection from './account-type-select';
 import BankSelectSheet from './bank-select-sheet';
@@ -107,6 +112,21 @@ const AccountConnectPageContainer = () => {
           text={'계좌 연결하기'}
           onClick={handleConnectAccount}
         />
+
+        <button
+          onClick={() =>
+            toast.success('계좌 연결이 완료되었습니다!', {
+              icon: <SquareCheckBig className='w-5 h-5 text-hana-green' />,
+              style: {
+                borderRadius: '8px',
+                color: 'black',
+                fontWeight: '500',
+              },
+            })
+          }
+        >
+          계좌 연결하기
+        </button>
       </div>
 
       <div className='w-full rounded-xl border border-gray-100 shadow-sm p-5 bg-white'>

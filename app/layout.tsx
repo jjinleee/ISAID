@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
+import { Toaster } from 'react-hot-toast';
 import { HeaderProvider } from '@/context/header-context';
 import BottomBar from '@/components/bottom-bar';
 import PageHeader from '@/components/header-bar/page-header';
@@ -32,6 +33,7 @@ export default function RootLayout({
       >
         <HeaderProvider>
           <PageHeader />
+          <Toaster position='top-center' />
           {children}
           <BottomBar />
         </HeaderProvider>
