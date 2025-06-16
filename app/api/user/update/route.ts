@@ -24,6 +24,16 @@ export async function PATCH(req: Request) {
 
   const body = await req.json();
 
+  const forbiddenFields = ['id', 'rrn', 'created_at'];
+  for (const field of forbiddenFields) {
+    if (field in body) {
+      return NextResponse.json(
+        { error: `변경할 수 없는 필드가 포함되어 있습니다: ${field}` },
+        { status: 400 }
+      );
+    }
+  }
+
   try {
     const data: any = {};
 
