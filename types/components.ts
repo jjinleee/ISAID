@@ -33,6 +33,7 @@ export type ButtonProps = {
 export type QuestionOptionProps = {
   text: string;
   active?: boolean;
+  error?: boolean;
   onClick?: () => void;
 };
 
