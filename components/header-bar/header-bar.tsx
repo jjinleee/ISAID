@@ -10,7 +10,7 @@ const HeaderBar = ({ title, subtitle, onMenuClick }: HeaderBarProps) => {
   const router = useRouter();
 
   return (
-    <div className='w-full bg-white px-6 py-3 border-b border-[#D9D9D9]'>
+    <div className='w-full bg-white px-6 py-3'>
       <div className='flex items-center justify-between'>
         <div className='flex gap-6 items-center'>
           <button onClick={() => router.back()} className='cursor-pointer'>

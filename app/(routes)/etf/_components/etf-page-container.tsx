@@ -73,7 +73,7 @@ const ETFPageContainer = () => {
   ];
 
   return (
-    <div className='flex flex-col px-6 py-10'>
+    <div className='flex flex-col px-6 pb-10 pt-21'>
       <div className='flex flex-col gap-5'>
         <h1 className='text-xl font-semibold'>ETF, 테마부터 시작해볼까요?</h1>
         <SliderWrapper cards={cards} />

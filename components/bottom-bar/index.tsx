@@ -27,7 +27,7 @@ export const BottomBar = () => {
       fixed bottom-0 inset-x-0
       mx-auto max-w-[768px] w-full
       flex justify-around space-x-8 items-center
-      border-t border-t-hana-green bg-white
+      border-t-[1.5px] border-t-gray-2 bg-white
       z-50
       '
     >
