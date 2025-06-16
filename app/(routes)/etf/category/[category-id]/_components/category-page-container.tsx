@@ -9,8 +9,6 @@ import ArrowIcon from '@/public/images/arrow-icon';
 import { Category } from '@/types/etf';
 import { fetchEtfCategory, fetchEtfItems } from '@/lib/api/etf';
 import { EtfItem, mapApiToRow } from '@/lib/utils';
-import EtfTable from '../_components/etf-table';
-import SearchBar from '../_components/search-bar';
 
 type Filter = 'name' | 'code';
 
@@ -30,14 +28,20 @@ const CategoryPageContainer = () => {
   const subCategory = searchParams.get('sub') ?? '';
 
   const [category, setCategory] = useState<Category | null>(null);
+  const [selectedSubId, setSelectedSubId] = useState<number | null>(null);
   const [loadingCategory, setLoadingCategory] = useState(true);
   const [loadingItems, setLoadingItems] = useState(false);
 
   const [error, setError] = useState('');
 
+  const [tableName, setTableName] = useState<string>('');
+
   useEffect(() => {
     setHeader('맞춤 테마 ETF', '당신의 투자 성향에 맞는 테마');
   }, []);
+  useEffect(() => {
+    console.log('category : ', category);
+  }, [category]);
 
   useEffect(() => {
     const fetchCategory = async () => {
@@ -60,17 +64,26 @@ const CategoryPageContainer = () => {
   useEffect(() => {
     if (!category) return;
 
-    if (category.categories.length === 1 || subCategory) {
+    const targetId =
+      selectedSubId ??
+      (category.categories.length ? category.categories[0].id : null);
+
+    if (!targetId) return;
+
+    const needFetch =
+      category.categories.length === 1 || subCategory || selectedSubId !== null;
+
+    if (needFetch) {
       const loadEtfData = async () => {
         setLoadingItems(true);
         try {
           const res = await fetchEtfItems(
-            String(category.categories[0].id),
+            String(targetId), // ⬅︎ 여기서 targetId 사용
             debounced,
             filter
           );
-          const rows = res.data.map(mapApiToRow);
-          setEtfData(rows);
+          setTableName(res.etfCategoryFullPath);
+          setEtfData(res.data.map(mapApiToRow));
         } catch (e: any) {
           setError(
             e.message || 'ETF 데이터를 불러오는 중 오류가 발생했습니다.'
@@ -84,7 +97,7 @@ const CategoryPageContainer = () => {
     } else {
       setEtfData([]);
     }
-  }, [category, subCategory, debounced, filter, rawCategoryId]);
+  }, [category, subCategory, debounced, filter, rawCategoryId, selectedSubId]);
 
   useEffect(() => {
     console.log('filter : ', filter);
@@ -98,19 +111,20 @@ const CategoryPageContainer = () => {
   if (loadingItems)
     return (
       <EtfSection
-        title={category.displayName}
+        title={tableName || category.displayName}
         count={0}
         keyword={keyword}
         filter={filter}
         data={[]}
         onKeywordChangeAction={setKeyword}
         onFilterChangeAction={setFilter}
+        isLoading={loadingItems}
       />
     );
   if (category.categories.length === 1) {
     return (
       <EtfSection
-        title={category.displayName}
+        title={tableName || category.displayName}
         count={etfData.length}
         keyword={keyword}
         filter={filter}
@@ -121,7 +135,9 @@ const CategoryPageContainer = () => {
     );
   }
 
-  const handleClick = (sub: string) => {
+  const handleClick = (id: number, sub: string, fullName: string) => {
+    setSelectedSubId(id);
+    setTableName(fullName);
     const encoded = encodeURIComponent(sub);
     router.push(`/etf/category/${rawCategoryId}?sub=${encoded}`);
   };
@@ -131,7 +147,9 @@ const CategoryPageContainer = () => {
       <div className='py-8 px-6'>
         <div className='flex flex-col gap-5'>
           <div className='flex gap-2 items-end'>
-            <h1 className='font-semibold text-xl'>{category.displayName}</h1>
+            <h1 className='font-semibold text-xl'>
+              {tableName || category.displayName}
+            </h1>
             <p className='text-sm text-gray'>
               {category.categories.length} 종목
             </p>
@@ -142,7 +160,7 @@ const CategoryPageContainer = () => {
               <div
                 key={sub.id}
                 className='flex justify-between items-center px-4 py-3 border-b border-b-gray-2 cursor-pointer'
-                onClick={() => handleClick(sub.name)}
+                onClick={() => handleClick(sub.id, sub.name, sub.fullname)}
               >
                 {sub.name}
                 <ArrowIcon direction='right' className='text-gray w-6 h-6' />
@@ -156,7 +174,7 @@ const CategoryPageContainer = () => {
 
   return (
     <EtfSection
-      title={category.displayName}
+      title={tableName || category.displayName}
       count={etfData.length}
       keyword={keyword}
       filter={filter}

@@ -14,6 +14,7 @@ interface Props {
   data: EtfItem[];
   onKeywordChangeAction: (v: string) => void;
   onFilterChangeAction: (v: Filter) => void;
+  isLoading?: boolean;
 }
 
 export default function EtfSection({
@@ -24,6 +25,7 @@ export default function EtfSection({
   data,
   onKeywordChangeAction,
   onFilterChangeAction,
+  isLoading,
 }: Props) {
   return (
     <div className='flex flex-col gap-5 py-8 px-6'>
@@ -39,7 +41,7 @@ export default function EtfSection({
         onFilterChangeAction={onFilterChangeAction}
       />
 
-      <EtfTable data={data} />
+      <EtfTable data={data} isLoading={isLoading} />
     </div>
   );
 }
