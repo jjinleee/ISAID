@@ -1,4 +1,5 @@
 import { useRouter } from 'next/navigation';
+import Spinner from '@/public/images//spinner.svg';
 
 interface EtfItem {
   name: string;
@@ -21,7 +22,6 @@ export default function EtfTable({ data }: EtfTableProps) {
         <div className='text-right'>거래량</div>
         <div className='text-right'>현재가</div>
       </div>
-
       {data.map((item, index) => (
         <div
           key={index}
@@ -37,7 +37,11 @@ export default function EtfTable({ data }: EtfTableProps) {
 
           <div className='text-right'>
             <div className='text-sm font-medium'>{item.price}</div>
-            <div className='text-xs text-hana-red'>{item.changeRate}</div>
+            <div
+              className={`text-xs ${parseFloat(item.changeRate.trim()) > 0 ? 'text-hana-red' : 'text-blue'}`}
+            >
+              {item.changeRate}
+            </div>
           </div>
         </div>
       ))}
