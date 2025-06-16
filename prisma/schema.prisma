@@ -92,25 +92,25 @@ model EtfPdf {
 model EtfDailyTrading {
   id                  Int      @id @default(autoincrement())
   etfId               Int      @map("etf_id")
-  baseDate            DateTime @map("base_date")
-  issueCode           String   @map("issue_code")
-  issueName           String?  @map("issue_name")
-  cmpPrevddPrice      Decimal? @map("cmp_prevdd_price") @db.Decimal(10, 2)
-  flucRate            Decimal? @map("fluc_rate") @db.Decimal(5, 2)
-  tddClosePrice       Decimal? @map("tdd_close_price") @db.Decimal(10, 2)
-  nav                 Decimal? @db.Decimal(10, 2)
-  tddOpenPrice        Decimal? @map("tdd_open_price") @db.Decimal(10, 2)
-  tddHighPrice        Decimal? @map("tdd_high_price") @db.Decimal(10, 2)
-  tddLowPrice         Decimal? @map("tdd_low_price") @db.Decimal(10, 2)
-  accTradeVolume      BigInt?  @map("acc_trade_volume")
-  accTotalValue       BigInt?  @map("acc_total_value")
-  marketCap           BigInt?  @map("market_cap")
-  netAssetTotalAmount BigInt?  @map("net_asset_total_amount")
-  listShrs            BigInt?  @map("list_shrs")
-  idxIndNm            String?  @map("idx_ind_nm")
-  objStkprcIdx        Decimal? @map("obj_stkprc_idx") @db.Decimal(10, 2)
-  cmpprevddIdx        Decimal? @map("cmpprevdd_idx") @db.Decimal(10, 2)
-  flucRtIdx           Decimal? @map("fluc_rt_idx") @db.Decimal(5, 2)
+  baseDate            DateTime @map("base_date") // 기준일자
+  issueCode           String   @map("issue_code") // 종목코드
+  issueName           String?  @map("issue_name") // 종목명
+  cmpPrevddPrice      Decimal? @map("cmp_prevdd_price") @db.Decimal(10, 2) // 대비
+  flucRate            Decimal? @map("fluc_rate") @db.Decimal(5, 2) // 등락률
+  tddClosePrice       Decimal? @map("tdd_close_price") @db.Decimal(10, 2) //종가
+  nav                 Decimal? @db.Decimal(10, 2) // 순자산가치
+  tddOpenPrice        Decimal? @map("tdd_open_price") @db.Decimal(10, 2) // 시가
+  tddHighPrice        Decimal? @map("tdd_high_price") @db.Decimal(10, 2) // 고가
+  tddLowPrice         Decimal? @map("tdd_low_price") @db.Decimal(10, 2) // 저가
+  accTradeVolume      BigInt?  @map("acc_trade_volume") // 거래량
+  accTotalValue       BigInt?  @map("acc_total_value") // 거래대금
+  marketCap           BigInt?  @map("market_cap") // 시가총액
+  netAssetTotalAmount BigInt?  @map("net_asset_total_amount") // 순자산총액
+  listShrs            BigInt?  @map("list_shrs") // 상장좌수
+  idxIndNm            String?  @map("idx_ind_nm") // 기초지수_지수명
+  objStkprcIdx        Decimal? @map("obj_stkprc_idx") @db.Decimal(10, 2) // 기초지수_종가
+  cmpprevddIdx        Decimal? @map("cmpprevdd_idx") @db.Decimal(10, 2) // 기초지수_대비
+  flucRtIdx           Decimal? @map("fluc_rt_idx") @db.Decimal(5, 2) // 기초지수_등락률
 
   etf Etf @relation(fields: [etfId], references: [id])
 

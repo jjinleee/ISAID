@@ -82,25 +82,43 @@ const Calendar = () => {
       </div>
 
       {transactions && (
-        <div className='mt-3 px-2'>
-          <p className='font-semibold text-lg mb-2'>
+        <div className='mt-5 px-4'>
+          <p className='text-base font-semibold mb-4'>
             {format(selected!, 'M월 d일 (E)', { locale: ko })}
           </p>
           <ul className='space-y-3'>
             {transactions.map((tx, idx) => (
               <li
                 key={idx}
-                className='flex justify-between items-center rounded-md py-2 px-3 shadow-sm bg-white'
+                className='bg-gray-50 rounded-xl px-4 py-3 flex justify-between items-center shadow-sm'
               >
-                <div>
-                  <p className='font-semibold'>{tx.title}</p>
-                  <p className={`text-sm font-semibold ${typeStyles[tx.type]}`}>
-                    {/* {typeIcons[tx.type]} */}
-                    {tx.type}
+                {/* 왼쪽: 항목 정보 */}
+                <div className='space-y-1'>
+                  <p className='text-sm text-gray-800 font-semibold'>
+                    {tx.title}
                   </p>
+                  <span
+                    className={`inline-block text-xs px-2 py-0.5 rounded-lg bg-opacity-10 font-medium ${
+                      tx.type === '입금'
+                        ? 'text-white font-semibold bg-green-600'
+                        : tx.type === '매수'
+                          ? 'text-white font-semibold bg-red-500'
+                          : tx.type === '매도'
+                            ? 'text-white font-semibold bg-blue-600'
+                            : tx.type === '배당금'
+                              ? 'text-white font-semibold bg-yellow-500'
+                              : 'text-white font-semibold bg-gray-400'
+                    }`}
+                  >
+                    {tx.type}
+                  </span>
                 </div>
-                <div className='text-right font-semibold'>
-                  {tx.amount.toLocaleString()}원
+
+                {/* 오른쪽: 금액 */}
+                <div className='text-right'>
+                  <p className='font-semibold text-gray-800'>
+                    {tx.amount.toLocaleString()}원
+                  </p>
                 </div>
               </li>
             ))}
