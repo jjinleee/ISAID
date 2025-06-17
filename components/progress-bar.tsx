@@ -3,6 +3,7 @@ interface ProgressBarProps {
   total: number;
   hideStatus?: boolean;
   className?: string;
+  hideStatus?: boolean;
 }
 
 export default function ProgressBar({

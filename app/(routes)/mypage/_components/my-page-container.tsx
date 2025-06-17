@@ -6,13 +6,17 @@ import { useRouter } from 'next/navigation';
 import ETFInfoSection from '@/app/(routes)/mypage/_components/etf-info-section';
 import IsaAccountSection from '@/app/(routes)/mypage/_components/isa-account-section';
 import ArrowIcon from '@/public/images/arrow-icon';
+import HanaIcon from '@/public/images/bank-icons/hana-icon';
+import StarBoyGirl from '@/public/images/my-page/star-boy-girl.svg';
 import StarBoy from '@/public/images/star-boy';
 import { ChartData } from '@/types/my-page';
+import Button from '@/components/button';
 import ProgressBar from '@/components/progress-bar';
 import Tab from '@/components/tab';
 import EtfDetailRatioChart from '../_components/ratio-chart';
 import { etfDetailMap } from '../data/ratio-data';
 import type { EtfInfo } from '../data/ratio-data';
+import DeleteSheet from './delete-sheet';
 
 interface Props {
   session: Session;
