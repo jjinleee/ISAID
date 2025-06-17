@@ -7,7 +7,7 @@ import Button from '@/components/button';
 interface Props {
   visible: boolean;
   onClose: () => void;
-  onSelect?: (bank: string) => void;
+  deleteAccount: () => void;
 }
 
 const backdrop = {
@@ -20,7 +20,7 @@ const slideUp = {
   visible: { y: 0 },
 };
 
-const DeleteSheet = ({ visible, onClose }: Props) => {
+const DeleteSheet = ({ visible, onClose, deleteAccount }: Props) => {
   return (
     <AnimatePresence>
       {visible && (
@@ -66,6 +66,7 @@ const DeleteSheet = ({ visible, onClose }: Props) => {
                     thin={false}
                     active={false}
                     className={'!rounded-xl'}
+                    onClick={() => deleteAccount()}
                   />
                 </div>
               </div>
