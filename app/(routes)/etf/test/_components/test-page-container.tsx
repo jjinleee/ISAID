@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useHeader } from '@/context/header-context';
 import Button from '@/components/button';
+import ProgressBar from '@/components/progress-bar';
 import QuestionOption from '@/components/question-option';
-import ProgressBar from './progress-bar';
 import { TestEndContainer } from './test-end-container';
 import { TestStartContainer } from './test-start-container';
 

@@ -28,7 +28,7 @@ export const Button = ({
         ? 'bg-primary text-white py-4'
         : thin
           ? 'py-3 bg-white border border-primary text-primary'
-          : 'py-4 bg-hana-green text-white'
+          : 'py-4 bg-subtitle text-white'
   }
   ${className}
 `.trim();
