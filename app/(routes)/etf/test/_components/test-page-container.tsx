@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useHeader } from '@/context/header-context';
+import { getRecommendedTypes, getRiskType } from '@/utils/etfPersonality';
 import Button from '@/components/button';
 import QuestionOption from '@/components/question-option';
 import ProgressBar from './progress-bar';
@@ -216,6 +217,10 @@ export default function TestContainer() {
   const handleNext = () => {
     if (isGroupComplete(0, FRONT_COUNT)) {
       setStep(2);
+      // ✅ 전환 후 최상단 이동
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 0);
     } else {
       const missing = selectedOptions
         .slice(0, FRONT_COUNT)
@@ -287,19 +292,25 @@ export default function TestContainer() {
       )}
 
       {/* 스크롤 가능한 질문 영역 */}
-      <div className='overflow-y-auto w-full h-full px-6'>
+      <div className='overflow-y-auto w-full h-full px-6 mb-10 mt-10'>
         <div className='flex flex-col gap-9 items-center'>
           {step === 0 && <TestStartContainer btnClick={() => setStep(1)} />}
           {step === 1 && renderGroup(0, FRONT_COUNT)}
           {step === 2 &&
             renderGroup(FRONT_COUNT, questions.length - FRONT_COUNT)}
-          {step === 3 && <TestEndContainer btnClick={() => setStep(0)} />}
+          {step === 3 && (
+            <TestEndContainer
+              btnClick={() => setStep(0)}
+              riskType={getRiskType(selectedOptions)}
+              recommendedTypes={getRecommendedTypes(selectedOptions)}
+            />
+          )}
         </div>
       </div>
 
       {/* 하단 고정 버튼 */}
       {(step === 1 || step === 2) && (
-        <div className='!fixed max-w-[720px] top-204 w-full bg-white pt-2 m'>
+        <div className='!fixed max-w-[720px] top-204 w-full bg-white pt-2'>
           <Button
             thin={false}
             text={step === 1 ? '다음' : '제출하기'}
