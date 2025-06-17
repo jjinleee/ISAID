@@ -4,14 +4,14 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useHeader } from '@/context/header-context';
 import ArrowIcon from '@/public/images/arrow-icon';
-import { ETFArrow } from '@/public/images/etf-rate';
+import { ETFArrow } from '@/public/images/etf/etf-rate';
 import {
   SlideImg1,
   SlideImg2,
   SlideImg3,
   SlideImg4,
   SlideImg5,
-} from '@/public/images/etf-slide';
+} from '@/public/images/etf/etf-slide';
 import StarBoyFinger from '@/public/images/star-boy-finger.svg';
 import { SlideCardProps } from '@/types/components';
 import { SliderWrapper } from '../_components/slider-wrapper';

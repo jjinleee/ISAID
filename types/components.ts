@@ -73,3 +73,7 @@ export type SlideCardProps = {
   category: string;
   onClick?: () => void;
 };
+
+export type LoadingProps = {
+  text: string;
+};

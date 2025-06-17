@@ -1,8 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
 import { RatioInfo } from '@/types/etf';
-import ApexCharts from 'apexcharts';
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
 
 interface EtfDetailRatioChartProps {
@@ -80,7 +78,7 @@ export default function EtfDetailRatioChart({
                   startAngle={90}
                   endAngle={450}
                   labelLine={false}
-                  label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
+                  label={false}
                 >
                   {data.map((_, idx) => (
                     <Cell

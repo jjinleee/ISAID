@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useHeader } from '@/context/header-context';
 import ArrowCross from '@/public/images/arrow-cross';
 import { EtfDetail, EtfDetailResponse, EtfIntro, RatioInfo } from '@/types/etf';
+import { Loading } from '@/components/loading';
 import Tab from '@/components/tab';
 import { fetchEtfDetails, fetchEtfRatio } from '@/lib/api/etf';
 import { EtfRatioData, formatComma, toEtfRatioData } from '@/lib/utils';
@@ -36,8 +37,11 @@ export default function EtfDetailContainer({
   const [etfDetail, setEtfDetail] = useState<EtfDetail>();
   const [chartRows] = useState(initialChart);
   const [showPie, setShowPie] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const loadDetailAndRatio = async (id: string) => {
+    setIsLoading(true);
+
     const [detailRes, ratioRes] = await Promise.all([
       fetchEtfDetails(id),
       fetchEtfRatio(id),
@@ -49,6 +53,7 @@ export default function EtfDetailContainer({
 
     setChartData(toEtfRatioData(ratioRes));
     setRatioInfo(ratioRes.data);
+    setIsLoading(false);
   };
 
   const [chartData, setChartData] = useState<EtfRatioData>(emptyRatioData);
@@ -88,6 +93,9 @@ export default function EtfDetailContainer({
   const [showSelected, setShowSelected] = useState(selectedPeriod);
   const [chartReady, setChartReady] = useState(false);
 
+  if (isLoading) {
+    return <Loading text={'ETF 정보를 불러오는 중입니다.'} />;
+  }
   if (!etfResponse || !etfIntro || !etfDetail)
     return <div>해당 ETF가 존재하지 않습니다.</div>;
   const periods = ['1주일', '1개월', '3개월', '1년', '3년'];

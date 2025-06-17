@@ -7,6 +7,7 @@ import { useHeader } from '@/context/header-context';
 import { useDebounce } from '@/hooks/useDebounce';
 import ArrowIcon from '@/public/images/arrow-icon';
 import { Category, Filter } from '@/types/etf';
+import { Loading } from '@/components/loading';
 import { fetchEtfCategory, fetchEtfItems } from '@/lib/api/etf';
 import { EtfItem, mapApiToRow } from '@/lib/utils';
 
@@ -159,8 +160,8 @@ const CategoryPageContainer = () => {
     setTableName('');
   };
 
-  if (loadingCategory)
-    return <div className='px-6 py-8'>카테고리 불러오는 중...</div>;
+  if (loadingCategory) return <Loading text={'카테고리 불러오는 중입니다.'} />;
+
   if (error) return <div className='px-6 py-8 text-hana-red'>{error}</div>;
 
   if (!category) return <div>존재하지 않는 카테고리입니다.</div>;

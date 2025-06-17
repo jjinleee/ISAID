@@ -47,6 +47,7 @@ export default function EftDetailChart({
       onReady?.();
       return;
     }
+    let alive = true;
 
     const chart = new ApexCharts(chartRef.current, {
       chart: {
@@ -72,15 +73,17 @@ export default function EftDetailChart({
         },
       },
     });
+    chartInstance.current = chart;
 
     chart.render().then(() => {
-      chartInstance.current = chart;
+      if (!alive) return;
       const [s, e] = getRange(selectedPeriod);
       chart.zoomX(s, e);
       onReady?.();
     });
 
     return () => {
+      alive = false;
       chart.destroy();
       chartInstance.current = null;
     };
