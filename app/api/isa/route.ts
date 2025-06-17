@@ -1,14 +1,13 @@
 import { getServerSession } from 'next-auth';
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
 import { authOptions } from '@/lib/auth-options';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 // ISA 계좌 등록
 export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
+    console.log(session);
     if (!session || !session.user?.id) {
       return NextResponse.json(
         { message: '인증된 사용자만 접근 가능합니다.' },

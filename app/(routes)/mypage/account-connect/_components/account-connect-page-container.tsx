@@ -26,19 +26,51 @@ const AccountConnectPageContainer = () => {
   const [accountKind, setAccountKind] = useState('');
   const [accountNumber, setAccountNumber] = useState('');
 
+  const [errors, setErrors] = useState({
+    bank: '',
+    accountType: '',
+    accountKind: '',
+    accountNumber: '',
+  });
+
   const handleConnectAccount = async () => {
+    const newErrors = {
+      bank: bank ? '' : '은행/증권사를 선택해 주세요.',
+      accountType: accountType ? '' : '계좌 유형을 선택해 주세요.',
+      accountKind: accountKind ? '' : '운용 방식을 선택해 주세요.',
+      accountNumber: accountNumber ? '' : '계좌번호를 입력해 주세요.',
+    };
+
+    setErrors(newErrors);
+
+    // 하나라도 에러 있으면 중단
+    if (Object.values(newErrors).some((msg) => msg !== '')) return;
+
     try {
-      const res = await fetch('/api/account/connect', {
+      const res = await fetch('/api/isa', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ bank, accountType, accountKind, accountNumber }),
+        credentials: 'include',
+        body: JSON.stringify({
+          id: 10008,
+          bankCode: bank,
+          accountType: accountType,
+          accountKind: accountKind,
+          accountNum: accountNumber,
+          currentBalance: 5000000,
+        }),
       });
 
       if (!res.ok) throw new Error('연결 실패');
 
-      const data = await res.json();
-
-      console.log('연결 성공!', data);
+      toast.success('계좌 연결이 완료되었습니다!', {
+        icon: <SquareCheckBig className='w-5 h-5 text-hana-green' />,
+        style: {
+          borderRadius: '8px',
+          color: 'black',
+          fontWeight: '500',
+        },
+      });
     } catch (err) {
       console.error('계좌 연결 오류', err);
     }
@@ -61,15 +93,19 @@ const AccountConnectPageContainer = () => {
         <p className='text-lg font-semibold'>계좌 정보를 입력해 주세요</p>
         <p className='text-sm'>기존 ISA 계좌를 연결해 주세요.</p>
 
-        <div className='flex flex-col gap-5'>
+        <div className='flex flex-col gap-3'>
           <input
             type='text'
             value={bank}
             readOnly
             onClick={() => setShowSheet(true)}
             placeholder='은행/증권사 선택'
-            className='rounded-md p-3 shadow-md text-sm border border-gray-200 cursor-pointer focus:outline-none focus:border-hana-green focus:ring-1 focus:ring-hana-green'
+            className='rounded-md p-3 text-gray-600 shadow-md text-sm border border-gray-200 cursor-pointer focus:outline-none focus:border-hana-green focus:ring-1 focus:ring-hana-green'
           />
+
+          {errors.bank && (
+            <span className='text-xs text-red-500 pl-1'>{errors.bank}</span>
+          )}
 
           <BankSelectSheet
             visible={showSheet}
@@ -82,6 +118,8 @@ const AccountConnectPageContainer = () => {
             kind={accountKind}
             onChangeType={(value) => setAccountType(value)}
             onChangeKind={(value) => setAccountKind(value)}
+            typeError={errors.accountType}
+            kindError={errors.accountKind}
           />
 
           <input
@@ -89,9 +127,13 @@ const AccountConnectPageContainer = () => {
             value={accountNumber}
             onChange={(e) => setAccountNumber(e.target.value)}
             placeholder='계좌번호를 입력해 주세요'
-            className='rounded-md p-3 shadow-md text-sm border border-gray-200 cursor-pointer focus:outline-none focus:border-hana-green focus:ring-1 focus:ring-hana-green'
+            className='rounded-md p-3 text-gray-600 shadow-md text-sm border border-gray-200 cursor-pointer focus:outline-none focus:border-hana-green focus:ring-1 focus:ring-hana-green'
           />
         </div>
+
+        {errors.accountNumber && (
+          <p className='text-xs text-red-500 pl-1'>{errors.accountNumber}</p>
+        )}
 
         <div className='flex gap-2 shadow bg-[#FFF4C5] mt-5 rounded-lg p-5 mb-5'>
           <MessageSquareWarning className='text-[#B8860B] relative top-0.5' />

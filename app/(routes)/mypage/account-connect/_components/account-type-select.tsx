@@ -8,6 +8,8 @@ interface Props {
   kind: string;
   onChangeType: (value: string) => void;
   onChangeKind: (value: string) => void;
+  typeError?: string;
+  kindError?: string;
 }
 
 const AccountSelectSection = ({
@@ -15,6 +17,8 @@ const AccountSelectSection = ({
   kind,
   onChangeType,
   onChangeKind,
+  typeError,
+  kindError,
 }: Props) => {
   const typeOptions = ['일반형', '서민형'];
   const kindOptions = ['중개형', '신탁형', '일임형'];
@@ -43,6 +47,10 @@ const AccountSelectSection = ({
             className='ml-2'
           />
         </button>
+
+        {typeError && (
+          <p className='text-xs text-red-500 mt-3 pl-1'>{typeError}</p>
+        )}
 
         {openMenu === 'type' && (
           <ul className='absolute z-10 mt-2 w-full bg-white border border-gray-200 rounded-md shadow-md text-sm'>
@@ -82,6 +90,10 @@ const AccountSelectSection = ({
             className='ml-2'
           />
         </button>
+
+        {kindError && (
+          <p className='text-xs text-red-500 mt-3 pl-1'>{kindError}</p>
+        )}
 
         {openMenu === 'kind' && (
           <ul className='absolute z-10 mt-2 w-full bg-white border border-gray-200 rounded-md shadow-md text-sm'>
