@@ -21,8 +21,9 @@ export default function PageHeader() {
       className='fixed top-0 left-0 z-50 inset-x-0
       mx-auto max-w-[768px] w-full'
     >
-      {pathname === '/login' || pathname === '/register' ? null : pathname ===
-        '/' ? (
+      {pathname === '/login' ||
+      pathname === '/register' ||
+      pathname === '/' ? null : pathname === '/main' ? (
         <MainHeader
           title='안녕하세요, OOO 님!'
           subtitle='오늘도 현명한 투자하세요'

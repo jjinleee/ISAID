@@ -27,7 +27,7 @@ export default function LoginPage() {
     });
 
     if (res?.ok && !res.error) {
-      router.push('/'); // 성공 시 홈으로 이동
+      router.push('/main'); // 성공 시 홈으로 이동
     } else {
       setError('로그인 실패: 이메일 또는 비밀번호를 확인해주세요.');
     }
