@@ -7,7 +7,7 @@ import Portfolio from './portfolio';
 import ProfitReport from './profit-report';
 
 const ISADetail = () => {
-  const tabs = ['수익률', '포트폴리오', '절세계산기', '가이드'];
+  const tabs = ['수익률', '포트폴리오', '절세계산기'];
   const [selectedTab, setSelectedTab] = useState(0);
 
   return (
