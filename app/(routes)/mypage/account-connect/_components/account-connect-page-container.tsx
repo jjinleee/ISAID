@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { useHeader } from '@/context/header-context';
 import {
   MessageSquareWarning,
@@ -15,6 +16,7 @@ import BankSelectSheet from './bank-select-sheet';
 
 const AccountConnectPageContainer = () => {
   const { setHeader } = useHeader();
+  const router = useRouter();
 
   useEffect(() => {
     setHeader('ISA 계좌 연결', 'ISA 계좌를 연결해 주세요');
@@ -71,6 +73,10 @@ const AccountConnectPageContainer = () => {
           fontWeight: '500',
         },
       });
+
+      setTimeout(() => {
+        router.push('/mypage'); // 원하는 경로로 변경 가능
+      }, 4000);
     } catch (err) {
       console.error('계좌 연결 오류', err);
     }
