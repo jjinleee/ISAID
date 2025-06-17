@@ -303,10 +303,7 @@ export default function TestContainer() {
           <Button
             thin={false}
             text={step === 1 ? '다음' : '제출하기'}
-            // active
-            // active={isGroupComplete(0, FRONT_COUNT)}
             active={true}
-            // disabled={!isGroupComplete(0, FRONT_COUNT)}
             onClick={step === 1 ? handleNext : handleSubmit}
           />
         </div>
