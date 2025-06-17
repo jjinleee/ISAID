@@ -1,4 +1,5 @@
-import type { EtfDetail } from '../data/etf-detail-data';
+import type { EtfDetail } from '@/types/etf';
+import { formatComma, formatDate } from '@/lib/utils';
 
 interface EtfDetailTableProps {
   etf: EtfDetail;
@@ -11,47 +12,31 @@ export default function EtfDetailTable({ etf }: EtfDetailTableProps) {
 
       <div className='flex items-center justify-between p-3 text-sm bg-[#F3F4F6] border-b border-b-gray-2'>
         <span>운용사</span>
-        <span className='font-semibold'>{etf.company}</span>
+        <span className='font-semibold'>{etf.comAbbrv}</span>
       </div>
       <div className='flex items-center justify-between p-3 text-sm bg-[#F3F4F6] border-b border-b-gray-2'>
         <span>상장일</span>
-        <span className='font-semibold'>{etf.listedDate}</span>
+        <span className='font-semibold'>{formatDate(etf.listDate)}</span>
       </div>
       <div className='flex items-center justify-between p-3 text-sm bg-[#F3F4F6] border-b border-b-gray-2'>
         <span>기초지수</span>
-        <span className='font-semibold'>{etf.index}</span>
+        <span className='font-semibold'>{etf.etfObjIndexName}</span>
       </div>
       <div className='flex items-center justify-between p-3 text-sm bg-[#F3F4F6] border-b border-b-gray-2'>
-        <span>시가총액</span>
-        <span className='font-semibold'>{etf.marketCap}</span>
+        <span>기초자산분류</span>
+        <span className='font-semibold'>{etf.idxMarketType}</span>
       </div>
       <div className='flex items-center justify-between p-3 text-sm bg-[#F3F4F6] border-b border-b-gray-2'>
-        <span>순자산(AUIM)</span>
-        <span className='font-semibold'>{etf.netAsset}</span>
-      </div>
-      <div className='flex items-center justify-between p-3 text-sm bg-[#F3F4F6] border-b border-b-gray-2'>
-        <span>상장주식수</span>
-        <span className='font-semibold'>{etf.totalShares}</span>
-      </div>
-      <div className='flex items-center justify-between p-3 text-sm bg-[#F3F4F6] border-b border-b-gray-2'>
-        <span>구성종목수</span>
-        <span className='font-semibold'>{etf.holdingsCount}</span>
-      </div>
-      <div className='flex items-center justify-between p-3 text-sm bg-[#F3F4F6] border-b border-b-gray-2'>
-        <span>전일NAV</span>
-        <span className='font-semibold'>{etf.nav}</span>
-      </div>
-      <div className='flex items-center justify-between p-3 text-sm bg-[#F3F4F6] border-b border-b-gray-2'>
-        <span>펀드형태</span>
-        <span className='font-semibold'>{etf.fundType}</span>
+        <span>총보수</span>
+        <span className='font-semibold'>{etf.etfTotalFee}%</span>
       </div>
       <div className='flex items-center justify-between p-3 text-sm bg-[#F3F4F6] border-b border-b-gray-2'>
         <span>과세유형</span>
         <span className='font-semibold'>{etf.taxType}</span>
       </div>
       <div className='flex items-center justify-between p-3 text-sm bg-[#F3F4F6] border-b border-b-gray-2'>
-        <span>복제방법</span>
-        <span className='font-semibold'>{etf.replicationMethod}</span>
+        <span>순자산총액</span>
+        <span className='font-semibold'>{formatComma(etf.marketCap)}</span>
       </div>
     </div>
   );

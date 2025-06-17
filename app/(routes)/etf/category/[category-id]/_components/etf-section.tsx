@@ -35,7 +35,7 @@ export default function EtfSection({
     };
   }, []);
   return (
-    <div className='flex flex-col gap-5 py-8 px-6'>
+    <div className='flex flex-col gap-5 px-6'>
       <div className='flex gap-2 items-end'>
         <h1 className='font-semibold text-xl'>{title}</h1>
         <p className='text-sm text-gray'>{totalPages} 종목</p>

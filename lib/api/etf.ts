@@ -1,4 +1,4 @@
-import { Category } from '@/types/etf';
+import { Category, EtfDetailResponse } from '@/types/etf';
 import type { EtfApiResponse } from '@/types/etf';
 
 export const fetchEtfCategory = async (
@@ -37,5 +37,17 @@ export const fetchEtfItems = async (
   if (!res.ok) {
     throw new Error('ETF 데이터를 불러오는 데 실패했습니다.');
   }
+  return res.json();
+};
+
+export const fetchEtfDetails = async (
+  eftId: string
+): Promise<EtfDetailResponse> => {
+  const res = await fetch(`/api/etf/${eftId}`);
+  return res.json();
+};
+
+export const fetchEtfRatio = async (etfId: string) => {
+  const res = await fetch(`/api/etf/${etfId}/pdf`);
   return res.json();
 };

@@ -50,7 +50,7 @@ const TestContainer = () => {
     const isAllAnswered = selectedOptions.every((v) => v !== null);
 
     return (
-      <div className='flex flex-col gap-10 items-center w-full pt-21'>
+      <div className='flex flex-col gap-10 items-center w-full'>
         <ProgressBar current={answeredCount} total={questions.length} />
 
         {questions.map((q, qIdx) => (
@@ -88,7 +88,7 @@ const TestContainer = () => {
   };
 
   return (
-    <div className='flex flex-col px-6 py-10'>
+    <div className='flex flex-col px-6'>
       <div className='flex flex-col gap-9 items-center'>
         {step === 0 && <TestStartContainer btnClick={() => setStep(1)} />}
 

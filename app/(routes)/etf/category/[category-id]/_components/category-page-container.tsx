@@ -7,6 +7,7 @@ import { useHeader } from '@/context/header-context';
 import { useDebounce } from '@/hooks/useDebounce';
 import ArrowIcon from '@/public/images/arrow-icon';
 import { Category, Filter } from '@/types/etf';
+import { Loading } from '@/components/loading';
 import { fetchEtfCategory, fetchEtfItems } from '@/lib/api/etf';
 import { EtfItem, mapApiToRow } from '@/lib/utils';
 
@@ -87,6 +88,19 @@ const CategoryPageContainer = () => {
   useEffect(() => {
     if (!category) return;
 
+    if (subCategory && selectedSubId === null) {
+      const targetSub = category.categories.find(
+        (cat) => cat.name === decodeURIComponent(subCategory)
+      );
+      if (targetSub) {
+        setSelectedSubId(targetSub.id);
+      }
+    }
+  }, [category, subCategory, selectedSubId]);
+
+  useEffect(() => {
+    if (!category) return;
+
     const targetId =
       selectedSubId ??
       (category.categories.length ? category.categories[0].id : null);
@@ -146,15 +160,14 @@ const CategoryPageContainer = () => {
     setTableName('');
   };
 
-  if (loadingCategory)
-    return <div className='px-6 py-8'>카테고리 불러오는 중...</div>;
+  if (loadingCategory) return <Loading text={'카테고리 불러오는 중입니다.'} />;
+
   if (error) return <div className='px-6 py-8 text-hana-red'>{error}</div>;
 
   if (!category) return <div>존재하지 않는 카테고리입니다.</div>;
 
   if (category.categories.length === 1) {
     return (
-
       <>
         <EtfSection
           title={tableName || category.displayName}
@@ -168,7 +181,6 @@ const CategoryPageContainer = () => {
           totalPages={totalPages}
         />
 
-        {/* 추가 페이지 로딩 중일 때 하단 인디케이터만 표시 */}
         {loadingItems && page > 1 && (
           <div className='py-4 text-center text-sm text-gray'>로딩 중…</div>
         )}
@@ -186,7 +198,7 @@ const CategoryPageContainer = () => {
 
   if (!subCategory) {
     return (
-      <div className='py-8 px-6'>
+      <div className='px-6'>
         <div className='flex flex-col gap-5'>
           <div className='flex gap-2 items-end'>
             <h1 className='font-semibold text-xl'>
