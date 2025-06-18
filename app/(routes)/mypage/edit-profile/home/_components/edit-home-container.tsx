@@ -64,7 +64,7 @@ export const EditHomeContainer = () => {
           </div>
         </div>
         <div className='flex flex-col gap-2'>
-          <label>영문 이름</label>
+          <label>전화 번호</label>
           <CustomInput
             thin={true}
             type={'number'}

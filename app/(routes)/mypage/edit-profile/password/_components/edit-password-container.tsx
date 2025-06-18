@@ -60,7 +60,7 @@ export const EditPasswordContainer = () => {
   };
   return (
     <div className='w-full pt-8 pb-10 px-7 flex flex-col gap-5'>
-      <h1 className='text-xl font-semibold'>이메일 변경</h1>
+      <h1 className='text-xl font-semibold'>비밀번호 변경</h1>
       <div className='flex flex-col gap-4'>
         <div className='flex flex-col gap-2'>
           <Label htmlFor='password' className='text-gray-600'>
