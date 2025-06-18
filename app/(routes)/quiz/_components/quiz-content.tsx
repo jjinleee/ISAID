@@ -30,7 +30,6 @@ export default function QUIZContent({
           style={{ width: `${((current + 1) / total) * 100}%` }}
         />
       </div>
-
       {/* 문제 영역 */}
       <div className='w-full h-full p-5 border-gray-2 shadow-[0px_4px_4px_rgba(0,0,0,0.25),0px_-2px_4px_rgba(0,0,0,0.15)] rounded-2xl'>
         <div className='text-sm text-gray-500'>문제 {current + 1}</div>
@@ -46,25 +45,40 @@ export default function QUIZContent({
             />
           ))}
         </div>
+        <div className='flex w-full gap-4 mt-auto'>
+          <button
+            onClick={onPrev}
+            disabled={current === 0}
+            className='flex-1 py-4 text-lg font-semibold text-center bg-gray-2 rounded-xl disabled:opacity-50'
+          >
+            이전
+          </button>
+          <button
+            onClick={onNext}
+            disabled={!selectedAnswer}
+            className='flex-1 py-4 text-lg font-semibold text-white bg-primary rounded-xl disabled:opacity-50'
+          >
+            {current === total - 1 ? '결과 보기' : '다음'}
+          </button>
+        </div>
       </div>
-
-      {/* 네비 버튼 */}
+      {/* 네비 버튼
       <div className='flex justify-between'>
         <button
           onClick={onPrev}
           disabled={current === 0}
-          className='px-4 py-2 bg-gray-2 rounded-md disabled:opacity-50'
+          className='px-8 py-4 bg-gray-2 rounded-md disabled:opacity-50 text-lg'
         >
           이전
         </button>
         <button
           onClick={onNext}
           disabled={!selectedAnswer}
-          className='px-4 py-2 bg-primary text-white rounded-md disabled:opacity-50'
+          className='px-8 py-4 bg-primary text-white rounded-md disabled:opacity-50 text-lg'
         >
           {current === total - 1 ? '결과 보기' : '다음'}
         </button>
-      </div>
+      </div> */}
     </div>
   );
 }

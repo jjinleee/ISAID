@@ -1,4 +1,5 @@
 import React from 'react';
+import QuizTrophy from '@/public/images/quiz-trophy.svg';
 import QuestionOption from '@/components/question-option';
 import { QuizQuestion } from '../data/questions';
 
@@ -24,6 +25,7 @@ export default function ResultPage({ questions, answers }: ResultPageProps) {
     <div className='flex flex-col p-5 space-y-6'>
       {/* 결과 요약 카드 */}
       <div className='w-full bg-primary rounded-lg p-6 text-center text-white'>
+        <QuizTrophy className='mx-auto' />
         <h1 className='text-2xl font-bold mb-2'>퀴즈 완료!</h1>
         <p>
           {total}문제 중 {score}문제 정답
