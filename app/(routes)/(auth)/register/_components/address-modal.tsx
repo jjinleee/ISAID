@@ -28,7 +28,6 @@ export default function AddressSearch({
     const container = document.getElementById('address-search-container');
     if (!container) return;
 
-    // 이제 타입 안전하게 사용 가능
     const postcode = new window.daum.Postcode({
       oncomplete: (data) => {
         onCompleteAction(data.address);

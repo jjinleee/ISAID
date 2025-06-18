@@ -1,3 +1,4 @@
+import { FormData } from '@/app/(routes)/(auth)/register/_components/register-form';
 import { EtfApiItem } from '@/types/etf';
 import { clsx, type ClassValue } from 'clsx';
 import { addDays, formatISO, parseISO } from 'date-fns';
@@ -152,3 +153,94 @@ export function fillGapsBetweenSingleMonthData(data: ChartRow[]): ChartRow[] {
   }
   return merged.sort((a, b) => a.date.localeCompare(b.date));
 }
+
+export const formatProfileRRN = (rrn: string) => {
+  return rrn.slice(0, 8).concat('*'.repeat(6));
+};
+
+export const formatProfilePHN = (phone: string): string => {
+  const visible = phone.slice(0, -4);
+  return visible + '****';
+};
+
+export const maskProfileEmail = (email: string): string => {
+  const [local, domain] = email.split('@');
+
+  const visibleLen = Math.ceil(local.length / 2);
+  const maskedPart = '*'.repeat(local.length - visibleLen);
+  const masked = local.slice(0, visibleLen) + maskedPart;
+
+  return `${masked}@${domain}`;
+};
+
+export const validateField = <T extends Record<string, any>>(
+  field: keyof T,
+  value: string,
+  formData: T
+): boolean => {
+  switch (field) {
+    case 'name':
+      return value.trim().length > 0;
+
+    case 'nameEng':
+      return (
+        value === '' || (/^[A-Z ]+$/.test(value) && value.trim().length > 0)
+      );
+
+    case 'rrn':
+      return /^[0-9]{13}$/.test(value);
+
+    case 'phone':
+      return /^\d{11,12}$/.test(value);
+
+    case 'verificationCode':
+      return /^\d{3}$/.test(value);
+
+    case 'address':
+      return value.trim().length > 0;
+
+    case 'telNo':
+      return value === '' || /^\d{2,10}$/.test(value);
+
+    case 'email':
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+
+    case 'password':
+      return /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/.test(value);
+
+    case 'passwordConfirm':
+      return value === formData.password && value.length > 0;
+
+    default:
+      return true;
+  }
+};
+
+export const formatPhoneNumber = (value: string) => {
+  const numbers = value.replace(/\D/g, '');
+  if (numbers.length <= 3) return numbers;
+  if (numbers.length <= 7) return `${numbers.slice(0, 3)}-${numbers.slice(3)}`;
+  return `${numbers.slice(0, 3)}-${numbers.slice(3, 7)}-${numbers.slice(7, 11)}`;
+};
+
+export const formatTelNo = (value: string) => {
+  const digits = value.replace(/\D/g, '').slice(0, 10);
+  if (!digits) return '';
+
+  const areaLen = digits.startsWith('02') ? 2 : 3;
+  const area = digits.slice(0, areaLen);
+  const rest = digits.slice(areaLen);
+
+  const len = rest.length;
+  if (len <= 4) {
+    return area + rest;
+  }
+
+  if (len <= 6) {
+    return `${area}-${rest.slice(0, 4)}-${rest.slice(4)}`;
+  }
+
+  const prefix = rest.slice(0, len - 4);
+  const suffix = rest.slice(len - 4);
+  return `${area}-${prefix}-${suffix}`;
+};

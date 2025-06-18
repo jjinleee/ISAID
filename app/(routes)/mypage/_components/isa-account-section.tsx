@@ -29,6 +29,7 @@ export const IsaAccountSection = ({
       `${bankType} ${accountNumber.replace(/-/g, '')}`
     );
   };
+
   const deleteClick = () => {
     setShowFramer(true);
   };

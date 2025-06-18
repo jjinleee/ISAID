@@ -6,6 +6,7 @@ import ArrowLeft from '@/public/images/arrow-left.svg';
 import { CustomInput } from '@/components/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { formatPhoneNumber, formatTelNo, validateField } from '@/lib/utils';
 import AddressSearch from './address-modal';
 
 export interface FormData {
@@ -76,45 +77,6 @@ export default function RegisterForm() {
     'email',
   ];
 
-  const validateField = (field: keyof FormData, value: string): boolean => {
-    switch (field) {
-      case 'name':
-        return value.trim().length > 0;
-
-      case 'nameEng':
-        return (
-          value === '' || (/^[A-Z ]+$/.test(value) && value.trim().length > 0)
-        );
-
-      case 'rrn':
-        return /^[0-9]{13}$/.test(value);
-
-      case 'phone':
-        return /^\d{11,12}$/.test(value);
-
-      case 'verificationCode':
-        return /^\d{3}$/.test(value);
-
-      case 'address':
-        return value.trim().length > 0;
-
-      case 'telNo':
-        return value === '' || /^\d{2,10}$/.test(value);
-
-      case 'email':
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-
-      case 'password':
-        return /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/.test(value);
-
-      case 'passwordConfirm':
-        return value === formData.password && value.length > 0;
-
-      default:
-        return true;
-    }
-  };
-
   const handleInputChange = (field: keyof FormData, value: string) => {
     if (field === 'rrn') {
       const raw = value.replace(/\D/g, '').slice(0, 13);
@@ -128,24 +90,24 @@ export default function RegisterForm() {
 
       setValidationErrors((prev) => ({
         ...prev,
-        [field]: !validateField(field, raw),
+        [field]: !validateField(field, raw, formData),
       }));
       return;
     }
 
     if (field === 'verificationCode') {
-      const raw = value.replace(/\D/g, '').slice(0, 3); // ✅ 3자리로 제한
+      const raw = value.replace(/\D/g, '').slice(0, 3);
       setFormData((prev) => ({ ...prev, verificationCode: raw }));
 
       setValidationErrors((prev) => ({
         ...prev,
-        verificationCode: !validateField('verificationCode', raw),
+        verificationCode: !validateField('verificationCode', raw, formData),
       }));
       return;
     }
 
     if (field === 'password') {
-      const isValid = validateField(field, value);
+      const isValid = validateField(field, value, formData);
       setShowPasswordError(!isValid && value.length > 0);
     }
 
@@ -153,7 +115,7 @@ export default function RegisterForm() {
 
     setValidationErrors((prev) => ({
       ...prev,
-      [field]: !validateField(field, value),
+      [field]: !validateField(field, value, formData),
     }));
   };
 
@@ -163,20 +125,20 @@ export default function RegisterForm() {
 
     if (currentField === 'phone') {
       return (
-        validateField('phone', formData.phone) &&
-        validateField('verificationCode', formData.verificationCode)
+        validateField('phone', formData.phone, formData) &&
+        validateField('verificationCode', formData.verificationCode, formData)
       );
     }
 
     if (currentField === 'email') {
       return (
-        validateField('email', formData.email) &&
-        validateField('password', formData.password) &&
-        validateField('passwordConfirm', formData.passwordConfirm)
+        validateField('email', formData.email, formData) &&
+        validateField('password', formData.password, formData) &&
+        validateField('passwordConfirm', formData.passwordConfirm, formData)
       );
     }
 
-    return validateField(currentField, formData[currentField]);
+    return validateField(currentField, formData[currentField], formData);
   };
 
   const handleSubmit = async () => {
@@ -256,36 +218,6 @@ export default function RegisterForm() {
     const first = digits[6];
     const extra = digits.length - 7;
     return `${head}-${first}${'•'.repeat(extra)}`;
-  };
-
-  const formatPhoneNumber = (value: string) => {
-    const numbers = value.replace(/\D/g, '');
-    if (numbers.length <= 3) return numbers;
-    if (numbers.length <= 7)
-      return `${numbers.slice(0, 3)}-${numbers.slice(3)}`;
-    return `${numbers.slice(0, 3)}-${numbers.slice(3, 7)}-${numbers.slice(7, 11)}`;
-  };
-
-  const formatTelNo = (value: string) => {
-    const digits = value.replace(/\D/g, '').slice(0, 10);
-    if (!digits) return '';
-
-    const areaLen = digits.startsWith('02') ? 2 : 3;
-    const area = digits.slice(0, areaLen);
-    const rest = digits.slice(areaLen);
-
-    const len = rest.length;
-    if (len <= 4) {
-      return area + rest;
-    }
-
-    if (len <= 6) {
-      return `${area}-${rest.slice(0, 4)}-${rest.slice(4)}`;
-    }
-
-    const prefix = rest.slice(0, len - 4);
-    const suffix = rest.slice(len - 4);
-    return `${area}-${prefix}-${suffix}`;
   };
 
   return (

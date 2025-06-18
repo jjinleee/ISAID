@@ -6,17 +6,13 @@ import { useRouter } from 'next/navigation';
 import ETFInfoSection from '@/app/(routes)/mypage/_components/etf-info-section';
 import IsaAccountSection from '@/app/(routes)/mypage/_components/isa-account-section';
 import ArrowIcon from '@/public/images/arrow-icon';
-import HanaIcon from '@/public/images/bank-icons/hana-icon';
-import StarBoyGirl from '@/public/images/my-page/star-boy-girl.svg';
 import StarBoy from '@/public/images/star-boy';
 import { ChartData } from '@/types/my-page';
-import Button from '@/components/button';
 import ProgressBar from '@/components/progress-bar';
 import Tab from '@/components/tab';
 import EtfDetailRatioChart from '../_components/ratio-chart';
 import { etfDetailMap } from '../data/ratio-data';
 import type { EtfInfo } from '../data/ratio-data';
-import DeleteSheet from './delete-sheet';
 
 interface Props {
   session: Session;
@@ -30,7 +26,6 @@ export const MyPageContainer = ({ session }: Props) => {
   const [accountName, setAccountName] = useState<string>('하나은행 ISA 계좌');
   const [accountNumber, setAccountNumber] =
     useState<string>('592-910508-29670');
-  const [showFramer, setShowFramer] = useState(false);
   const [selectedItem, setSelectedItem] = useState<string>('');
   const [selectedEtf, setSelectedEtf] = useState<EtfInfo>({
     name: '',
@@ -40,12 +35,6 @@ export const MyPageContainer = ({ session }: Props) => {
     quantity: 0,
     portionOfTotal: 0,
   });
-
-  const labels = Object.values(etfDetailMap).map((etf) => etf.name);
-
-  const series = Object.values(etfDetailMap).map((etf) =>
-    Number((etf.portionOfTotal * 100).toFixed(2))
-  );
 
   const chartData: ChartData[] = Object.entries(etfDetailMap).map(
     ([etfId, etf]) => ({
@@ -60,10 +49,6 @@ export const MyPageContainer = ({ session }: Props) => {
     await navigator.clipboard.writeText(
       `${bankType} ${accountNumber.replace(/-/g, '')}`
     );
-  };
-
-  const deleteClick = () => {
-    setShowFramer(true);
   };
 
   useEffect(() => {
@@ -99,7 +84,10 @@ export const MyPageContainer = ({ session }: Props) => {
             </div>
           </div>
           <h1 className='font-semibold'>ESFP : 자유로운 영혼의 연예인</h1>
-          <div className='w-full flex justify-end items-center absolute bottom-4 right-3'>
+          <div
+            className='flex justify-end items-center absolute bottom-4 right-3 cursor-pointer'
+            onClick={() => router.push('mypage/edit-profile')}
+          >
             <span className='font-light text-sm'>내 정보 수정하기 </span>
             <ArrowIcon
               direction='right'
