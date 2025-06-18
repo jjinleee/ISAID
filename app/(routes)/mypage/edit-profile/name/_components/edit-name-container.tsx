@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FormData } from '@/app/(routes)/(auth)/register/_components/register-form';
+import { useHeader } from '@/context/header-context';
 import Button from '@/components/button';
 import CustomInput from '@/components/input';
 import { validateField } from '@/lib/utils';
@@ -16,6 +17,11 @@ interface ValidationErrors {
 }
 
 export const EditNameContainer = () => {
+  const { setHeader } = useHeader();
+  useEffect(() => {
+    setHeader('내 정보 수정하기', '이름 수정');
+  }, []);
+
   const [nameData, setNameData] = useState<NameData>({
     name: '곽희건',
     nameEng: 'Jin Lee',

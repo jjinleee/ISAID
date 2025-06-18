@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import AddressSearch from '@/app/(routes)/(auth)/register/_components/address-modal';
 import { FormData } from '@/app/(routes)/(auth)/register/_components/register-form';
+import { useHeader } from '@/context/header-context';
 import Button from '@/components/button';
 import CustomInput from '@/components/input';
 import { formatTelNo, validateField } from '@/lib/utils';
@@ -17,6 +18,10 @@ interface ValidationErrors {
 }
 
 export const EditHomeContainer = () => {
+  const { setHeader } = useHeader();
+  useEffect(() => {
+    setHeader('내 정보 수정하기', '자택 정보 수정');
+  }, []);
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [homeData, setHomeData] = useState<HomeData>({
     address: '경기도 용인시 수지구',
@@ -71,7 +76,11 @@ export const EditHomeContainer = () => {
           />
         </div>
       </div>
-      {/*<Button text={'이름 변경'} thin={false} active={!validationErrors.name} />*/}
+      <Button
+        text={'자택 정보 변경'}
+        thin={false}
+        active={!validationErrors.address}
+      />
       {showAddressModal && (
         <AddressSearch
           onCompleteAction={(addr) => handleAddressSelect(addr)}

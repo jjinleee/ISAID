@@ -20,6 +20,7 @@ export interface FormData {
   email: string;
   password: string;
   passwordConfirm: string;
+  oldPassword?: string;
 }
 
 interface ValidationErrors {
@@ -32,6 +33,7 @@ interface ValidationErrors {
   email: boolean;
   password: boolean;
   passwordConfirm: boolean;
+  oldPassword?: boolean;
 }
 
 export default function RegisterForm() {
@@ -137,8 +139,10 @@ export default function RegisterForm() {
         validateField('passwordConfirm', formData.passwordConfirm, formData)
       );
     }
-
-    return validateField(currentField, formData[currentField], formData);
+    if (currentField !== 'oldPassword') {
+      return validateField(currentField, formData[currentField], formData);
+    }
+    return false;
   };
 
   const handleSubmit = async () => {

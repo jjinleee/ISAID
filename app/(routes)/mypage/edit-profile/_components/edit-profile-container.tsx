@@ -1,10 +1,17 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useHeader } from '@/context/header-context';
 import ArrowIcon from '@/public/images/arrow-icon';
 import Button from '@/components/button';
 
 export const EditProfileContainer = () => {
+  const { setHeader } = useHeader();
+  useEffect(() => {
+    setHeader('내 정보 수정하기', '회원정보를 확인하고 수정할 수 있어요');
+  }, []);
+
   const router = useRouter();
   const gun = [
     { target: '이름', path: 'name' },

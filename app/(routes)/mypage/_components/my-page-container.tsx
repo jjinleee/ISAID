@@ -45,11 +45,6 @@ export const MyPageContainer = ({ session }: Props) => {
   );
 
   const tabs = ['보유 ETF', '연결 계좌'];
-  const handleCopy = async () => {
-    await navigator.clipboard.writeText(
-      `${bankType} ${accountNumber.replace(/-/g, '')}`
-    );
-  };
 
   useEffect(() => {
     setSelectedEtf(etfDetailMap[selectedItem]);

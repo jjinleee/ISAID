@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { FormData } from '@/app/(routes)/(auth)/register/_components/register-form';
+import { useHeader } from '@/context/header-context';
 import Button from '@/components/button';
 import CustomInput from '@/components/input';
 import { validateField } from '@/lib/utils';
@@ -17,6 +18,11 @@ interface ValidationErrors {
 }
 
 export const EditPhoneContainer = () => {
+  const { setHeader } = useHeader();
+  useEffect(() => {
+    setHeader('내 정보 수정하기', '전화번호 수정');
+  }, []);
+
   const [phoneData, setPhoneData] = useState<PhoneData>({
     phone: '01012323332',
     verificationCode: '',
