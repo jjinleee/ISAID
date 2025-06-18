@@ -9,14 +9,14 @@ import BottomTab from './bottom-tab';
 
 const items = [
   { to: '/isa', text: 'ISA', icon: PiggyBank },
-  { to: '/', text: 'Home', icon: Home },
+  { to: '/main', text: 'Home', icon: Home },
   { to: '/etf', text: 'ETF', icon: BottomChart },
 ];
 
 export const BottomBar = () => {
   const pathname = usePathname();
 
-  const hiddenPaths = ['/register', '/login'];
+  const hiddenPaths = ['/register', '/login', '/'];
   if (hiddenPaths.includes(pathname)) {
     return null;
   }

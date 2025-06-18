@@ -14,7 +14,7 @@ const ISAPageContainer = () => {
   }, []);
 
   return (
-    <div className='flex-col p-5 flex flex-1/2 pt-21'>
+    <div className='flex-col px-5 pb-5 flex flex-1/2'>
       <Account />
       <ContributionLimit />
       <ISADetail />
