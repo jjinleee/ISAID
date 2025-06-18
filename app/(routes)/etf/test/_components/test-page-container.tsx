@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useHeader } from '@/context/header-context';
-import { getRecommendedTypes, getRiskType } from '@/utils/etfPersonality';
 import Button from '@/components/button';
 import ProgressBar from '@/components/progress-bar';
 import QuestionOption from '@/components/question-option';
@@ -205,13 +204,40 @@ export default function TestContainer() {
       .slice(start, start + count)
       .every((_, i) => selectedOptions[start + i] !== null);
 
+  // const scrollAndFocus = (idx: number) => {
+  //   const el = questionRefs.current[idx];
+  //   if (!el) return;
+
+  //   // 스크롤 먼저 부드럽게 이동
+  //   el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+  //   // IntersectionObserver로 중앙 진입 여부 감지 후 포커스
+  //   const observer = new IntersectionObserver(
+  //     ([entry]) => {
+  //       if (entry.isIntersecting) {
+  //         el.focus();
+  //         setFocusedIdx(idx);
+  //         observer.disconnect(); // 감지 종료
+  //       }
+  //     },
+  //     {
+  //       root: null, // viewport 기준
+  //       threshold: 0.6, // 요소의 60% 이상이 보여야 감지 (중앙 근처 의미)
+  //     }
+  //   );
+
+  //   observer.observe(el);
+  // };
   const scrollAndFocus = (idx: number) => {
     const el = questionRefs.current[idx];
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      el.focus();
-      setFocusedIdx(idx);
-    }
+    if (!el) return;
+
+    // 💥 애니메이션 없이 바로 중앙 정렬
+    el.scrollIntoView({ behavior: 'auto', block: 'center' });
+
+    // 💡 포커스 및 강조
+    el.focus();
+    setFocusedIdx(idx);
   };
 
   const handleNext = () => {
@@ -276,7 +302,7 @@ export default function TestContainer() {
     <div className='flex flex-col gap-10 items-center w-full'>
       {/* 상단 고정 ProgressBar */}
       {(step === 1 || step === 2) && (
-        <div className='!fixed max-w-[720px] top-17 w-full bg-white pt-2 m'>
+        <div className='!fixed max-w-[720px] top-17 w-full bg-white pt-2 px-6'>
           <ProgressBar
             current={
               step === 1
@@ -292,7 +318,7 @@ export default function TestContainer() {
       )}
 
       {/* 스크롤 가능한 질문 영역 */}
-      <div className='overflow-y-auto w-full h-full px-6 mb-10 mt-10'>
+      <div className='overflow-y-auto w-full h-full px-6 pt-13 pb-16'>
         <div className='flex flex-col gap-9 items-center'>
           {step === 0 && <TestStartContainer btnClick={() => setStep(1)} />}
           {step === 1 && renderGroup(0, FRONT_COUNT)}
@@ -301,8 +327,7 @@ export default function TestContainer() {
           {step === 3 && (
             <TestEndContainer
               btnClick={() => setStep(0)}
-              riskType={getRiskType(selectedOptions)}
-              recommendedTypes={getRecommendedTypes(selectedOptions)}
+              answers={selectedOptions} // ✅ 전체 답변 배열 넘기기
             />
           )}
         </div>
@@ -310,7 +335,7 @@ export default function TestContainer() {
 
       {/* 하단 고정 버튼 */}
       {(step === 1 || step === 2) && (
-        <div className='!fixed max-w-[720px] top-204 w-full bg-white pt-2'>
+        <div className='!fixed max-w-[720px] bottom-19 w-full bg-white pt-2 px-6'>
           <Button
             thin={false}
             text={step === 1 ? '다음' : '제출하기'}
