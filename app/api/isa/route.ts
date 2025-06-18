@@ -7,7 +7,7 @@ import { prisma } from '@/lib/prisma';
 export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    console.log(session);
+
     if (!session || !session.user?.id) {
       return NextResponse.json(
         { message: '인증된 사용자만 접근 가능합니다.' },
@@ -17,16 +17,10 @@ export async function POST(req: NextRequest) {
     const userId = Number(session.user.id);
 
     const body = await req.json();
-    const {
-      id, //db수정후 삭제
-      bankCode,
-      accountNum,
-      currentBalance,
-      accountType,
-      accountKind,
-    } = body;
+    const { bankCode, accountNum, currentBalance, accountType, accountKind } =
+      body;
 
-    const existing = await prisma.isaAccount.findUnique({ where: { userId } });
+    const existing = await prisma.ISAAccount.findUnique({ where: { userId } });
     if (existing) {
       return NextResponse.json(
         { message: '이미 ISA 계좌가 존재합니다.' },
@@ -34,16 +28,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const newAccount = await prisma.isaAccount.create({
+    const newAccount = await prisma.ISAAccount.create({
       data: {
-        id, //db수정후 삭제
         userId,
         bankCode,
         accountNum,
         connectedAt: new Date(),
         currentBalance,
         accountType,
-        accountKind,
       },
     });
 
@@ -69,7 +61,7 @@ export async function GET(req: NextRequest) {
     }
     const userId = Number(session.user.id);
 
-    const isa = await prisma.isaAccount.findUnique({ where: { userId } });
+    const isa = await prisma.ISAAccount.findUnique({ where: { userId } });
 
     if (!isa) {
       return NextResponse.json({ message: 'ISA 계좌 없음' }, { status: 404 });
@@ -94,7 +86,7 @@ export async function DELETE(req: NextRequest) {
     }
     const userId = Number(session.user.id);
 
-    await prisma.isaAccount.delete({ where: { userId } });
+    await prisma.ISAAccount.delete({ where: { userId } });
 
     return NextResponse.json({ message: 'ISA 계좌 삭제 성공' });
   } catch (error) {
