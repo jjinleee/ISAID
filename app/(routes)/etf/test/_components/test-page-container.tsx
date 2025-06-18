@@ -306,7 +306,7 @@ export default function TestContainer() {
       )}
 
       {/* 스크롤 가능한 질문 영역 */}
-      <div className='overflow-y-auto w-full h-full px-6 pt-13 pb-16'>
+      <div className='overflow-y-auto w-full h-full px-6 pt-13 pb-18'>
         <div className='flex flex-col gap-9 items-center'>
           {step === 0 && <TestStartContainer btnClick={() => setStep(1)} />}
           {step === 1 && renderGroup(0, FRONT_COUNT)}
@@ -323,7 +323,7 @@ export default function TestContainer() {
 
       {/* 하단 고정 버튼 */}
       {(step === 1 || step === 2) && (
-        <div className='!fixed max-w-[720px] bottom-19 w-full bg-white pt-2 px-6'>
+        <div className='!fixed max-w-[720px] bottom-18 w-full bg-white pb-3 px-6'>
           <Button
             thin={false}
             text={step === 1 ? '다음' : '제출하기'}
