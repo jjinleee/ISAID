@@ -9,14 +9,14 @@ import BottomTab from './bottom-tab';
 
 const items = [
   { to: '/isa', text: 'ISA', icon: PiggyBank },
-  { to: '/', text: 'Home', icon: Home },
+  { to: '/main', text: 'Home', icon: Home },
   { to: '/etf', text: 'ETF', icon: BottomChart },
 ];
 
 export const BottomBar = () => {
   const pathname = usePathname();
 
-  const hiddenPaths = ['/register', '/login'];
+  const hiddenPaths = ['/register', '/login', '/'];
   if (hiddenPaths.includes(pathname)) {
     return null;
   }
@@ -27,7 +27,7 @@ export const BottomBar = () => {
       fixed bottom-0 inset-x-0
       mx-auto max-w-[768px] w-full
       flex justify-around space-x-8 items-center
-      border-t border-t-hana-green bg-white
+      border-t-[1.5px] border-t-gray-2 bg-white
       z-50
       '
     >

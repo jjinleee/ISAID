@@ -4,14 +4,14 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useHeader } from '@/context/header-context';
 import ArrowIcon from '@/public/images/arrow-icon';
-import { ETFArrow } from '@/public/images/etf-rate';
+import { ETFArrow } from '@/public/images/etf/etf-rate';
 import {
   SlideImg1,
   SlideImg2,
   SlideImg3,
   SlideImg4,
   SlideImg5,
-} from '@/public/images/etf-slide';
+} from '@/public/images/etf/etf-slide';
 import StarBoyFinger from '@/public/images/star-boy-finger.svg';
 import { SlideCardProps } from '@/types/components';
 import { SliderWrapper } from '../_components/slider-wrapper';
@@ -73,7 +73,7 @@ const ETFPageContainer = () => {
   ];
 
   return (
-    <div className='flex flex-col px-6 py-10'>
+    <div className='flex flex-col px-6 pb-10'>
       <div className='flex flex-col gap-5'>
         <h1 className='text-xl font-semibold'>ETF, 테마부터 시작해볼까요?</h1>
         <SliderWrapper cards={cards} />

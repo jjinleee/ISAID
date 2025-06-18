@@ -149,3 +149,143 @@ body {
   border-radius: 9999px;
   background-color: #4c525d;
 }
+
+/* calendar 설정 */
+.rdp-root {
+  width: 100% !important;
+}
+
+.rdp-months {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.rdp-month {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.rdp-month_grid {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.rdp-month_caption {
+  align-items: center;
+}
+
+.rdp-weekday,
+.rdp-weekday abbr,
+.rdp-weekday span {
+  font-weight: 700 !important;
+  font-size: 15px !important;
+  color: #000000;
+  text-align: center;
+}
+
+.rdp-button_previous svg polygon,
+.rdp-button_next svg polygon {
+  fill: #4c525d;
+}
+
+.rdp-day {
+  color: #9ca3af;
+  font-weight: 600;
+}
+
+.rdp-day_selected {
+  background-color: transparent !important;
+  color: #000000 !important;
+  font-weight: 600;
+}
+
+.rdp-day.rdp-today {
+  color: #000 !important;
+  font-weight: 600 !important;
+}
+
+.rdp-day.rdp-today button {
+  color: #000 !important;
+  font-weight: 600 !important;
+}
+
+.rdp-day_selected.rdp-today {
+  color: #000 !important;
+  background-color: transparent !important;
+  font-weight: 600 !important;
+}
+
+.rdp-day_button {
+  margin: 0 auto !important;
+  width: 40px !important;
+  height: 40px !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+.rdp-selected .rdp-day_button {
+  background-color: rgba(0, 145, 120, 1) !important;
+  color: #ffffff !important;
+  border-radius: 9999px !important;
+
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.rdp-selected.rdp-today .rdp-day_button {
+  background-color: rgba(0, 145, 120, 1) !important;
+  color: #ffffff !important;
+}
+
+/* 선택 + 거래가 겹칠 때도 동일하게 유지 */
+.rdp-day_selected.rdp-day_hasTx .rdp-day_button {
+  background-color: rgba(0, 145, 120, 1);
+  color: #ffffff;
+}
+
+/* 거래 ‘만’ 있는 날짜  ─ 선택되지 않았을 때만 연초록 */
+.rdp-day_hasTx:not(.rdp-selected) .rdp-day_button {
+  background-color: rgba(0, 145, 120, 0.3) !important; /* 연초록 */
+  color: #000 !important;
+}
+
+/* 선택된 날짜  ─ (거래 여부와 무관) 진초록 + 흰 글씨 */
+.rdp-selected .rdp-day_button {
+  background-color: rgba(0, 145, 120, 1) !important; /* 진초록 */
+  color: #fff !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* 선택 + 거래 겹칠 때 진한 초록색 */
+.rdp-day_selected.rdp-day_hasTx .rdp-day_button {
+  background-color: rgba(0, 145, 120, 1) !important;
+  color: #ffffff !important;
+}
+
+/* 거래 + 오늘인 경우 → 글씨 검정색 */
+.rdp-day_hasTx.rdp-today:not(.rdp-selected) .rdp-day_button {
+  background-color: rgba(0, 145, 120, 0.3) !important;
+  color: #000000 !important;
+}
+
+/* 거래는 있지만 오늘은 아닌 경우 → 연초록 + 흰 글씨 */
+.rdp-day_hasTx:not(.rdp-today):not(.rdp-selected) .rdp-day_button {
+  background-color: rgba(0, 145, 120, 0.3) !important;
+  color: #ffffff !important;
+}
+
+/* 선택 + 거래 → 진초록 + 흰 글씨 */
+.rdp-day_selected.rdp-day_hasTx .rdp-day_button {
+  background-color: rgba(0, 145, 120, 1) !important;
+  color: #ffffff !important;
+}
+
+/* 단순 선택 (거래 없어도) → 진초록 + 흰 글씨 */
+.rdp-selected .rdp-day_button {
+  background-color: rgba(0, 145, 120, 1) !important;
+  color: #ffffff !important;
+}

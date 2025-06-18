@@ -1,53 +1,67 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import ApexCharts from 'apexcharts';
-import { etfPriceData } from '../data/etf-price-data';
 
-export const EftDetailChart = ({
-  selectedPeriod,
-  onReady,
-}: {
+interface ChartRow {
+  date: string;
+  closePrice: number;
+}
+
+interface Props {
+  chartRows: ChartRow[];
   selectedPeriod: number;
   onReady?: () => void;
-}) => {
+}
+
+export default function EftDetailChart({
+  chartRows,
+  selectedPeriod,
+  onReady,
+}: Props) {
   const chartRef = useRef<HTMLDivElement>(null);
-  const chartInstanceRef = useRef<ApexCharts | null>(null);
-  // 최초 렌더링: 3년치 전체 데이터를 기반으로 생성
+  const chartInstance = useRef<ApexCharts | null>(null);
+
+  const seriesData = useMemo<[number, number][]>(
+    () =>
+      chartRows.map(({ date, closePrice }) => [
+        new Date(date).getTime(),
+        closePrice,
+      ]),
+    [chartRows]
+  );
+
+  const firstTs = seriesData[0]?.[0] ?? 0;
+  const lastTs = seriesData[seriesData.length - 1]?.[0] ?? 0;
+  const availDays = Math.floor((lastTs - firstTs) / 86400000);
+  const needDays = [7, 30, 90, 365, 1095];
+
+  const getRange = (period: number): [number, number] => {
+    const need = needDays[period] ?? 1095;
+    const start = need > availDays ? firstTs : lastTs - need * 86400000;
+    return [start, lastTs];
+  };
+
   useEffect(() => {
-    if (!chartRef.current) return;
+    if (!chartRef.current || seriesData.length === 0) {
+      onReady?.();
+      return;
+    }
+    let alive = true;
 
-    const fullSet = etfPriceData['3년'];
-    const seriesData = fullSet.categories.map((dateStr, i) => {
-      const timestamp = new Date(dateStr).getTime();
-      return [timestamp, fullSet.data[i]];
-    });
-    console.log(seriesData.filter(([x, y]) => isNaN(x) || isNaN(y)));
-
-    const options = {
+    const chart = new ApexCharts(chartRef.current, {
       chart: {
         id: 'etf-area',
         type: 'area',
         height: 350,
-        zoom: { enabled: false },
         toolbar: { show: false },
-        selection: {
-          enabled: false,
-        },
+        zoom: { enabled: false },
       },
       dataLabels: { enabled: false },
-      series: [
-        {
-          name: '가격',
-          data: seriesData,
-        },
-      ],
+      series: [{ name: '가격', data: seriesData }],
       xaxis: {
         type: 'datetime',
-        labels: {
-          rotate: -30,
-          style: { fontSize: '10px' },
-        },
+        labels: { rotate: -30, style: { fontSize: '10px' } },
         tickAmount: 6,
       },
       tooltip: {
@@ -55,68 +69,31 @@ export const EftDetailChart = ({
         theme: 'light',
         x: { format: 'MM/dd' },
         y: {
-          formatter: (val: number) => `${val.toFixed(2)}원`,
+          formatter: (value: number) => `${value.toFixed(2)}원`,
         },
       },
+    });
+    chartInstance.current = chart;
+
+    chart.render().then(() => {
+      if (!alive) return;
+      const [s, e] = getRange(selectedPeriod);
+      chart.zoomX(s, e);
+      onReady?.();
+    });
+
+    return () => {
+      alive = false;
+      chart.destroy();
+      chartInstance.current = null;
     };
-    if (!chartRef.current) {
-      onReady?.();
-      return;
-    }
-
-    if (!fullSet || fullSet.categories.length === 0) {
-      onReady?.();
-      return;
-    }
-
-    const chart = new ApexCharts(chartRef.current, options);
-    chart
-      .render()
-      .then(() => {
-        chartInstanceRef.current = chart;
-        onReady?.();
-      })
-      .catch((err) => {
-        console.error('차트 렌더링 실패:', err);
-        onReady?.();
-      });
-
-    chartInstanceRef.current = chart;
-
-    return () => chart.destroy();
-  }, []);
+  }, [seriesData]);
 
   useEffect(() => {
-    const chart = chartInstanceRef.current;
-    if (!chart) return;
-
-    const fullDates = etfPriceData['3년'].categories;
-    const end = new Date(fullDates[fullDates.length - 1]).getTime();
-    let start: number;
-
-    switch (selectedPeriod) {
-      case 0:
-        start = end - 7 * 86400000;
-        break; // 1주일
-      case 1:
-        start = end - 30 * 86400000;
-        break; // 1개월
-      case 2:
-        start = end - 90 * 86400000;
-        break; // 3개월
-      case 3:
-        start = end - 365 * 86400000;
-        break; // 1년
-      case 4:
-      default:
-        start = new Date(fullDates[0]).getTime();
-        break; // 3년 (전체)
-    }
-
-    chart.zoomX(start, end);
+    if (!chartInstance.current) return;
+    const [s, e] = getRange(selectedPeriod);
+    chartInstance.current.zoomX(s, e);
   }, [selectedPeriod]);
 
   return <div ref={chartRef} />;
-};
-
-export default EftDetailChart;
+}
