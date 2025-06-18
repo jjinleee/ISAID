@@ -5,8 +5,7 @@ import { prisma } from '@/lib/prisma';
 export async function POST(req: Request) {
   try {
     const data = await req.json();
-    const { name, eng_name, email, password, rrn, phone, address, telno } =
-      data;
+    const { name, engName, email, password, rrn, phone, address, telno } = data;
 
     if (!name || !email || !password || !rrn || !phone || !address) {
       return NextResponse.json(
@@ -14,6 +13,7 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
+    console.log('가입 요청 데이터:', data);
 
     // 중복 이메일 체크
     const existingUser = await prisma.user.findUnique({
@@ -31,7 +31,7 @@ export async function POST(req: Request) {
     const newUser = await prisma.user.create({
       data: {
         name,
-        eng_name,
+        engName,
         email,
         password: hashedPassword,
         rrn,

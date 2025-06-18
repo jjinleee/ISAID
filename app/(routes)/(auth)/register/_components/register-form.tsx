@@ -155,7 +155,7 @@ export default function RegisterForm() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: formData.name,
-          eng_name: formData.nameEng,
+          engName: formData.nameEng,
           email: formData.email,
           password: formData.password,
           rrn: formData.rrn,
