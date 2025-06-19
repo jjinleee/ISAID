@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
         connectedAt: new Date(),
         currentBalance,
         accountType,
-        paymentAmount: BigInt(1700),
+        paymentAmount: BigInt(17000000),
       },
     });
 

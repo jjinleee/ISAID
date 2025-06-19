@@ -59,7 +59,7 @@ const AccountConnectPageContainer = () => {
           accountType: accountType,
           accountKind: accountKind,
           accountNum: accountNumber,
-          currentBalance: 5000000,
+          currentBalance: 17000000,
         }),
       });
 

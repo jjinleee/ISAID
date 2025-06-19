@@ -42,7 +42,10 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json(
-      { message: '회원가입 성공', id: newUser.id },
+      {
+        message: '회원가입 성공',
+        id: newUser.id.toString(), // BigInt → String 변환
+      },
       { status: 201 }
     );
     // build error : Warning: Unexpected any. Specify a different type
