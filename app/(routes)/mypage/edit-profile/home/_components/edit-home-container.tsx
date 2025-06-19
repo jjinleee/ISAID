@@ -7,7 +7,7 @@ import AddressSearch from '@/app/(routes)/(auth)/register/_components/address-mo
 import { FormData } from '@/app/(routes)/(auth)/register/_components/register-form';
 import { submitUserUpdate } from '@/app/(routes)/mypage/edit-profile/utils';
 import { useHeader } from '@/context/header-context';
-import { CircleAlert, SquareCheckBig } from 'lucide-react';
+import ModalWrapper from '@/utils/modal';
 import Button from '@/components/button';
 import CustomInput from '@/components/input';
 import { fetchMyInfo, updateUser } from '@/lib/api/my-page';
@@ -120,11 +120,13 @@ export const EditHomeContainer = () => {
         onClick={submitData}
       />
       {showAddressModal && (
-        <AddressSearch
-          onCompleteAction={(addr) => handleAddressSelect(addr)}
-          onCloseAction={() => setShowAddressModal(false)}
-          openState={showAddressModal}
-        />
+        <ModalWrapper headerOnly={true}>
+          <AddressSearch
+            onCompleteAction={(addr) => handleAddressSelect(addr)}
+            onCloseAction={() => setShowAddressModal(false)}
+            openState={showAddressModal}
+          />
+        </ModalWrapper>
       )}
     </div>
   );

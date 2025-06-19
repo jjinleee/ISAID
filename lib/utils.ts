@@ -157,9 +157,18 @@ export const formatProfileRRN = (rrn: string) => {
   return rrn.slice(0, 8).concat('*'.repeat(6));
 };
 
-export const formatProfilePHN = (phone: string): string => {
-  const visible = phone.slice(0, -4);
-  return visible + '****';
+export const formatProfilePHN = (raw: string): string => {
+  const digits = raw.replace(/\D/g, '');
+
+  if (digits.length === 11) {
+    return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-****`;
+  }
+
+  if (digits.length === 10) {
+    return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-****`;
+  }
+
+  return raw;
 };
 
 export const maskProfileEmail = (email: string): string => {

@@ -82,3 +82,20 @@ export const fetchMyInfo = async () => {
   }
   return res.json();
 };
+
+export const leaveUser = async (password: string) => {
+  const res = await fetch('/api/user/delete', {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ password }),
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json();
+    throw new Error(errorData.message || '탈퇴 요청 실패');
+  }
+
+  return res.json();
+};

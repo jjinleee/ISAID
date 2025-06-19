@@ -123,21 +123,32 @@ export default function RegisterForm() {
     const currentField = steps[currentStep];
     if (!currentField) return true;
 
-    if (currentField === 'phone') {
-      return (
-        validateField('phone', formData.phone, formData) &&
-        validateField('verificationCode', formData.verificationCode, formData)
-      );
-    }
+    switch (currentField) {
+      case 'name':
+        return validateField('name', formData.name, formData);
 
-    if (currentField === 'email') {
-      return (
-        validateField('email', formData.email, formData) &&
-        validateField('password', formData.password, formData) &&
-        validateField('passwordConfirm', formData.passwordConfirm, formData)
-      );
+      case 'rrn':
+        return validateField('rrn', formData.rrn, formData);
+
+      case 'phone':
+        return (
+          validateField('phone', formData.phone, formData) &&
+          validateField('verificationCode', formData.verificationCode, formData)
+        );
+
+      case 'address':
+        return validateField('address', formData.address, formData);
+
+      case 'email':
+        return (
+          validateField('email', formData.email, formData) &&
+          validateField('password', formData.password, formData) &&
+          validateField('passwordConfirm', formData.passwordConfirm, formData)
+        );
+
+      default:
+        return false;
     }
-    return false;
   };
 
   const handleSubmit = async () => {

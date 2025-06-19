@@ -112,9 +112,11 @@ export const MyPageContainer = ({ session }: Props) => {
           <h1 className='font-semibold'>ESFP : 자유로운 영혼의 연예인</h1>
           <div
             className='flex justify-end items-center absolute bottom-4 right-3 cursor-pointer'
-            onClick={() => router.push('mypage/edit-profile')}
+            onClick={() => router.push('mypage/profile')}
           >
-            <span className='font-light text-sm'>내 정보 수정하기 </span>
+            <span className='font-light text-sm'>
+              내 정보 확인 <span className='opacity-50'>/</span> 수정하기
+            </span>
             <ArrowIcon
               direction='right'
               color='#c9c9c9'
