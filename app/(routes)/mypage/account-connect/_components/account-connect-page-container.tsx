@@ -17,6 +17,7 @@ import BankSelectSheet from './bank-select-sheet';
 const AccountConnectPageContainer = () => {
   const { setHeader } = useHeader();
   const router = useRouter();
+  const [connecting, setConnecting] = useState(false);
 
   useEffect(() => {
     setHeader('ISA 계좌 연결', 'ISA 계좌를 연결해 주세요');
@@ -36,6 +37,7 @@ const AccountConnectPageContainer = () => {
   });
 
   const handleConnectAccount = async () => {
+    setConnecting(true);
     const newErrors = {
       bank: bank ? '' : '은행/증권사를 선택해 주세요.',
       accountType: accountType ? '' : '계좌 유형을 선택해 주세요.',
@@ -76,9 +78,10 @@ const AccountConnectPageContainer = () => {
 
       setTimeout(() => {
         router.push('/mypage'); // 원하는 경로로 변경 가능
-      }, 4000);
+      }, 2000);
     } catch (err) {
       console.error('계좌 연결 오류', err);
+      setConnecting(false);
     }
   };
 
@@ -159,6 +162,7 @@ const AccountConnectPageContainer = () => {
           active={true}
           text={'계좌 연결하기'}
           onClick={handleConnectAccount}
+          disabled={connecting}
         />
       </div>
 

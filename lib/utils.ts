@@ -244,3 +244,10 @@ export const formatTelNo = (value: string) => {
   const suffix = rest.slice(len - 4);
   return `${area}-${prefix}-${suffix}`;
 };
+
+export const formatHanaAccountNumber = (raw: string) => {
+  const onlyDigits = raw.replace(/\D/g, '').slice(0, 13);
+  return onlyDigits.replace(/(\d{3})(\d{6})(\d{0,4})/, (_, a, b, c) =>
+    [a, b, c].filter(Boolean).join('-')
+  );
+};

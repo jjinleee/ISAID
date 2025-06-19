@@ -25,7 +25,6 @@ const DeleteSheet = ({ visible, onClose, deleteAccount }: Props) => {
     <AnimatePresence>
       {visible && (
         <>
-          {/* Overlay */}
           <motion.div
             className='fixed inset-0 z-60 bg-black/40 max-w-[768px] mx-auto'
             initial='hidden'
@@ -35,7 +34,6 @@ const DeleteSheet = ({ visible, onClose, deleteAccount }: Props) => {
             onClick={onClose}
           />
 
-          {/* Bottom Sheet */}
           <div className='fixed bottom-0 left-0 right-0 z-60 flex justify-center'>
             <motion.div
               className='w-full max-w-[768px] bg-white rounded-t-2xl px-8 pt-8 pb-6 max-h-[80vh] overflow-y-auto'

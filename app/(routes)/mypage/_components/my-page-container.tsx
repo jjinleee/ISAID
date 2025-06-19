@@ -13,6 +13,7 @@ import { ChartData } from '@/types/my-page';
 import Button from '@/components/button';
 import ProgressBar from '@/components/progress-bar';
 import Tab from '@/components/tab';
+import { fetchISAInfo } from '@/lib/api/my-page';
 import EtfDetailRatioChart from '../_components/ratio-chart';
 import { etfDetailMap } from '../data/ratio-data';
 import type { EtfInfo } from '../data/ratio-data';
@@ -25,7 +26,7 @@ interface Props {
 export const MyPageContainer = ({ session }: Props) => {
   const router = useRouter();
   const [selectedTab, setSelectedTab] = useState<number>(0);
-  const [connected, setConnected] = useState(true);
+  const [connected, setConnected] = useState(false);
   const [bankType, setBankType] = useState<string>('하나');
   const [accountName, setAccountName] = useState<string>('하나은행 ISA 계좌');
   const [accountNumber, setAccountNumber] =
@@ -49,6 +50,26 @@ export const MyPageContainer = ({ session }: Props) => {
   );
 
   const tabs = ['보유 ETF', '연결 계좌'];
+
+  useEffect(() => {
+    const fetchISA = async () => {
+      const res = await fetchISAInfo();
+
+      if ('error' in res) {
+        if (res.error === 'NOT_FOUND') {
+          setConnected(false);
+          console.log('ISA 계좌가 없습니다.');
+        } else {
+          console.log('에러 발생: ', res.status || res.error);
+        }
+      } else {
+        setConnected(true);
+        console.log('res : ', res);
+      }
+    };
+
+    fetchISA();
+  }, []);
 
   useEffect(() => {
     setSelectedEtf(etfDetailMap[selectedItem]);

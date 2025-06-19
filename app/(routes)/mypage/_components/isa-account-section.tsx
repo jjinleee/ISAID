@@ -1,10 +1,13 @@
 import { useState } from 'react';
+import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import DeleteSheet from '@/app/(routes)/mypage/_components/delete-sheet';
 import ArrowIcon from '@/public/images/arrow-icon';
 import HanaIcon from '@/public/images/bank-icons/hana-icon';
 import StarBoyGirl from '@/public/images/my-page/star-boy-girl.svg';
+import { SquareCheckBig } from 'lucide-react';
 import Button from '@/components/button';
+import { deleteISA } from '@/lib/api/my-page';
 
 interface Props {
   connected: boolean;
@@ -34,9 +37,29 @@ export const IsaAccountSection = ({
     setShowFramer(true);
   };
 
-  const deleteAccount = () => {
-    setShowFramer(false);
-    console.log('delete');
+  const deleteAccount = async () => {
+    const res = await deleteISA();
+    if ('error' in res) {
+      if (res.error === 'NOT_FOUND') {
+        console.log('ISA 계좌가 없습니다.');
+      } else {
+        console.log('삭제 실패:', res.status);
+      }
+    } else {
+      setShowFramer(false);
+      console.log('삭제 성공:', res);
+      toast.success('계좌 삭제가 완료되었습니다!', {
+        icon: <SquareCheckBig className='w-5 h-5 text-hana-green' />,
+        style: {
+          borderRadius: '8px',
+          color: 'black',
+          fontWeight: '500',
+        },
+      });
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+    }
   };
 
   return (
