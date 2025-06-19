@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
     const { bankCode, accountNum, currentBalance, accountType, accountKind } =
       body;
 
-    const existing = await prisma.ISAAccount.findUnique({ where: { userId } });
+    const existing = await prisma.iSAAccount.findUnique({ where: { userId } });
     if (existing) {
       return NextResponse.json(
         { message: '이미 ISA 계좌가 존재합니다.' },
@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const newAccount = await prisma.ISAAccount.create({
+    const newAccount = await prisma.iSAAccount.create({
       data: {
         userId,
         bankCode,
@@ -61,7 +61,7 @@ export async function GET(req: NextRequest) {
     }
     const userId = Number(session.user.id);
 
-    const isa = await prisma.ISAAccount.findUnique({ where: { userId } });
+    const isa = await prisma.iSAAccount.findUnique({ where: { userId } });
 
     if (!isa) {
       return NextResponse.json({ message: 'ISA 계좌 없음' }, { status: 404 });
@@ -86,7 +86,7 @@ export async function DELETE(req: NextRequest) {
     }
     const userId = Number(session.user.id);
 
-    await prisma.ISAAccount.delete({ where: { userId } });
+    await prisma.iSAAccount.delete({ where: { userId } });
 
     return NextResponse.json({ message: 'ISA 계좌 삭제 성공' });
   } catch (error) {
