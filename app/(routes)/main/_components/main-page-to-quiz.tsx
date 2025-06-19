@@ -1,18 +1,33 @@
 'use client';
 
+import toast from 'react-hot-toast'; // ✅ 추가
 import { useRouter } from 'next/navigation';
 import QuizBannerCharater from '@/public/images/quiz-banner-character.svg';
 import QUizBannerGift from '@/public/images/quiz-banner-gift.svg';
+import { isSameDay } from 'date-fns';
 
 interface Props {
   onComplete: (date: Date) => void;
+  streakLabel: string;
+  completedDates: Date[];
 }
 
-export default function MainPageToQuiz({ onComplete }: Props) {
+export default function MainPageToQuiz({
+  onComplete,
+  streakLabel,
+  completedDates,
+}: Props) {
   const router = useRouter();
 
+  const today = new Date();
+  const alreadyCompleted = completedDates.some((d) => isSameDay(d, today));
+
   const handleClick = () => {
-    // 퀴즈 페이지로 이동
+    if (alreadyCompleted) {
+      toast.error('이미 오늘 퀴즈를 푸셨어요!');
+      return;
+    }
+
     router.push('/quiz');
   };
 
@@ -31,12 +46,12 @@ export default function MainPageToQuiz({ onComplete }: Props) {
         <div className='text-sm whitespace-nowrap py-0.5'>
           퀴즈를 풀고 포인트를 받아보세요!
         </div>
-        <div className='text-xs whitespace-nowrap py-0.5'>n일차</div>
+        <div className='text-xs whitespace-nowrap py-0.5'>{streakLabel}</div>
       </div>
 
       {/* 오른쪽 텍스트 */}
       <div
-        className='bg-white px-2 py-2 mt-25  w-100% rounded-xl text-xs btruncate text-right flex-shrink-0 flex'
+        className='bg-white px-2 py-2 mt-25 w-100% rounded-xl text-xs text-right flex-shrink-0 flex'
         onClick={handleClick}
       >
         <QUizBannerGift />

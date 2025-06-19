@@ -4,14 +4,19 @@ import { useState } from 'react';
 import { addDays, format, isSameDay, subDays } from 'date-fns';
 import { AnimatePresence, motion } from 'framer-motion';
 
-const WeeklyCalendar = () => {
+interface WeeklyCalendarProps {
+  completedDates: Date[];
+}
+
+export default function WeeklyCalendar({
+  completedDates,
+}: WeeklyCalendarProps) {
   const today = new Date();
-  const [selectedDate, setSelectedDate] = useState(today);
   const [baseDate, setBaseDate] = useState(today);
   const [direction, setDirection] = useState<'next' | 'prev'>('next');
 
   const getStartOfWeek = (base: Date) => {
-    const day = base.getDay();
+    const day = base.getDay(); // 일:0 ~ 토:6
     return addDays(base, -day);
   };
 
@@ -37,7 +42,7 @@ const WeeklyCalendar = () => {
       <div className='flex items-center justify-between'>
         <div>
           <p className='text-base font-bold'>{getWeekLabel(weekStart)}</p>
-          <p className='text-xs text-gray-400'>부제목</p>
+          <p className='text-xs text-gray-400'>이번 주 출석 현황</p>
         </div>
         <div className='flex items-center gap-2 text-gray-500'>
           <button onClick={() => handleWeekChange('prev')}>{'<'}</button>
@@ -63,17 +68,17 @@ const WeeklyCalendar = () => {
             className='absolute top-0 left-0 w-full grid grid-cols-7 text-center text-sm'
           >
             {weekDates.map((day) => {
-              const isSelected = isSameDay(day, selectedDate);
+              const isCompleted = completedDates.some((d) => isSameDay(d, day));
+
               return (
-                <button
+                <div
                   key={day.toISOString()}
-                  onClick={() => setSelectedDate(day)}
                   className={`w-9 h-9 rounded-full flex items-center justify-center mx-auto transition
-                    ${isSelected ? 'bg-primary text-white font-bold' : 'text-gray-800'}
+                    ${isCompleted ? 'bg-primary text-white font-bold' : 'text-gray-800'}
                   `}
                 >
                   {format(day, 'd')}
-                </button>
+                </div>
               );
             })}
           </motion.div>
@@ -81,6 +86,4 @@ const WeeklyCalendar = () => {
       </div>
     </div>
   );
-};
-
-export default WeeklyCalendar;
+}
