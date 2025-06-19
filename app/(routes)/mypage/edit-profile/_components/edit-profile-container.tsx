@@ -13,7 +13,7 @@ export const EditProfileContainer = () => {
   }, []);
 
   const router = useRouter();
-  const gun = [
+  const targetList = [
     { target: '이름', path: 'name' },
     { target: '전화번호', path: 'phone' },
     { target: '자택 정보', path: 'home' },
@@ -27,7 +27,7 @@ export const EditProfileContainer = () => {
         내 정보 수정
       </h1>
       <div className='flex flex-col gap-6'>
-        {gun.map((item, idx) => (
+        {targetList.map((item, idx) => (
           <div
             key={idx}
             className='flex justify-between cursor-pointer'

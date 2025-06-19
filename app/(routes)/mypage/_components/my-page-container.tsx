@@ -9,7 +9,7 @@ import ArrowIcon from '@/public/images/arrow-icon';
 import HanaIcon from '@/public/images/bank-icons/hana-icon';
 import StarBoyGirl from '@/public/images/my-page/star-boy-girl.svg';
 import StarBoy from '@/public/images/star-boy';
-import { ChartData } from '@/types/my-page';
+import { ChartData, type Account } from '@/types/my-page';
 import Button from '@/components/button';
 import ProgressBar from '@/components/progress-bar';
 import Tab from '@/components/tab';
@@ -28,11 +28,6 @@ export const MyPageContainer = ({ session }: Props) => {
   const router = useRouter();
   const [selectedTab, setSelectedTab] = useState<number>(0);
   const [connected, setConnected] = useState(false);
-  const [bankType, setBankType] = useState<string>('하나');
-  const [accountName, setAccountName] = useState<string>('하나은행 ISA 계좌');
-  const [accountNumber, setAccountNumber] =
-    useState<string>('592-910508-29670');
-  const [accountBalance, setAccountBalance] = useState<number | undefined>();
   const [selectedItem, setSelectedItem] = useState<string>('');
   const [selectedEtf, setSelectedEtf] = useState<EtfInfo>({
     name: '',
@@ -41,6 +36,15 @@ export const MyPageContainer = ({ session }: Props) => {
     returnRate: 0,
     quantity: 0,
     portionOfTotal: 0,
+  });
+  const [account, setAccount] = useState<Account>({
+    id: '',
+    userId: '',
+    bankCode: '',
+    accountNum: '',
+    connectedAt: '',
+    currentBalance: 0,
+    accountType: '',
   });
 
   const chartData: ChartData[] = Object.entries(etfDetailMap).map(
@@ -67,13 +71,15 @@ export const MyPageContainer = ({ session }: Props) => {
       } else {
         setConnected(true);
         console.log('res : ', res);
-        setAccountNumber(formatHanaAccountNumber(res.accountNum));
-        setAccountBalance(res.currentBalance);
+        setAccount(res);
       }
     };
-
     fetchISA();
   }, []);
+
+  useEffect(() => {
+    console.log('account : ', account);
+  }, [account]);
 
   useEffect(() => {
     setSelectedEtf(etfDetailMap[selectedItem]);
@@ -146,13 +152,8 @@ export const MyPageContainer = ({ session }: Props) => {
       {selectedTab === 1 && (
         <IsaAccountSection
           connected={connected}
-          accountName={accountName}
-          accountNumber={accountNumber}
-          bankType={bankType}
           userName={String(session.user.name)}
-          accountBalance={
-            accountBalance !== undefined ? formatComma(accountBalance) : '-'
-          }
+          account={account}
         />
       )}
     </div>

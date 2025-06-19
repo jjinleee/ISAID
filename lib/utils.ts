@@ -251,3 +251,9 @@ export const formatHanaAccountNumber = (raw: string) => {
     [a, b, c].filter(Boolean).join('-')
   );
 };
+
+export const addYears = (isoDateStr: string, years: number): string => {
+  const date = new Date(isoDateStr);
+  date.setFullYear(date.getFullYear() + years);
+  return date.toISOString(); // 필요 시 다른 포맷으로 변환 가능
+};
