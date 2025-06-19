@@ -1,7 +1,6 @@
 interface ProgressBarProps {
   current: number;
   total: number;
-  hideStatus?: boolean;
   className?: string;
   hideStatus?: boolean;
 }
@@ -10,7 +9,7 @@ export default function ProgressBar({
   current,
   total,
   hideStatus,
-                                      className
+  className,
 }: ProgressBarProps) {
   const percentage = (current / total) * 100;
 
