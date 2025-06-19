@@ -12,7 +12,7 @@ export type InputProps = {
   thin: boolean;
   type: string;
   placeholder: string;
-  name: string;
+  name?: string;
   field?: keyof FormData;
   value?: string;
   displayValue?: string;
