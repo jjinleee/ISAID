@@ -2,7 +2,6 @@
 
 import { toast } from 'react-hot-toast';
 import HanaIcon from '@/public/images/bank-icons/hana-icon';
-import { Copy } from 'lucide-react'; // 복사 아이콘
 
 export default function AccountSummaryCard() {
   const accountNumber = '592-910508-29670';
@@ -42,7 +41,7 @@ export default function AccountSummaryCard() {
         </div>
       </div>
       {/* 절세 효과 카드 */}
-      <div className='mt-4 bg-emerald-50 rounded-xl px-4 py-5 flex justify-between items-center'>
+      <div className='mt-4 bg-primary-2 rounded-xl px-4 py-5 flex justify-between items-center'>
         <div className='text-sm'>
           <p className='text-hana-green font-semibold pb-0.5'>
             이번 달 절세 효과

@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { isSameDay } from 'date-fns';
 import AccountSummaryCard from './account-summary-card';
+import BeginnerGuideCard from './beginner-guide-card';
+import ChallengeCard from './challenge-card';
 import QuizBanner from './quiz-banner';
 import WeeklyCalendar from './weekly-calendar';
 
@@ -66,7 +68,8 @@ const MainPageContainer = () => {
   );
 
   return (
-    <div className='px-4 py-10 space-y-6'>
+    <div className='px-4 py-5 space-y-6'>
+      <ChallengeCard />
       <QuizBanner
         onComplete={handleQuizComplete}
         streakLabel={streakLabel}
@@ -74,6 +77,7 @@ const MainPageContainer = () => {
       />
       <WeeklyCalendar completedDates={completedDates} />
       <AccountSummaryCard />
+      <BeginnerGuideCard />
     </div>
   );
 };

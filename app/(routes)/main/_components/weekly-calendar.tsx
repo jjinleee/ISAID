@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { CalendarIcon } from '@/public/images/isa/calendar-icon';
 import { addDays, format, isSameDay, subDays } from 'date-fns';
 import { AnimatePresence, motion } from 'framer-motion';
 
@@ -37,12 +38,15 @@ export default function WeeklyCalendar({
   };
 
   return (
-    <div className='bg-white px-4 py-5 space-y-3 overflow-hidden'>
+    <div className='bg-white px-4 space-y-3 overflow-hidden'>
       {/* 상단 헤더 */}
       <div className='flex items-center justify-between'>
         <div>
-          <p className='text-base font-bold'>{getWeekLabel(weekStart)}</p>
-          <p className='text-xs text-gray-400'>이번 주 출석 현황</p>
+          <div className='flex gap-1'>
+            <CalendarIcon />
+            <p className='text-base font-bold'>{getWeekLabel(weekStart)}</p>
+          </div>
+          <p className='text-xs text-gray-400 pl-7'>이번 주 퀴즈 출석 현황</p>
         </div>
         <div className='flex items-center gap-2 text-gray-500'>
           <button onClick={() => handleWeekChange('prev')}>{'<'}</button>
