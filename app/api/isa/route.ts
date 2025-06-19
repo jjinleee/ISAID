@@ -78,7 +78,13 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ message: 'ISA 계좌 없음' }, { status: 404 });
     }
 
-    return NextResponse.json(isa);
+    return NextResponse.json({
+      ...isa,
+      id: isa.id.toString(),
+      userId: isa.userId.toString(),
+      currentBalance: isa.currentBalance.toString(),
+      paymentAmount: isa.paymentAmount.toString(),
+    });
   } catch (error) {
     console.error('ISA 조회 오류:', error);
     return NextResponse.json({ message: '서버 오류' }, { status: 500 });
