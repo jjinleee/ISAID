@@ -153,10 +153,6 @@ export function fillGapsBetweenSingleMonthData(data: ChartRow[]): ChartRow[] {
   return merged.sort((a, b) => a.date.localeCompare(b.date));
 }
 
-export const formatProfileRRN = (rrn: string) => {
-  return rrn.slice(0, 8).concat('*'.repeat(6));
-};
-
 export const formatProfilePHN = (raw: string): string => {
   const digits = raw.replace(/\D/g, '');
 
@@ -165,7 +161,15 @@ export const formatProfilePHN = (raw: string): string => {
   }
 
   if (digits.length === 10) {
-    return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-****`;
+    return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-****`;
+  }
+
+  if (digits.length === 9 && digits.startsWith('02')) {
+    return `${digits.slice(0, 2)}-${digits.slice(2, 5)}-****`;
+  }
+
+  if (digits.length === 10 && !digits.startsWith('01')) {
+    return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-****`;
   }
 
   return raw;
