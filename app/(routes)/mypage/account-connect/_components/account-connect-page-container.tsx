@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useHeader } from '@/context/header-context';
 import {
+  CircleAlert,
   MessageSquareWarning,
   ShieldCheck,
   SquareCheckBig,
@@ -37,7 +38,6 @@ const AccountConnectPageContainer = () => {
   });
 
   const handleConnectAccount = async () => {
-    setConnecting(true);
     const newErrors = {
       bank: bank ? '' : '은행/증권사를 선택해 주세요.',
       accountType: accountType ? '' : '계좌 유형을 선택해 주세요.',
@@ -49,6 +49,7 @@ const AccountConnectPageContainer = () => {
 
     // 하나라도 에러 있으면 중단
     if (Object.values(newErrors).some((msg) => msg !== '')) return;
+    setConnecting(true);
 
     try {
       const res = await fetch('/api/isa', {
@@ -81,6 +82,16 @@ const AccountConnectPageContainer = () => {
       }, 2000);
     } catch (err) {
       console.error('계좌 연결 오류', err);
+      toast.error('잠시 후 다시 시도해주세요.', {
+        duration: 2000,
+        icon: <CircleAlert className='w-5 h-5 text-hana-red' />,
+        style: {
+          borderRadius: '8px',
+          color: 'black',
+          fontWeight: '500',
+        },
+      });
+
       setConnecting(false);
     }
   };
