@@ -49,7 +49,7 @@ export const EditNameContainer = () => {
   const submitData = async () => {
     const data = {
       name: nameData.name,
-      eng_name: nameData.nameEng,
+      engName: nameData.nameEng,
     };
     setLoading(true);
     await submitUserUpdate({
