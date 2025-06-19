@@ -235,7 +235,7 @@ export default function RegisterForm() {
       >
         <ArrowLeft />
       </div>
-      <div className='flex pt-20 gap-2 px-4 mb-12'>
+      <div className='flex gap-2 px-4 mb-12'>
         {steps.map((_, index) => (
           <div
             key={index}

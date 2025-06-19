@@ -1,32 +1,29 @@
 import { useState } from 'react';
+import { toast } from 'react-hot-toast';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import DeleteSheet from '@/app/(routes)/mypage/_components/delete-sheet';
 import ArrowIcon from '@/public/images/arrow-icon';
-import HanaIcon from '@/public/images/bank-icons/hana-icon';
 import StarBoyGirl from '@/public/images/my-page/star-boy-girl.svg';
+import { Account } from '@/types/my-page';
+import { SquareCheckBig } from 'lucide-react';
 import Button from '@/components/button';
+import { deleteISA } from '@/lib/api/my-page';
+import { addYears, formatDate, formatHanaAccountNumber } from '@/lib/utils';
 
 interface Props {
   connected: boolean;
-  accountName: string;
-  accountNumber: string;
-  bankType: string;
   userName: string;
+  account: Account;
 }
 
-export const IsaAccountSection = ({
-  connected,
-  accountName,
-  accountNumber,
-  bankType,
-  userName,
-}: Props) => {
+export const IsaAccountSection = ({ connected, userName, account }: Props) => {
   const router = useRouter();
   const [showFramer, setShowFramer] = useState(false);
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(
-      `${bankType} ${accountNumber.replace(/-/g, '')}`
+      `${account.bankCode} ${account.accountNum.replace(/-/g, '')}`
     );
   };
 
@@ -34,31 +31,68 @@ export const IsaAccountSection = ({
     setShowFramer(true);
   };
 
-  const deleteAccount = () => {
-    setShowFramer(false);
-    console.log('delete');
+  const deleteAccount = async () => {
+    const res = await deleteISA();
+    if ('error' in res) {
+      if (res.error === 'NOT_FOUND') {
+        console.log('ISA 계좌가 없습니다.');
+      } else {
+        console.log('삭제 실패:', res.status);
+      }
+    } else {
+      setShowFramer(false);
+      console.log('삭제 성공:', res);
+      toast.success('계좌 삭제가 완료되었습니다!', {
+        icon: <SquareCheckBig className='w-5 h-5 text-hana-green' />,
+        style: {
+          borderRadius: '8px',
+          color: 'black',
+          fontWeight: '500',
+        },
+      });
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    }
+  };
+  const companyMap = {
+    하나증권: 'hanaIcon.svg',
+    미래에셋증권: 'miraeIcon.png',
+    삼성증권: 'samsungIcon.png',
+    NH투자증권: 'nhIcon.png',
+    한국투자증권: 'koreaIcon.png',
+    키움증권: 'kiwoonIcon.png',
+    신한투자증권: 'sinhanIcon.png',
+    KB증권: 'kbIcon.jpeg',
   };
 
   return (
     <div className='w-full flex flex-col gap-5'>
       <h1 className='text-xl font-semibold'>ISA 계좌</h1>
-      {connected ? (
+      {connected && account ? (
         <div className='w-full flex flex-col gap-5'>
           <div className='border border-gray-2 rounded-2xl w-full flex flex-col gap-5 px-5 py-4'>
             <div className='flex flex-col gap-5'>
               <div className=' flex flex-col text-sm'>
                 <div className='flex gap-2 font-semibold items-center'>
-                  <HanaIcon width={24} height={24} />
-                  <span>{accountName}</span>
+                  <Image
+                    src={`/images/securities-icons/${companyMap[account.bankCode]}.png`}
+                    alt={account.bankCode}
+                    width={24}
+                    height={24}
+                  />
+                  <span>{`${account.bankCode} ${account.accountType} 계좌`}</span>
                 </div>
                 <div className='flex gap-2 text-gray items-center pl-8'>
-                  <span>{accountNumber}</span>
+                  <span>{formatHanaAccountNumber(account.accountNum)}</span>
                   <u className='cursor-pointer' onClick={() => handleCopy()}>
                     복사
                   </u>
                 </div>
               </div>
-              <h1 className='text-xl font-semibold'>5,230,100 원</h1>
+              <h1 className='text-xl font-semibold'>
+                {account.currentBalance}원
+              </h1>
             </div>
             <div className='flex flex-col gap-1.5 w-full'>
               <div className='w-full flex justify-between items-center p-1'>
@@ -67,18 +101,20 @@ export const IsaAccountSection = ({
               </div>
               <div className='w-full flex justify-between items-center p-1'>
                 <span className='text-subtitle'>가입일</span>
-                <span>2024.11.20</span>
+                <span>{formatDate(account.connectedAt)}</span>
               </div>
               <div className='w-full flex justify-between items-center p-1'>
                 <span className='text-subtitle'>의무 가입 기간</span>
                 <div className='flex flex-col items-end gap-1'>
                   3년
-                  <span className='text-subtitle text-xs'>~2027.11.20</span>
+                  <span className='text-subtitle text-xs'>
+                    ~{formatDate(addYears(account.connectedAt, 3))}
+                  </span>
                 </div>
               </div>
               <div className='w-full flex justify-between items-center p-1'>
                 <span className='text-subtitle'>만기일</span>
-                <span>2030.11.20</span>
+                <span>{formatDate(addYears(account.connectedAt, 3))}</span>
               </div>
               <div className='w-full flex justify-between items-center p-1'>
                 <span className='text-subtitle'>비과세 한도</span>

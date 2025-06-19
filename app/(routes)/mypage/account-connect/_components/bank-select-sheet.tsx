@@ -1,30 +1,13 @@
-'use client';
-
-import { useState } from 'react';
 import Image from 'next/image';
-import { bankMeta, securitiesMeta } from '@/data/bank-data';
+import { securitiesMeta } from '@/data/bank-data';
 import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
-import Tab from '@/components/tab';
 
 interface BankSelectSheetProps {
   visible: boolean;
   onClose: () => void;
   onSelect: (bank: string) => void;
 }
-
-const banks = [
-  '하나',
-  '신한',
-  'KB국민',
-  '우리',
-  'SC제일',
-  '기업',
-  '농협',
-  '카카오뱅크',
-  '토스뱅크',
-  '케이뱅크',
-];
 
 const backdrop = {
   hidden: { opacity: 0 },
@@ -41,8 +24,6 @@ const BankSelectSheet = ({
   onClose,
   onSelect,
 }: BankSelectSheetProps) => {
-  const tabs = ['은행', '증권사'];
-  const [selectedTab, setSelectedTab] = useState(0);
   return (
     <AnimatePresence>
       {visible && (
@@ -76,42 +57,30 @@ const BankSelectSheet = ({
                 </button>
               </div>
 
-              <div className='inline-flex bg-gray-100 p-1 rounded-lg mb-6 cursor-pointer'>
-                {tabs.map((label, idx) => (
-                  <button
-                    key={label}
-                    onClick={() => setSelectedTab(idx)}
-                    className={`px-4 py-1.5 text-sm rounded-lg transition-all duration-200 cursor-pointer
-        ${selectedTab === idx ? 'bg-hana-green text-white font-semibold' : 'text-gray-500 font-semibold'}
-      `}
-                  >
-                    {label}
-                  </button>
-                ))}
+              <div className='w-full inline-flex p-2 mb-6 cursor-pointer text-xl font-semibold border-b border-b-gray-2'>
+                증권사
               </div>
 
-              <div className='grid grid-cols-3 gap-4'>
-                {(selectedTab === 0 ? bankMeta : securitiesMeta).map(
-                  ({ name, icon }) => (
-                    <button
-                      key={name}
-                      className='flex items-center cursor-pointer gap-2 p-3 shadow rounded-lg text-sm'
-                      onClick={() => {
-                        onSelect(name);
-                        onClose();
-                      }}
-                    >
-                      <Image
-                        src={icon}
-                        alt={`${name} 아이콘`}
-                        width={24}
-                        height={24}
-                        className='object-cover rounded-lg'
-                      />
-                      <span>{name}</span>
-                    </button>
-                  )
-                )}
+              <div className='grid gap-4 custom-grid'>
+                {securitiesMeta.map(({ name, icon }) => (
+                  <button
+                    key={name}
+                    className='flex items-center cursor-pointer gap-2 p-3 shadow rounded-lg text-sm'
+                    onClick={() => {
+                      onSelect(name);
+                      onClose();
+                    }}
+                  >
+                    <Image
+                      src={icon}
+                      alt={`${name} 아이콘`}
+                      width={24}
+                      height={24}
+                      className='object-cover rounded-lg'
+                    />
+                    <span>{name}</span>
+                  </button>
+                ))}
               </div>
             </motion.div>
           </div>
