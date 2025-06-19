@@ -31,11 +31,6 @@ export const ProfileContainer = () => {
       setEmail(maskProfileEmail(res.email));
       setAddress(res.address);
       setTelNo(formatProfilePHN(res.telno));
-      console.log(
-        'formatProfilePHN(res.telno) : ',
-        formatProfilePHN(res.telno)
-      );
-      console.log('(res.telno) : ', res.telno);
     };
     fetchMe();
     setHeader('내 정보 수정하기', '당신의 금융 발자취를 확인해보세요');
