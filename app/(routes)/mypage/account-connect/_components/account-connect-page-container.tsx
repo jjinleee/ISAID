@@ -57,7 +57,6 @@ const AccountConnectPageContainer = () => {
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({
-          id: 10008,
           bankCode: bank,
           accountType: accountType,
           accountKind: accountKind,
