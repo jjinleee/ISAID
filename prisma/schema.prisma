@@ -1,4 +1,4 @@
-generator client {
+ generator client {
   provider = "prisma-client-js"
 }
 
@@ -8,33 +8,67 @@ datasource db {
 }
 
 model User {
-  id           Int       @id @default(autoincrement())
-  name         String    @db.VarChar(20)
-  engName      String?   @map("eng_name") @db.VarChar(20)
-  email        String    @unique @db.VarChar(30)
-  password     String    @db.VarChar(100)
-  pinCode      String?   @db.VarChar(10) //간편비밀번호
-  rrn          String    @unique @db.VarChar(20)
-  phone        String    @db.VarChar(20)
-  address      String    @db.VarChar(100)
-  telno        String?   @db.VarChar(20)
-  level        Int       @default(1)
-  solvedCount  Int       @default(0) @map("solved_count")
-  createdAt    DateTime  @default(now()) @map("created_at")
-  updatedAt    DateTime? @updatedAt @map("updated_at")
-  rewardAgreed Boolean   @default(false) //퀴즈 리워드 동의 여부
+  id          BigInt    @id @default(autoincrement())
+  name        String    @db.VarChar(20)
+  engName     String?   @map("eng_name") @db.VarChar(20)
+  email       String    @unique @db.VarChar(30)
+  password    String    @db.VarChar(100)
+  pinCode     String?   @db.VarChar(10) @map("pin_code")//간편비밀번호
+  rrn         String    @unique @db.VarChar(20)
+  phone       String    @db.VarChar(20)
+  address     String    @db.VarChar(100)
+  telno       String?   @db.VarChar(20)
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime? @updatedAt @map("updated_at")
+	rewardAgreed  Boolean  @default(false) @map("reward_agreed")
 
   isaAccount        ISAAccount?
   investmentProfile InvestmentProfile?
   userEtfCategories UserEtfCategory[]
-  quizCalendar      QuizCalendar[]
+  quizCalendar      QuizCalendar?
+  userChallengeClaims     UserChallengeClaim[]
 
   @@map("user")
 }
-// 간편비빌번호, 퀴즈리워드동의 필드 추가해야함
+
+model Challenge {
+  id         BigInt   @id @default(autoincrement())
+  etfId      BigInt   @map("etf_id")
+  code       String   @unique @db.VarChar(20)
+  title      String   @db.VarChar(50)
+  challengeType  ChallengeType @map("challenge_type")
+  quantity   Decimal  @db.Decimal(20, 6)
+  targetval  Int?
+
+  userChallengeClaims     UserChallengeClaim[]
+
+  etf Etf @relation(fields: [etfId], references: [id], onDelete: Cascade)
+
+  @@map("challenge")
+}
+
+enum ChallengeType {
+  ONCE
+  DAILY
+  STREAK
+}
+
+model UserChallengeClaim {
+  id           BigInt   @id @default(autoincrement())
+  userId       BigInt   @map("user_id")
+  challengeId  BigInt   @map("challenge_id")
+  claimDate    DateTime @map("claim_date")
+  claimedAt    DateTime @default(now()) @map("claimed_at")
+
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  challenge    Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, challengeId, claimDate])
+  @@map("user_challenge_claim")
+}
 
 model EtfCategory {
-  id           Int     @id
+  id           BigInt     @id
   assetClass   String  @map("asset_class") @db.VarChar(50)
   assetType    String? @map("asset_type") @db.VarChar(50)
   assetSubtype String? @map("asset_subtype") @db.VarChar(50)
@@ -47,8 +81,8 @@ model EtfCategory {
 }
 
 model Etf {
-  id                   Int       @id
-  etfCategoryId        Int       @map("etf_category_id")
+  id                   BigInt    @id
+  etfCategoryId        BigInt    @map("etf_category_id")
   issueStdCode         String?   @map("issue_std_code")
   issueCode            String?   @map("issue_code") // 종목코드
   issueName            String?   @map("issue_name") // 종목명
@@ -74,19 +108,20 @@ model Etf {
   volatility           String? // 변동성
   riskGrade            Int?      @map("risk_grade") // 위험등급
 
-  category           EtfCategory          @relation(fields: [etfCategoryId], references: [id])
-  pdfs               EtfPdf[]
-  tradings           EtfDailyTrading[]
-  transactions       ETFTransaction[]
-  ETFHoldingSnapshot ETFHoldingSnapshot[]
-  ETFHolding         ETFHolding[]
+  category     EtfCategory       @relation(fields: [etfCategoryId], references: [id], onDelete: Cascade)
+  pdfs         EtfPdf[]
+  tradings     EtfDailyTrading[]
+  etfTransactions ETFTransaction[]
+  etfHoldings    ETFHolding[]
+  etfHoldingSnapshots ETFHoldingSnapshot[]
+  challenges     Challenge[]
 
   @@map("etf")
 }
 
 model EtfPdf {
-  id                   Int      @id @default(autoincrement())
-  etfId                Int      @map("etf_id")
+  id                   BigInt   @id @default(autoincrement())
+  etfId                BigInt   @map("etf_id")
   compstIssueCode      String?  @map("compst_issue_code") // 구성종목코드
   compstIssueName      String?  @map("compst_issue_name") // 구성종목명
   compstIssueCu1Shares Decimal? @map("compst_issue_cu1_shares") @db.Decimal(15, 2) // 주식수(계약수)
@@ -100,8 +135,8 @@ model EtfPdf {
 }
 
 model EtfDailyTrading {
-  id                  Int      @id @default(autoincrement())
-  etfId               Int      @map("etf_id")
+  id                  BigInt   @id @default(autoincrement())
+  etfId               BigInt   @map("etf_id")
   baseDate            DateTime @map("base_date") // 기준일자
   issueCode           String   @map("issue_code") // 종목코드
   issueName           String?  @map("issue_name") // 종목명
@@ -137,9 +172,9 @@ enum InvestType {
 }
 
 model InvestmentProfile {
-  id         Int        @id @default(autoincrement())
-  userId     Int        @unique @map("user_id")
-  investType InvestType @map("invest_type")
+  id         BigInt        @id @default(autoincrement())
+  userId     BigInt        @unique @map("user_id")
+  investType InvestType    @map("invest_type")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -147,9 +182,9 @@ model InvestmentProfile {
 }
 
 model UserEtfCategory {
-  id            Int @id @default(autoincrement())
-  userId        Int @map("user_id")
-  etfCategoryId Int @map("etf_category_id")
+  id            BigInt @id @default(autoincrement())
+  userId        BigInt @map("user_id")
+  etfCategoryId BigInt @map("etf_category_id")
 
   user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   etfCategory EtfCategory @relation(fields: [etfCategoryId], references: [id], onDelete: Cascade)
@@ -159,9 +194,9 @@ model UserEtfCategory {
 }
 
 model QuizCalendar {
-  id         Int      @id @default(autoincrement())
-  userId     Int      @map("user_id")
-  solvedDate DateTime @map("solved_date")
+  id         BigInt      @id @default(autoincrement())
+  userId     BigInt      @unique @map("user_id")
+  solvedDate DateTime    @map("solved_date")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -170,8 +205,9 @@ model QuizCalendar {
 }
 
 model Question {
-  id      Int    @id @default(autoincrement())
-  content String @db.VarChar(100)
+  id      BigInt    @id @default(autoincrement())
+  content String    @db.VarChar(100)
+	description String? @db.Text
 
   selections Selection[]
 
@@ -179,11 +215,10 @@ model Question {
 }
 
 model Selection {
-  id          Int     @id @default(autoincrement())
-  questionId  Int     @map("question_id")
-  content     String  @db.VarChar(100)
-  answerFlag  Boolean @map("answer_flag")
-  description String? @db.Text
+  id          BigInt     @id @default(autoincrement())
+  questionId  BigInt     @map("question_id")
+  content     String     @db.VarChar(100)
+  answerFlag  Boolean    @map("answer_flag")
 
   question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
 
@@ -192,37 +227,36 @@ model Selection {
 }
 
 model ISAAccount {
-  id             Int      @id @default(autoincrement())
-  userId         Int      @unique
-  bankCode       String   @db.VarChar(30)
-  accountNum     String   @unique
-  connectedAt    DateTime
-  currentBalance Int
-  accountType    String
+  id             BigInt                @id @default(autoincrement())
+  userId         BigInt                @unique @map("user_id")
+  bankCode       String                @db.VarChar(30) @map("bank_code")
+  accountNum     String                @unique @map("account_num")
+  connectedAt    DateTime              @map("connected_at")
+  currentBalance Decimal               @db.Decimal(20, 6) @map("current_balance")
+  accountType    String                @map("account_type")
+	paymentAmount BigInt                 @map("payment_amount")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  etfHolding             ETFHolding[]
-  generalHolding         GeneralHolding[]
-  etfTransaction         ETFTransaction[]
-  generalTransaction     GeneralTransaction[]
-  GeneralHoldingSnapshot GeneralHoldingSnapshot[]
-  ETFHoldingSnapshot     ETFHoldingSnapshot[]
-  MonthlyReturn          MonthlyReturn[]
+  etfHoldings         ETFHolding[]
+  generalHoldings     GeneralHolding[]
+  etfTransactions      ETFTransaction[]
+  generalTransactions  GeneralTransaction[]
+  generalHoldingSnapshots   GeneralHoldingSnapshot[]
+  etfHoldingSnapshots   ETFHoldingSnapshot[]
+  monthlyReturns       MonthlyReturn[]
 
   @@map("isa_account")
 }
 
 // 상품 테이블 (FUND, ELS, BOND)
 model FinancialProduct {
-  id          Int            @id @default(autoincrement())
-  type        InstrumentType
-  productName String
+  id   BigInt    @id @default(autoincrement())
+  instrumentType InstrumentType @map("instrument_type")
+  productName String @map("product_name")
 
   generalHoldings     GeneralHolding[]
   generalTransactions GeneralTransaction[]
-  monthlyReturns      MonthlyReturn[]
-  snapshots           GeneralHoldingSnapshot[]
 
   @@map("financial_product")
 }
@@ -235,87 +269,87 @@ enum InstrumentType {
 
 // 월초,월말 평가금
 model GeneralHoldingSnapshot {
-  id              Int            @id @default(autoincrement())
-  isaAccountId    Int
-  productId       Int
-  productType     InstrumentType
-  snapshotDate    DateTime
-  evaluatedAmount Decimal        @db.Decimal(20, 2)
+  id              BigInt      @id @default(autoincrement())
+  isaAccountId    BigInt     @map("isa_account_id")
+  instrumentType  InstrumentType  @map("instrument_type")
+  snapshotDate    DateTime        @map("snapshot_date")
+  evaluatedAmount Decimal  @db.Decimal(20, 2)  @map("evaluated_amount")
 
-  isaAccount ISAAccount       @relation(fields: [isaAccountId], references: [id], onDelete: Cascade)
-  product    FinancialProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+  isaAccount ISAAccount @relation(fields: [isaAccountId], references: [id], onDelete: Cascade)
 
-  @@unique([isaAccountId, productId, snapshotDate])
+  @@unique([isaAccountId, snapshotDate])
   @@map("general_holding_snapshot")
 }
 
 // 월초, 월말 평가금
 model ETFHoldingSnapshot {
-  id              Int      @id @default(autoincrement())
-  isaAccountId    Int
-  etfId           Int
-  snapshotDate    DateTime
-  evaluatedAmount Decimal  @db.Decimal(20, 2)
+  id              BigInt      @id @default(autoincrement())
+  isaAccountId    BigInt      @map("isa_account_id")
+	etfId           BigInt      @map("etf_id")
+  snapshotDate    DateTime  @map("snapshot_date")
+  evaluatedAmount Decimal  @db.Decimal(20, 2)  @map("evaluated_amount")
 
   isaAccount ISAAccount @relation(fields: [isaAccountId], references: [id], onDelete: Cascade)
-  etf        Etf        @relation(fields: [etfId], references: [id], onDelete: Cascade)
+  etf             Etf        @relation(fields: [etfId], references: [id], onDelete: Cascade)
 
   @@unique([isaAccountId, etfId, snapshotDate])
   @@map("etf_holding_snapshot")
 }
 
 model ETFHolding {
-  id           Int      @id @default(autoincrement())
-  etfId        Int
-  isaAccountId Int
-  quantity     Decimal  @db.Decimal(20, 6)
-  avgCost      Decimal? @db.Decimal(20, 2)
-  acquiredAt   DateTime
-  updatedAt    DateTime
+  id              BigInt      @id @default(autoincrement())
+  etfId           BigInt      @map("etf_id")
+  isaAccountId    BigInt      @map("isa_account_id")
+  quantity        Decimal  @db.Decimal(20, 6)
+  avgCost         Decimal  @db.Decimal(20, 2) @map("avg_cost")
+  acquiredAt      DateTime   @map("acquired_at")
+  updatedAt       DateTime   @map("updated_at")
 
-  etf        Etf        @relation(fields: [etfId], references: [id], onDelete: Cascade)
-  isaAccount ISAAccount @relation(fields: [isaAccountId], references: [id], onDelete: Cascade)
+  etf        Etf         @relation(fields: [etfId], references: [id], onDelete: Cascade)
+  isaAccount ISAAccount  @relation(fields: [isaAccountId], references: [id], onDelete: Cascade)
 
+  @@unique([isaAccountId, etfId])
   @@map("etf_holding")
 }
 
 // 채권, 펀드, ELS -> 현금투자
 model GeneralHolding {
-  id           Int      @id @default(autoincrement())
-  productId    Int
-  isaAccountId Int
-  totalCost    Decimal? @db.Decimal(20, 2)
-  acquiredAt   DateTime
-  updatedAt    DateTime
+  id              BigInt      @id @default(autoincrement())
+  productId       BigInt      @map("product_id")
+  isaAccountId    BigInt      @map("isa_account_id")
+  totalCost       Decimal? @db.Decimal(20, 2) @map("total_cost")
+  acquiredAt      DateTime   @map("acquired_at")
+  updatedAt       DateTime   @map("updated_at")
 
   product    FinancialProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
   isaAccount ISAAccount       @relation(fields: [isaAccountId], references: [id], onDelete: Cascade)
 
+  @@unique([isaAccountId, productId])
   @@map("general_holding")
 }
 
 model ETFTransaction {
-  id            Int             @id @default(autoincrement())
-  etfId         Int
-  isaAccountId  Int
-  type          TransactionType
-  quantity      Decimal         @db.Decimal(20, 6)
-  price         Decimal         @db.Decimal(20, 6)
-  transactionAt DateTime
+  id                 BigInt      @id @default(autoincrement())
+  etfId              BigInt      @map("etf_id")
+  isaAccountId       BigInt      @map("isa_account_id")
+  transactionType    TransactionType @map("transaction_type")
+  quantity           Decimal     @db.Decimal(20, 6)
+  price              Decimal     @db.Decimal(20, 6)
+  transactionAt      DateTime    @map("transaction_at")
 
-  etf        Etf        @relation(fields: [etfId], references: [id], onDelete: Cascade)
-  isaAccount ISAAccount @relation(fields: [isaAccountId], references: [id], onDelete: Cascade)
+  etf        Etf         @relation(fields: [etfId], references: [id], onDelete: Cascade)
+  isaAccount ISAAccount  @relation(fields: [isaAccountId], references: [id], onDelete: Cascade)
 
   @@map("etf_transaction")
 }
 
 model GeneralTransaction {
-  id            Int             @id @default(autoincrement())
-  productId     Int
-  isaAccountId  Int
-  type          TransactionType
-  price         Decimal?        @db.Decimal(20, 6)
-  transactionAt DateTime
+  id                 BigInt      @id @default(autoincrement())
+  productId          BigInt      @map("product_id")
+  isaAccountId       BigInt      @map("isa_account_id")
+  transactionType    TransactionType  @map("transaction_type")
+  price              Decimal? @db.Decimal(20, 6)
+  transactionAt      DateTime    @map("transaction_at")
 
   product    FinancialProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
   isaAccount ISAAccount       @relation(fields: [isaAccountId], references: [id], onDelete: Cascade)
@@ -326,20 +360,18 @@ model GeneralTransaction {
 enum TransactionType {
   BUY
   SELL
-  DIVIDEND //배당금
-  INTEREST //이자
+  DIVIDEND // 배당금
+  INTEREST // 이자
 }
 
 // 계좌별 월별 수익률
 model MonthlyReturn {
-  id           Int      @id @default(autoincrement())
-  isaAccountId Int
-  baseDate     DateTime
-  entireProfit Decimal  @db.Decimal(20, 6) // General, eft 상품에 대한 전체 수익률 +배당금,이자
+  id               BigInt    @id @default(autoincrement())
+  isaAccountId     BigInt    @map("isa_account_id")
+  baseDate         DateTime  @map("base_date")
+  entireProfit     Decimal   @db.Decimal(20, 6) @map("entire_profit")// General, etf 상품에 대한 전체 수익률 +배당금,이자
 
-  isaAccount         ISAAccount        @relation(fields: [isaAccountId], references: [id], onDelete: Cascade)
-  FinancialProduct   FinancialProduct? @relation(fields: [financialProductId], references: [id])
-  financialProductId Int?
+  isaAccount ISAAccount       @relation(fields: [isaAccountId], references: [id], onDelete: Cascade)
 
   @@unique([isaAccountId, baseDate])
   @@map("monthly_return")
