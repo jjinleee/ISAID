@@ -15,6 +15,7 @@ interface Props {
   accountNumber: string;
   bankType: string;
   userName: string;
+  accountBalance: string;
 }
 
 export const IsaAccountSection = ({
@@ -23,6 +24,7 @@ export const IsaAccountSection = ({
   accountNumber,
   bankType,
   userName,
+  accountBalance,
 }: Props) => {
   const router = useRouter();
   const [showFramer, setShowFramer] = useState(false);
@@ -81,7 +83,7 @@ export const IsaAccountSection = ({
                   </u>
                 </div>
               </div>
-              <h1 className='text-xl font-semibold'>5,230,100 원</h1>
+              <h1 className='text-xl font-semibold'>{accountBalance}원</h1>
             </div>
             <div className='flex flex-col gap-1.5 w-full'>
               <div className='w-full flex justify-between items-center p-1'>

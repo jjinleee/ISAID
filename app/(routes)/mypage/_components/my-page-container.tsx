@@ -14,6 +14,7 @@ import Button from '@/components/button';
 import ProgressBar from '@/components/progress-bar';
 import Tab from '@/components/tab';
 import { fetchISAInfo } from '@/lib/api/my-page';
+import { formatComma, formatHanaAccountNumber } from '@/lib/utils';
 import EtfDetailRatioChart from '../_components/ratio-chart';
 import { etfDetailMap } from '../data/ratio-data';
 import type { EtfInfo } from '../data/ratio-data';
@@ -31,6 +32,7 @@ export const MyPageContainer = ({ session }: Props) => {
   const [accountName, setAccountName] = useState<string>('하나은행 ISA 계좌');
   const [accountNumber, setAccountNumber] =
     useState<string>('592-910508-29670');
+  const [accountBalance, setAccountBalance] = useState<number | undefined>();
   const [selectedItem, setSelectedItem] = useState<string>('');
   const [selectedEtf, setSelectedEtf] = useState<EtfInfo>({
     name: '',
@@ -65,6 +67,8 @@ export const MyPageContainer = ({ session }: Props) => {
       } else {
         setConnected(true);
         console.log('res : ', res);
+        setAccountNumber(formatHanaAccountNumber(res.accountNum));
+        setAccountBalance(res.currentBalance);
       }
     };
 
@@ -146,6 +150,9 @@ export const MyPageContainer = ({ session }: Props) => {
           accountNumber={accountNumber}
           bankType={bankType}
           userName={String(session.user.name)}
+          accountBalance={
+            accountBalance !== undefined ? formatComma(accountBalance) : '-'
+          }
         />
       )}
     </div>
