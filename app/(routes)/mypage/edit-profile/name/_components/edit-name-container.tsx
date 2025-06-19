@@ -2,39 +2,46 @@
 
 import { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
-import { Session } from 'next-auth';
-import { router } from 'next/client';
+import { useRouter } from 'next/navigation';
 import { FormData } from '@/app/(routes)/(auth)/register/_components/register-form';
 import { useHeader } from '@/context/header-context';
 import { CircleAlert, SquareCheckBig } from 'lucide-react';
 import Button from '@/components/button';
 import CustomInput from '@/components/input';
-import { updateUser } from '@/lib/api/my-page';
+import { fetchMyInfo, updateUser } from '@/lib/api/my-page';
 import { validateField } from '@/lib/utils';
+import { submitUserUpdate } from '../../utils';
 
 interface NameData {
   name: string;
-  nameEng: string;
+  nameEng?: string;
 }
 
 interface ValidationErrors {
   name: boolean;
 }
 
-interface Props {
-  session: Session;
-}
-
-export const EditNameContainer = ({ session }: Props) => {
+export const EditNameContainer = () => {
   const { setHeader } = useHeader();
-  useEffect(() => {
-    setHeader('내 정보 수정하기', '이름 수정');
-  }, []);
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
   const [nameData, setNameData] = useState<NameData>({
-    name: '곽희건',
-    nameEng: 'Jin Lee',
+    name: '',
+    nameEng: '',
   });
+
+  useEffect(() => {
+    setHeader('내 정보 수정하기', '이름 수정');
+    const fetchMe = async () => {
+      const res = await fetchMyInfo();
+      setNameData({
+        name: res.name || '',
+        nameEng: res.eng_name || '',
+      });
+    };
+    fetchMe();
+  }, []);
 
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>({
     name: false,
@@ -44,31 +51,12 @@ export const EditNameContainer = ({ session }: Props) => {
       name: nameData.name,
       eng_name: nameData.nameEng,
     };
-    const res = await updateUser(data);
-    if (res.success) {
-      console.log('성공');
-      toast.success('정보 수정이 완료되었습니다!', {
-        icon: <SquareCheckBig className='w-5 h-5 text-hana-green' />,
-        style: {
-          borderRadius: '8px',
-          color: 'black',
-          fontWeight: '500',
-        },
-      });
-      setTimeout(() => {
-        router.back();
-      }, 1000);
-    } else {
-      toast.error('잠시 후 다시 시도해주세요.', {
-        duration: 2000,
-        icon: <CircleAlert className='w-5 h-5 text-hana-red' />,
-        style: {
-          borderRadius: '8px',
-          color: 'black',
-          fontWeight: '500',
-        },
-      });
-    }
+    setLoading(true);
+    await submitUserUpdate({
+      data: data,
+      onSuccess: () => router.back(),
+      onFinally: () => setLoading(false),
+    });
   };
 
   const handleInputChange = (field: keyof FormData, value: string) => {
@@ -114,6 +102,7 @@ export const EditNameContainer = ({ session }: Props) => {
         thin={false}
         active={!validationErrors.name}
         onClick={submitData}
+        disabled={loading}
       />
     </div>
   );

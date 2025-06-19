@@ -71,3 +71,14 @@ export const updateUser = async (payload: UserUpdatePayload) => {
   const data = await res.json();
   return { success: true, data };
 };
+
+export const fetchMyInfo = async () => {
+  const res = await fetch('/api/user/me');
+  if (res.status === 404) {
+    return { error: 'NOT_FOUND' };
+  }
+  if (!res.ok) {
+    return { error: 'UNKNOWN_ERROR' };
+  }
+  return res.json();
+};

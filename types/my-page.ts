@@ -21,3 +21,14 @@ export type Account = {
   currentBalance: number;
   accountType: string;
 };
+
+export type UserInfo = {
+  id: string;
+  name: string;
+  engName?: string;
+  email: string;
+  phone: string;
+  address: string;
+  telno?: string;
+  rewardAgreed?: boolean;
+};

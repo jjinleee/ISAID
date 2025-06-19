@@ -1,4 +1,3 @@
-import { FormData } from '@/app/(routes)/(auth)/register/_components/register-form';
 import { EtfApiItem } from '@/types/etf';
 import { clsx, type ClassValue } from 'clsx';
 import { addDays, formatISO, parseISO } from 'date-fns';

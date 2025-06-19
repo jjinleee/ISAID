@@ -1,7 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { FormData } from '@/app/(routes)/(auth)/register/_components/register-form';
+import { submitUserUpdate } from '@/app/(routes)/mypage/edit-profile/utils';
 import { useHeader } from '@/context/header-context';
 import Button from '@/components/button';
 import CustomInput from '@/components/input';
@@ -11,16 +13,15 @@ import { validateField } from '@/lib/utils';
 interface PasswordData {
   password: string;
   passwordConfirm: string;
-  oldPassword: string;
 }
 
 interface ValidationErrors {
   password: boolean;
   passwordConfirm: boolean;
-  oldPassword: boolean;
 }
 
 export const EditPasswordContainer = () => {
+  const router = useRouter();
   const { setHeader } = useHeader();
   useEffect(() => {
     setHeader('내 정보 수정하기', '비밀번호 수정');
@@ -29,15 +30,15 @@ export const EditPasswordContainer = () => {
   const [passwordData, setPasswordData] = useState<PasswordData>({
     password: '',
     passwordConfirm: '',
-    oldPassword: '',
   });
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>({
     password: true,
     passwordConfirm: true,
-    oldPassword: true,
   });
 
   const [showPasswordError, setShowPasswordError] = useState<boolean>(false);
+
+  const [loading, setLoading] = useState(false);
 
   const handleInputChange = (field: keyof FormData, value: string) => {
     if (field === 'password') {
@@ -45,11 +46,7 @@ export const EditPasswordContainer = () => {
       setShowPasswordError(!isValid && value.length > 0);
     }
 
-    if (
-      field === 'password' ||
-      field === 'passwordConfirm' ||
-      field === 'oldPassword'
-    ) {
+    if (field === 'password' || field === 'passwordConfirm') {
       setPasswordData((prev) => ({ ...prev, [field]: value }));
 
       setValidationErrors((prev) => ({
@@ -58,6 +55,19 @@ export const EditPasswordContainer = () => {
       }));
     }
   };
+
+  const submitData = async () => {
+    const data = {
+      password: passwordData.password,
+    };
+    setLoading(true);
+    await submitUserUpdate({
+      data: data,
+      onSuccess: () => router.back(),
+      onFinally: () => setLoading(false),
+    });
+  };
+
   return (
     <div className='w-full pt-8 pb-10 px-7 flex flex-col gap-5'>
       <h1 className='text-xl font-semibold'>비밀번호 변경</h1>
@@ -114,29 +124,13 @@ export const EditPasswordContainer = () => {
             비밀번호를 한번 더 입력해주세요.
           </p>
         </div>
-        <div className='flex flex-col gap-2'>
-          <Label htmlFor='password' className='text-gray-600'>
-            기존 비밀번호
-          </Label>
-          <CustomInput
-            type='password'
-            thin={true}
-            placeholder='비밀번호'
-            name='oldPassword'
-            field='oldPassword'
-            value={passwordData.oldPassword}
-            onChangeField={handleInputChange}
-          />
-        </div>
       </div>
       <Button
         text={'비밀번호 변경'}
         thin={false}
-        active={
-          !validationErrors.password &&
-          !validationErrors.passwordConfirm &&
-          !validationErrors.oldPassword
-        }
+        active={!validationErrors.password && !validationErrors.passwordConfirm}
+        onClick={submitData}
+        disabled={loading}
       />
     </div>
   );
