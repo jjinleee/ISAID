@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
         { status: 401 }
       );
     }
-    const userId = Number(session.user.id);
+    const userId = BigInt(session.user.id);
 
     const body = await req.json();
     const { bankCode, accountNum, currentBalance, accountType, accountKind } =
@@ -36,12 +36,13 @@ export async function POST(req: NextRequest) {
         connectedAt: new Date(),
         currentBalance,
         accountType,
+        paymentAmount: BigInt(17000000),
       },
     });
 
     return NextResponse.json({
       message: 'ISA 계좌 등록 성공',
-      isaAccountId: newAccount.id,
+      isaAccountId: newAccount.id.toString(),
     });
   } catch (error) {
     console.error('ISA 등록 오류:', error);
@@ -59,7 +60,7 @@ export async function GET(req: NextRequest) {
         { status: 401 }
       );
     }
-    const userId = Number(session.user.id);
+    const userId = BigInt(session.user.id);
 
     const isa = await prisma.iSAAccount.findUnique({ where: { userId } });
 
@@ -84,7 +85,7 @@ export async function DELETE(req: NextRequest) {
         { status: 401 }
       );
     }
-    const userId = Number(session.user.id);
+    const userId = BigInt(session.user.id);
 
     await prisma.iSAAccount.delete({ where: { userId } });
 

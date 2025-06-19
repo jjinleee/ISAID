@@ -45,7 +45,7 @@ export async function GET(req: NextRequest) {
       const rawName = isMixedAssets ? c.assetType : c.assetSubtype;
 
       return {
-        id: c.id,
+        id: c.id.toString(),
         name: rawName ?? 'etc',
         fullname: c.fullPath,
       };

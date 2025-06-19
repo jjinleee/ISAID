@@ -18,7 +18,7 @@ export async function PATCH(req: Request) {
       { status: 400 }
     );
   }
-  const userId = parseInt(userIdStr);
+  const userId = BigInt(userIdStr);
 
   const existingUser = await prisma.user.findUnique({
     where: { id: userId },
@@ -61,7 +61,7 @@ export async function PATCH(req: Request) {
       data,
     });
 
-    return NextResponse.json({ message: '정보 수정 완료', user: updatedUser });
+    return NextResponse.json({ message: '정보 수정 완료' });
   } catch (error: any) {
     return NextResponse.json(
       { error: '수정 실패: ' + error.message },

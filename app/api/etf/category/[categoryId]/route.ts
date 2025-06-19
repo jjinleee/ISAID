@@ -91,7 +91,7 @@ export async function GET(req: NextRequest) {
 
     // 응답 구조 가공
     const data = etfs.map((etf) => ({
-      etfId: etf.id,
+      etfId: etf.id.toString(),
       issueCode: etf.issueCode,
       issueName: etf.issueName,
       accTradeVolume: etf.tradings[0]?.accTradeVolume

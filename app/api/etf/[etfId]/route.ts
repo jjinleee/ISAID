@@ -110,7 +110,9 @@ export async function GET(req: NextRequest) {
         ? Number(latestTrading.marketCap)
         : null,
       nav: latestTrading?.nav ?? null,
-      listShrs: latestTrading?.listShrs ? Number(latestTrading.listShrs) : null,
+      listShrs: latestTrading?.listShrs
+        ? latestTrading.listShrs.toString()
+        : null,
     };
 
     return NextResponse.json({
