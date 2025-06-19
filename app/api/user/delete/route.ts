@@ -18,7 +18,7 @@ export async function DELETE(req: Request) {
       { status: 400 }
     );
   }
-  const userId = parseInt(userIdStr);
+  const userId = BigInt(userIdStr);
 
   const body = await req.json();
   const { password } = body;

@@ -70,7 +70,8 @@ export const authOptions: AuthOptions = {
     async session({ session, token }) {
       session.user.id =
         typeof token.id === 'string' ? token.id : String(token.id ?? '');
-      session.user.name = token.name;
+      session.user.name =
+        typeof token.name === 'string' ? token.name : String(token.name ?? '');
       session.user.email = token.email ?? '';
       return session;
     },
