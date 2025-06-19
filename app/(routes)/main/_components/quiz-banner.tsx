@@ -12,7 +12,7 @@ interface Props {
   completedDates: Date[];
 }
 
-export default function MainPageToQuiz({
+export default function QuizBanner({
   onComplete,
   streakLabel,
   completedDates,

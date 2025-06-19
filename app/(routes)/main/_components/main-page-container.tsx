@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { isSameDay } from 'date-fns';
-import MainPageToQuiz from './main-page-to-quiz';
+import AccountSummaryCard from './account-summary-card';
+import QuizBanner from './quiz-banner';
 import WeeklyCalendar from './weekly-calendar';
 
 const MainPageContainer = () => {
@@ -66,12 +67,13 @@ const MainPageContainer = () => {
 
   return (
     <div className='px-4 py-10 space-y-6'>
-      <MainPageToQuiz
+      <QuizBanner
         onComplete={handleQuizComplete}
         streakLabel={streakLabel}
         completedDates={completedDates}
       />
       <WeeklyCalendar completedDates={completedDates} />
+      <AccountSummaryCard />
     </div>
   );
 };
