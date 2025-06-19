@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
+import { Session } from 'next-auth';
 import { router } from 'next/client';
 import { FormData } from '@/app/(routes)/(auth)/register/_components/register-form';
 import { useHeader } from '@/context/header-context';
@@ -20,7 +21,11 @@ interface ValidationErrors {
   name: boolean;
 }
 
-export const EditNameContainer = () => {
+interface Props {
+  session: Session;
+}
+
+export const EditNameContainer = ({ session }: Props) => {
   const { setHeader } = useHeader();
   useEffect(() => {
     setHeader('내 정보 수정하기', '이름 수정');
@@ -30,6 +35,7 @@ export const EditNameContainer = () => {
     name: '곽희건',
     nameEng: 'Jin Lee',
   });
+
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>({
     name: false,
   });

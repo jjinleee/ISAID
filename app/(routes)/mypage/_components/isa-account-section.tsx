@@ -9,7 +9,12 @@ import { Account } from '@/types/my-page';
 import { SquareCheckBig } from 'lucide-react';
 import Button from '@/components/button';
 import { deleteISA } from '@/lib/api/my-page';
-import { addYears, formatDate, formatHanaAccountNumber } from '@/lib/utils';
+import {
+  addYears,
+  formatComma,
+  formatDate,
+  formatHanaAccountNumber,
+} from '@/lib/utils';
 
 interface Props {
   connected: boolean;
@@ -61,7 +66,7 @@ export const IsaAccountSection = ({ connected, userName, account }: Props) => {
     삼성증권: 'samsungIcon.png',
     NH투자증권: 'nhIcon.png',
     한국투자증권: 'koreaIcon.png',
-    키움증권: 'kiwoonIcon.png',
+    키움증권: 'kiwoomIcon.png',
     신한투자증권: 'sinhanIcon.png',
     KB증권: 'kbIcon.jpeg',
   };
@@ -76,14 +81,15 @@ export const IsaAccountSection = ({ connected, userName, account }: Props) => {
               <div className=' flex flex-col text-sm'>
                 <div className='flex gap-2 font-semibold items-center'>
                   <Image
-                    src={`/images/securities-icons/${companyMap[account.bankCode]}.png`}
+                    src={`/images/securities-icons/${companyMap[account.bankCode]}`}
                     alt={account.bankCode}
-                    width={24}
-                    height={24}
+                    width={36}
+                    height={36}
+                    className='rounded-full p-0.5'
                   />
                   <span>{`${account.bankCode} ${account.accountType} 계좌`}</span>
                 </div>
-                <div className='flex gap-2 text-gray items-center pl-8'>
+                <div className='flex gap-2 text-gray items-center pl-11'>
                   <span>{formatHanaAccountNumber(account.accountNum)}</span>
                   <u className='cursor-pointer' onClick={() => handleCopy()}>
                     복사
@@ -91,7 +97,7 @@ export const IsaAccountSection = ({ connected, userName, account }: Props) => {
                 </div>
               </div>
               <h1 className='text-xl font-semibold'>
-                {account.currentBalance}원
+                {formatComma(account.currentBalance)}원
               </h1>
             </div>
             <div className='flex flex-col gap-1.5 w-full'>
