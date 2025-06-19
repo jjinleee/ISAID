@@ -37,6 +37,16 @@ export async function POST(req: NextRequest) {
         currentBalance,
         accountType,
         paymentAmount: BigInt(17000000),
+        generalHoldings: {
+          create: [],
+        },
+        generalHoldingSnapshots: {
+          create: {
+            instrumentType: 'BOND',
+            snapshotDate: new Date(),
+            evaluatedAmount: currentBalance,
+          },
+        },
       },
     });
 
