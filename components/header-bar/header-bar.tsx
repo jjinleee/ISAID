@@ -23,9 +23,10 @@ const HeaderBar = ({ title, subtitle, onMenuClick }: HeaderBarProps) => {
           </div>
         </div>
 
-        <button onClick={onMenuClick} className='cursor-pointer'>
-          <MenuIcon />
-        </button>
+        {/*<button onClick={onMenuClick} className='cursor-pointer'>*/}
+        {/*  <MenuIcon />*/}
+        {/*</button>*/}
+        <button></button>
       </div>
     </div>
   );
