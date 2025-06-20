@@ -1,6 +1,6 @@
 'use client';
 
-import toast from 'react-hot-toast'; // ✅ 추가
+import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import QuizBannerCharater from '@/public/images/quiz-banner-character.svg';
 import QUizBannerGift from '@/public/images/quiz-banner-gift.svg';
