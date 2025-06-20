@@ -13,13 +13,12 @@ import SecurePinModal from '@/components/secure-pin-modal';
 const HeaderBar = ({ title, subtitle, onMenuClick }: HeaderBarProps) => {
   const router = useRouter();
   const [modalOpen, setModalOpen] = useState(false);
-  const handleVerifyPin = async (pin: string) => {
+  const handleVerifyPin = async (pin: string): Promise<boolean> => {
     try {
       if (pin !== '123456') {
         toast.error('비밀번호가 올바르지 않습니다.');
         return false;
       }
-      console.log('gmlgml');
 
       toast.success('인증에 성공하였습니다.', {
         style: {
@@ -28,7 +27,11 @@ const HeaderBar = ({ title, subtitle, onMenuClick }: HeaderBarProps) => {
           fontWeight: '500',
         },
       });
-      router.push('/mypage');
+
+      setTimeout(() => {
+        router.push('/mypage');
+      }, 500);
+
       return true;
     } catch (err) {
       toast.error('서버 오류가 발생했습니다.');
@@ -53,7 +56,7 @@ const HeaderBar = ({ title, subtitle, onMenuClick }: HeaderBarProps) => {
         <button onClick={onMenuClick} className='cursor-pointer'>
           <MenuIcon />
         </button>
-        <div onClick={() => setModalOpen(true)}>gmlgmlgmlg</div>
+        <div onClick={() => setModalOpen(true)}>간편비밀번호</div>
         <SecurePinModal
           visible={modalOpen}
           onClose={() => setModalOpen(false)}
