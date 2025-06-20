@@ -45,6 +45,7 @@ export async function POST(req: NextRequest) {
             instrumentType: 'BOND',
             snapshotDate: new Date(),
             evaluatedAmount: currentBalance,
+            snapshotType: 'CASH',
           },
         },
       },

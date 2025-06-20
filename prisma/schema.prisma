@@ -31,15 +31,16 @@ model User {
 }
 
 model Challenge {
-  id                  BigInt               @id @default(autoincrement())
-  etfId               BigInt               @map("etf_id")
-  code                String               @unique @db.VarChar(20)
-  title               String               @db.VarChar(50)
-  challengeType       ChallengeType        @map("challenge_type")
-  quantity            Decimal              @db.Decimal(20, 6)
-  targetval           Int?
-  etf                 Etf                  @relation(fields: [etfId], references: [id], onDelete: Cascade)
-  userChallengeClaims UserChallengeClaim[]
+  id                   BigInt               @id @default(autoincrement())
+  etfId                BigInt               @map("etf_id")
+  code                 String               @unique @db.VarChar(20)
+  title                String               @db.VarChar(50)
+  challengeDescription String               @map("challenge_description")
+  challengeType        ChallengeType        @map("challenge_type")
+  quantity             Decimal              @db.Decimal(20, 6)
+  targetval            Int?
+  etf                  Etf                  @relation(fields: [etfId], references: [id], onDelete: Cascade)
+  userChallengeClaims  UserChallengeClaim[]
 
   @@index([etfId], map: "challenge_etf_id_fkey")
   @@map("challenge")
@@ -236,25 +237,27 @@ model FinancialProduct {
 }
 
 model GeneralHoldingSnapshot {
-  id              BigInt         @id @default(autoincrement())
-  isaAccountId    BigInt         @map("isa_account_id")
-  instrumentType  InstrumentType @map("instrument_type")
-  snapshotDate    DateTime       @map("snapshot_date")
-  evaluatedAmount Decimal        @map("evaluated_amount") @db.Decimal(20, 2)
-  isaAccount      ISAAccount     @relation(fields: [isaAccountId], references: [id], onDelete: Cascade)
+  id              BigInt       @id @default(autoincrement())
+  isaAccountId    BigInt       @map("isa_account_id")
+  snapshotType    SnapshotType @map("snapshot_type")
+  snapshotDate    DateTime     @map("snapshot_date")
+  evaluatedAmount Decimal      @map("evaluated_amount") @db.Decimal(20, 2)
+  isaAccount      ISAAccount   @relation(fields: [isaAccountId], references: [id], onDelete: Cascade)
 
-  @@unique([isaAccountId, snapshotDate])
+  @@unique([isaAccountId, snapshotDate, snapshotType])
   @@map("general_holding_snapshot")
 }
 
 model ETFHoldingSnapshot {
-  id              BigInt     @id @default(autoincrement())
-  isaAccountId    BigInt     @map("isa_account_id")
-  etfId           BigInt     @map("etf_id")
-  snapshotDate    DateTime   @map("snapshot_date")
-  evaluatedAmount Decimal    @map("evaluated_amount") @db.Decimal(20, 2)
-  etf             Etf        @relation(fields: [etfId], references: [id], onDelete: Cascade)
-  isaAccount      ISAAccount @relation(fields: [isaAccountId], references: [id], onDelete: Cascade)
+  id              BigInt   @id @default(autoincrement())
+  isaAccountId    BigInt   @map("isa_account_id")
+  etfId           BigInt   @map("etf_id")
+  snapshotDate    DateTime @map("snapshot_date")
+  evaluatedAmount Decimal  @map("evaluated_amount") @db.Decimal(20, 2)
+  profit          Decimal  @db.Decimal(20, 2)
+
+  etf        Etf        @relation(fields: [etfId], references: [id], onDelete: Cascade)
+  isaAccount ISAAccount @relation(fields: [isaAccountId], references: [id], onDelete: Cascade)
 
   @@unique([isaAccountId, etfId, snapshotDate])
   @@index([etfId], map: "etf_holding_snapshot_etf_id_fkey")
@@ -359,4 +362,10 @@ enum TransactionType {
   SELL
   DIVIDEND
   INTEREST
+  CHALLENGE_REWARD //보상 지급
+}
+
+enum SnapshotType {
+  GENERAL
+  CASH
 }
