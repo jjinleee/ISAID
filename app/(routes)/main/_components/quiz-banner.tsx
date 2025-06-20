@@ -24,8 +24,7 @@ export default function QuizBanner({
 
   const handleClick = () => {
     if (alreadyCompleted) {
-      toast.error('이미 오늘 퀴즈를 푸셨어요!');
-      return;
+      toast.success('문제를 복기합니다');
     }
 
     router.push('/quiz');

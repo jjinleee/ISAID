@@ -3,7 +3,7 @@ import QuestionOption from '@/components/question-option';
 import { QuizQuestion } from '../data/questions';
 
 interface QuizContentProps {
-  question: QuizQuestion;
+  question?: QuizQuestion; // <- ✅ 변경
   current: number;
   total: number;
   selectedAnswer: string | null;
@@ -21,8 +21,16 @@ export default function QUIZContent({
   onPrev,
   onNext,
 }: QuizContentProps) {
+  if (!question) {
+    return (
+      <div className='p-6 text-center text-gray-500'>
+        문제를 불러오는 중입니다...
+      </div>
+    );
+  }
+
   return (
-    <div className='flex flex-col p-5  space-y-6'>
+    <div className='flex flex-col p-5 space-y-6'>
       {/* 진행 바 */}
       <div className='h-1 bg-gray-2 rounded'>
         <div
@@ -30,6 +38,7 @@ export default function QUIZContent({
           style={{ width: `${((current + 1) / total) * 100}%` }}
         />
       </div>
+
       {/* 문제 영역 */}
       <div className='w-full h-full p-5 border-gray-2 shadow-[0px_4px_4px_rgba(0,0,0,0.25),0px_-2px_4px_rgba(0,0,0,0.15)] rounded-2xl'>
         <div className='text-sm text-gray-500'>문제 {current + 1}</div>
@@ -45,6 +54,7 @@ export default function QUIZContent({
             />
           ))}
         </div>
+
         <div className='flex w-full gap-4 mt-auto'>
           <button
             onClick={onPrev}
@@ -62,23 +72,6 @@ export default function QUIZContent({
           </button>
         </div>
       </div>
-      {/* 네비 버튼
-      <div className='flex justify-between'>
-        <button
-          onClick={onPrev}
-          disabled={current === 0}
-          className='px-8 py-4 bg-gray-2 rounded-md disabled:opacity-50 text-lg'
-        >
-          이전
-        </button>
-        <button
-          onClick={onNext}
-          disabled={!selectedAnswer}
-          className='px-8 py-4 bg-primary text-white rounded-md disabled:opacity-50 text-lg'
-        >
-          {current === total - 1 ? '결과 보기' : '다음'}
-        </button>
-      </div> */}
     </div>
   );
 }

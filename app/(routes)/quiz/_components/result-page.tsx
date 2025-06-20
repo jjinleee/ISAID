@@ -16,19 +16,25 @@ export default function ResultPage({ questions, answers }: ResultPageProps) {
   const today = new Date();
   const router = useRouter();
 
-  // 퀴즈 완료 날짜 저장 로직
+  // 퀴즈 완료 날짜 저장/답안 저장
   useEffect(() => {
     const key = 'quizCompletedDates';
-    const stored = localStorage.getItem(key);
-    const parsed: Date[] = stored
-      ? JSON.parse(stored).map((d: string) => new Date(d))
-      : [];
+    const answerKey = 'quizAnswersByDate';
 
-    const alreadyExists = parsed.some((d) => isSameDay(d, today));
-    if (!alreadyExists) {
-      const updated = [...parsed, today];
+    const stored = localStorage.getItem(key);
+    const parsed: string[] = stored ? JSON.parse(stored) : [];
+
+    const todayStr = today.toISOString().split('T')[0];
+    if (!parsed.includes(todayStr)) {
+      const updated = [...parsed, todayStr];
       localStorage.setItem(key, JSON.stringify(updated));
     }
+
+    // 오늘 답안 저장
+    const savedAnswers = localStorage.getItem(answerKey);
+    const parsedAnswers = savedAnswers ? JSON.parse(savedAnswers) : {};
+    parsedAnswers[todayStr] = answers;
+    localStorage.setItem(answerKey, JSON.stringify(parsedAnswers));
   }, []);
 
   // 2. 기존 결과 렌더링 로직
