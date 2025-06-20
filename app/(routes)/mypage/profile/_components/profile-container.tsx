@@ -33,7 +33,9 @@ export const ProfileContainer = () => {
       setTelNo(formatProfilePHN(res.telno));
     };
     fetchMe();
-    setHeader('내 정보 수정하기', '당신의 금융 발자취를 확인해보세요');
+    setHeader('내 정보 수정하기', '당신의 금융 발자취를 확인해보세요', () =>
+      router.push('/mypage')
+    );
   }, []);
 
   return (
