@@ -9,7 +9,7 @@ const MainHeader = ({ title, subtitle, onMenuClick }: MainHeaderProps) => {
       <div className='flex items-center justify-between'>
         <div className='flex flex-col'>
           <h1 className='text-base font-semibold'>{title}</h1>
-          {subtitle && <p className='text-sm text-gray-500 mt-1'>{subtitle}</p>}
+          {subtitle && <p className='text-sm text-gray-500'>{subtitle}</p>}
         </div>
 
         <button onClick={onMenuClick} className='cursor-pointer'>
