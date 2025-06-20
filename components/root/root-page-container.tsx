@@ -16,7 +16,7 @@ const RootPageContainer = () => {
       />
 
       <div className='flex flex-col text-center'>
-        <p className='text-[#33C4A8] font-bold'>ISAID</p>
+        <p className='text-[#33C4A8] font-bold text-2xl'>ISAID</p>
         <p className='text-subtitle'>I SAVE SMART, INVEST DAILY!</p>
       </div>
 
