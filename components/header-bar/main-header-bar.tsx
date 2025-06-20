@@ -49,7 +49,6 @@ const MainHeader = ({ title, subtitle, onMenuClick }: MainHeaderProps) => {
         <button onClick={onMenuClick} className='cursor-pointer'>
           <User />
         </button>
-        <div onClick={() => setModalOpen(true)}>간편비밀번호</div>
         <SecurePinModal
           visible={modalOpen}
           onClose={() => setModalOpen(false)}
