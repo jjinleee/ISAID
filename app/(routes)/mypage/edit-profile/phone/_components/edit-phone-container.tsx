@@ -132,7 +132,7 @@ export const EditPhoneContainer = () => {
         thin={false}
         active={!validationErrors.phone && !validationErrors.verificationCode}
         onClick={submitData}
-        disabled={loading}
+        disabled={validationErrors.phone || validationErrors.verificationCode}
       />
     </div>
   );

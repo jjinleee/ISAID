@@ -130,7 +130,11 @@ export const EditPasswordContainer = () => {
         thin={false}
         active={!validationErrors.password && !validationErrors.passwordConfirm}
         onClick={submitData}
-        disabled={loading}
+        disabled={
+          loading ||
+          validationErrors.password ||
+          validationErrors.passwordConfirm
+        }
       />
     </div>
   );
