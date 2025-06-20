@@ -33,9 +33,7 @@ export const Button = ({
   }
   ${className}
 `.trim();
-  useEffect(() => {
-    console.log('disabled', disabled);
-  }, [disabled]);
+
   return (
     <button
       disabled={disabled}

@@ -55,7 +55,6 @@ export const MyPageContainer = ({ session }: Props) => {
   useEffect(() => {
     const fetchISA = async () => {
       const res = await fetchISAInfo();
-      console.log('res : ', res);
 
       if ('error' in res) {
         if (res.error === 'NOT_FOUND') {

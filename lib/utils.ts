@@ -223,6 +223,9 @@ export const validateField = <T extends Record<string, any>>(
     case 'passwordConfirm':
       return value === formData.password && value.length > 0;
 
+    case 'pinCode':
+      return value.length === 6;
+
     default:
       return true;
   }

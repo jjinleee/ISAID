@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import Button from '@/components/button';
 import SecurePinModal from '@/components/secure-pin-modal';
+import { verifyPin } from '@/lib/api/my-page';
 
 interface Props {
   visible: boolean;
@@ -28,7 +29,8 @@ const DeleteSheet = ({ visible, onClose, deleteAccount }: Props) => {
 
   const handleVerifyPin = async (pin: string) => {
     try {
-      if (pin !== '123456') {
+      const res = await verifyPin(pin);
+      if (!res.success) {
         toast.error('비밀번호가 올바르지 않습니다.');
         return false;
       }

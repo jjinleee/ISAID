@@ -81,7 +81,7 @@ export default function PinCodeSheet({ visible, onClose, onSubmit }: Props) {
           {/* Bottom Sheet */}
           <div className='fixed bottom-0 left-0 right-0 z-60 flex justify-center '>
             <motion.div
-              className='w-full max-w-[768px] bg-white h-[90vh] px-6 pt-8 pb-10 overflow-y-auto rounded-2xl'
+              className='w-full max-w-[768px] bg-white h-[60vh] px-6 pt-8 pb-10 rounded-t-2xl'
               initial='hidden'
               animate='visible'
               exit='hidden'
@@ -126,7 +126,7 @@ export default function PinCodeSheet({ visible, onClose, onSubmit }: Props) {
                 ))}
               </div>
 
-              {/* 마지막 줄: 전체삭제 / 4 / ⌫ */}
+              {/* 마지막 줄 */}
               <div className='grid grid-cols-3 gap-3'>
                 <button
                   onClick={handleReset}
