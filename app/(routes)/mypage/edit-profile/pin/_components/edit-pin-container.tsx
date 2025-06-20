@@ -70,7 +70,7 @@ export const EditPinContainer = () => {
 
   return (
     <div className='w-full pt-8 pb-10 px-7 flex flex-col gap-5'>
-      <h1 className='text-xl font-semibold'>간변비밀번호 변경</h1>
+      <h1 className='text-xl font-semibold'>간편 비밀번호 변경</h1>
       <div className='flex flex-col gap-4'>
         <div className='flex flex-col gap-2'>
           <label>이전 비밀번호</label>
