@@ -28,7 +28,7 @@ export default function LeaveModal({ onClose }: { onClose: () => void }) {
       });
 
       setTimeout(() => {
-        signOut({ callbackUrl: '/login' });
+        signOut({ callbackUrl: '/' });
         setLoading(false);
       }, 2000);
     } catch (error: any) {
