@@ -83,7 +83,7 @@ export const EditEmailContainer = () => {
         thin={false}
         active={!validationErrors.email}
         onClick={submitData}
-        disabled={loading}
+        disabled={loading || validationErrors.email}
       />
     </div>
   );

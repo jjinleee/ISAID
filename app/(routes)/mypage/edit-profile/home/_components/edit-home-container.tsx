@@ -117,7 +117,7 @@ export const EditHomeContainer = () => {
         thin={false}
         active={!validationErrors.address}
         disabled={loading}
-        onClick={submitData}
+        onClick={submitData || validationErrors.address}
       />
       {showAddressModal && (
         <ModalWrapper headerOnly={true}>
