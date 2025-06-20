@@ -21,7 +21,7 @@ export const Button = ({
   className = '',
 }: ButtonProps) => {
   const computedClassName = `
-  w-full text-center font-semibold rounded-md
+  w-full text-center font-semibold rounded-md cursor-pointer
   ${
     disabled
       ? 'bg-subtitle text-white py-4 cursor-not-allowed pointer-events-none'
@@ -33,9 +33,7 @@ export const Button = ({
   }
   ${className}
 `.trim();
-  useEffect(() => {
-    console.log('disabled', disabled);
-  }, [disabled]);
+
   return (
     <button
       disabled={disabled}

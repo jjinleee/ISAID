@@ -47,9 +47,27 @@ export async function PATCH(req: Request) {
     const data: any = {};
 
     for (const [key, value] of Object.entries(body)) {
-      if (value !== undefined && key !== 'password') {
+      if (value !== undefined && key !== 'password' && key !== 'oldPinCode') {
         data[key] = value;
       }
+    }
+
+    if ('pinCode' in body) {
+      if (!body.oldPinCode || body.oldPinCode !== existingUser.pinCode) {
+        return NextResponse.json(
+          { error: '기존 핀코드가 일치하지 않습니다.' },
+          { status: 400 }
+        );
+      }
+
+      if (!/^\d{6}$/.test(body.pinCode)) {
+        return NextResponse.json(
+          { error: '새 핀코드는 6자리 숫자여야 합니다.' },
+          { status: 400 }
+        );
+      }
+
+      data.pinCode = body.pinCode;
     }
 
     if (body.password !== undefined) {

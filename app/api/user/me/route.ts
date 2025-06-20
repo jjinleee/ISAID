@@ -31,6 +31,7 @@ export async function GET(req: NextRequest) {
         createdAt: true,
         updatedAt: true,
         rewardAgreed: true,
+        pinCode: true,
       },
     });
 

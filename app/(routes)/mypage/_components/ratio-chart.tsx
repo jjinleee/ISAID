@@ -25,8 +25,6 @@ export default function EtfDetailRatioChart({
   data,
   onClickItem,
 }: EtfDetailRatioChartProps) {
-  // console.log('data : ', data);
-
   return (
     <div className='flex flex-col gap-5 w-full'>
       <div className='flex items-center justify-center w-full gap-4 flex-col'>

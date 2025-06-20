@@ -60,10 +60,6 @@ export const updateUser = async (payload: UserUpdatePayload) => {
     }
 
     console.error('에러:', error.message);
-    console.log('{ success: false, error: error } : ', {
-      success: false,
-      error: error,
-    });
 
     return { success: false, error };
   }
@@ -92,6 +88,24 @@ export const leaveUser = async (password: string) => {
     body: JSON.stringify({ password }),
   });
 
+  if (!res.ok) {
+    const errorData = await res.json();
+    throw new Error(errorData.message || '탈퇴 요청 실패');
+  }
+
+  return res.json();
+};
+
+export const verifyPin = async (pin: string) => {
+  const data = { pinCode: pin };
+  const res = await fetch('/api/user/verify-pin', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+  console.log('verifyPin res : ', res);
   if (!res.ok) {
     const errorData = await res.json();
     throw new Error(errorData.message || '탈퇴 요청 실패');

@@ -48,17 +48,13 @@ const BankSelectSheet = ({
               variants={slideUp}
               transition={{ type: 'spring', stiffness: 300, damping: 30 }}
             >
-              <div className='flex justify-between items-center mb-4'>
-                <p className='text-lg font-semibold'>
-                  은행 혹은 증권사를 선택해 주세요
-                </p>
+              <div className='flex justify-end items-center mb-4 border-b border-b-gray-2'>
+                <div className='w-full inline-flex p-2 cursor-pointer text-xl font-semibold '>
+                  증권사
+                </div>
                 <button onClick={onClose}>
-                  <X className='w-6 h-6' />
+                  <X className='w-6 h-6 mb-8' />
                 </button>
-              </div>
-
-              <div className='w-full inline-flex p-2 mb-6 cursor-pointer text-xl font-semibold border-b border-b-gray-2'>
-                증권사
               </div>
 
               <div className='grid gap-4 custom-grid'>

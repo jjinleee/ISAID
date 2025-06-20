@@ -77,8 +77,8 @@ const AccountConnectPageContainer = () => {
       });
 
       setTimeout(() => {
-        router.push('/mypage'); // 원하는 경로로 변경 가능
-      }, 2000);
+        router.push('/mypage');
+      }, 1000);
     } catch (err) {
       console.error('계좌 연결 오류', err);
       toast.error('잠시 후 다시 시도해주세요.', {
@@ -96,7 +96,7 @@ const AccountConnectPageContainer = () => {
   };
 
   return (
-    <div className='px-5 pt-21 pb-5 flex flex-col gap-8'>
+    <div className='px-5 pb-5 flex flex-col gap-8'>
       <div className='flex shadow rounded-lg p-5'>
         <ShieldCheck className='w-12 sm:w-10 sm:h-6 text-hana-green mr-2 relative top-0.5' />
         <div>
