@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { usePathname, useRouter } from 'next/navigation';
 import { useHeader } from '@/context/header-context';
-import ModalWrapper from '@/utils/modal';
 import SecurePinModal from '@/components/secure-pin-modal';
 import { verifyPin } from '@/lib/api/my-page';
 import { isPinVerified, setPinVerified } from '@/lib/session';
