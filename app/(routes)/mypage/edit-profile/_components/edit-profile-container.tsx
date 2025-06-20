@@ -11,12 +11,14 @@ import LeaveModal from '../../_components/leave-modal';
 export const EditProfileContainer = () => {
   const { setHeader } = useHeader();
   const [showLeaveModal, setShowLeaveModal] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
-    setHeader('내 정보 수정하기', '회원정보를 확인하고 수정할 수 있어요');
+    setHeader('내 정보 수정하기', '회원정보를 확인하고 수정할 수 있어요', () =>
+      router.push('/mypage/profile')
+    );
   }, []);
 
-  const router = useRouter();
   const targetList = [
     { target: '이름', path: 'name' },
     { target: '전화번호', path: 'phone' },
