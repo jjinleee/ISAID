@@ -5,14 +5,40 @@ import { prisma } from '@/lib/prisma';
 export async function POST(req: Request) {
   try {
     const data = await req.json();
-    const { name, engName, email, password, rrn, phone, address, telno } = data;
+    const {
+      name,
+      engName,
+      email,
+      password,
+      rrn,
+      phone,
+      address,
+      telno,
+      pinCode,
+    } = data;
 
-    if (!name || !email || !password || !rrn || !phone || !address) {
+    if (
+      !name ||
+      !email ||
+      !password ||
+      !rrn ||
+      !phone ||
+      !address ||
+      !pinCode
+    ) {
       return NextResponse.json(
         { error: '필수 항목이 누락되었습니다.' },
         { status: 400 }
       );
     }
+
+    if (!/^\d{6}$/.test(pinCode)) {
+      return NextResponse.json(
+        { error: '핀코드는 6자리 숫자여야 합니다.' },
+        { status: 400 }
+      );
+    }
+
     console.log('가입 요청 데이터:', data);
 
     // 중복 이메일 체크
@@ -38,6 +64,7 @@ export async function POST(req: Request) {
         phone,
         address,
         telno,
+        pinCode,
       },
     });
 
