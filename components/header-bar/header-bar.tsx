@@ -7,7 +7,6 @@ import { useHeader } from '@/context/header-context';
 import BackIcon from '@/public/images/back-icon';
 import User from '@/public/images/common/user.svg';
 import { HeaderBarProps } from '@/types/components';
-import SecurePinModal from '@/components/secure-pin-modal';
 
 const HeaderBar = ({ title, subtitle, onMenuClick }: HeaderBarProps) => {
   const router = useRouter();
@@ -64,11 +63,6 @@ const HeaderBar = ({ title, subtitle, onMenuClick }: HeaderBarProps) => {
         <button onClick={onMenuClick} className='cursor-pointer'>
           <User />
         </button>
-        <SecurePinModal
-          visible={modalOpen}
-          onClose={() => setModalOpen(false)}
-          onSubmit={handleVerifyPin}
-        />
       </div>
     </div>
   );

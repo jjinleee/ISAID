@@ -7,7 +7,6 @@ import { useRouter } from 'next/navigation';
 import User from '@/public/images/common/user.svg';
 import MenuIcon from '@/public/images/menu-icon';
 import { MainHeaderProps } from '@/types/components';
-import SecurePinModal from '@/components/secure-pin-modal';
 
 const MainHeader = ({ title, subtitle, onMenuClick }: MainHeaderProps) => {
   const [modalOpen, setModalOpen] = useState(false);
@@ -49,11 +48,6 @@ const MainHeader = ({ title, subtitle, onMenuClick }: MainHeaderProps) => {
         <button onClick={onMenuClick} className='cursor-pointer'>
           <User />
         </button>
-        <SecurePinModal
-          visible={modalOpen}
-          onClose={() => setModalOpen(false)}
-          onSubmit={handleVerifyPin}
-        />
       </div>
     </div>
   );
