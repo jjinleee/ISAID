@@ -38,7 +38,6 @@ export const Button = ({
   }, [disabled]);
   return (
     <button
-      type='button'
       disabled={disabled}
       className={computedClassName}
       onClick={!disabled ? onClick : undefined}
