@@ -1,9 +1,8 @@
 'use client';
 
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import BackIcon from '@/public/images/back-icon';
-import MenuIcon from '@/public/images/menu-icon';
+import User from '@/public/images/common/user.svg';
 import { HeaderBarProps } from '@/types/components';
 
 const HeaderBar = ({ title, subtitle, onMenuClick }: HeaderBarProps) => {
@@ -23,10 +22,9 @@ const HeaderBar = ({ title, subtitle, onMenuClick }: HeaderBarProps) => {
           </div>
         </div>
 
-        {/*<button onClick={onMenuClick} className='cursor-pointer'>*/}
-        {/*  <MenuIcon />*/}
-        {/*</button>*/}
-        <button></button>
+        <button onClick={onMenuClick} className='cursor-pointer'>
+          <User />
+        </button>
       </div>
     </div>
   );
