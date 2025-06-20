@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useHeader } from '@/context/header-context';
 import {
+  CircleAlert,
   MessageSquareWarning,
   ShieldCheck,
   SquareCheckBig,
@@ -17,6 +18,7 @@ import BankSelectSheet from './bank-select-sheet';
 const AccountConnectPageContainer = () => {
   const { setHeader } = useHeader();
   const router = useRouter();
+  const [connecting, setConnecting] = useState(false);
 
   useEffect(() => {
     setHeader('ISA 계좌 연결', 'ISA 계좌를 연결해 주세요');
@@ -47,6 +49,7 @@ const AccountConnectPageContainer = () => {
 
     // 하나라도 에러 있으면 중단
     if (Object.values(newErrors).some((msg) => msg !== '')) return;
+    setConnecting(true);
 
     try {
       const res = await fetch('/api/isa', {
@@ -54,7 +57,6 @@ const AccountConnectPageContainer = () => {
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({
-          id: 10008,
           bankCode: bank,
           accountType: accountType,
           accountKind: accountKind,
@@ -76,9 +78,20 @@ const AccountConnectPageContainer = () => {
 
       setTimeout(() => {
         router.push('/mypage'); // 원하는 경로로 변경 가능
-      }, 4000);
+      }, 2000);
     } catch (err) {
       console.error('계좌 연결 오류', err);
+      toast.error('잠시 후 다시 시도해주세요.', {
+        duration: 2000,
+        icon: <CircleAlert className='w-5 h-5 text-hana-red' />,
+        style: {
+          borderRadius: '8px',
+          color: 'black',
+          fontWeight: '500',
+        },
+      });
+
+      setConnecting(false);
     }
   };
 
@@ -159,6 +172,7 @@ const AccountConnectPageContainer = () => {
           active={true}
           text={'계좌 연결하기'}
           onClick={handleConnectAccount}
+          disabled={connecting}
         />
       </div>
 

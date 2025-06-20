@@ -1,19 +1,23 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useHeader } from '@/context/header-context';
 import ArrowIcon from '@/public/images/arrow-icon';
+import ModalWrapper from '@/utils/modal';
 import Button from '@/components/button';
+import LeaveModal from '../../_components/leave-modal';
 
 export const EditProfileContainer = () => {
   const { setHeader } = useHeader();
+  const [showLeaveModal, setShowLeaveModal] = useState(false);
+
   useEffect(() => {
     setHeader('내 정보 수정하기', '회원정보를 확인하고 수정할 수 있어요');
   }, []);
 
   const router = useRouter();
-  const gun = [
+  const targetList = [
     { target: '이름', path: 'name' },
     { target: '전화번호', path: 'phone' },
     { target: '자택 정보', path: 'home' },
@@ -27,7 +31,7 @@ export const EditProfileContainer = () => {
         내 정보 수정
       </h1>
       <div className='flex flex-col gap-6'>
-        {gun.map((item, idx) => (
+        {targetList.map((item, idx) => (
           <div
             key={idx}
             className='flex justify-between cursor-pointer'
@@ -45,8 +49,18 @@ export const EditProfileContainer = () => {
       </div>
 
       <div className='flex flex-col gap-2'>
-        <Button text={'탈퇴하기'} thin={false} active={false} />
+        <Button
+          text={'탈퇴하기'}
+          thin={false}
+          active={false}
+          onClick={() => setShowLeaveModal(true)}
+        />
       </div>
+      {showLeaveModal && (
+        <ModalWrapper headerOnly={false}>
+          <LeaveModal onClose={() => setShowLeaveModal(false)} />
+        </ModalWrapper>
+      )}
     </div>
   );
 };

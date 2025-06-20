@@ -25,11 +25,13 @@ CREATE TABLE `challenge` (
     `etf_id` BIGINT NOT NULL,
     `code` VARCHAR(20) NOT NULL,
     `title` VARCHAR(50) NOT NULL,
+    `challenge_description` VARCHAR(191) NOT NULL,
     `challenge_type` ENUM('ONCE', 'DAILY', 'STREAK') NOT NULL,
     `quantity` DECIMAL(20, 6) NOT NULL,
     `targetval` INTEGER NULL,
 
     UNIQUE INDEX `challenge_code_key`(`code`),
+    INDEX `challenge_etf_id_fkey`(`etf_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -41,6 +43,7 @@ CREATE TABLE `user_challenge_claim` (
     `claim_date` DATETIME(3) NOT NULL,
     `claimed_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
+    INDEX `user_challenge_claim_challenge_id_fkey`(`challenge_id`),
     UNIQUE INDEX `user_challenge_claim_user_id_challenge_id_claim_date_key`(`user_id`, `challenge_id`, `claim_date`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -85,6 +88,7 @@ CREATE TABLE `etf` (
     `volatility` VARCHAR(191) NULL,
     `risk_grade` INTEGER NULL,
 
+    INDEX `etf_etf_category_id_fkey`(`etf_category_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -99,6 +103,7 @@ CREATE TABLE `etf_pdf` (
     `compst_amount` BIGINT NULL,
     `compst_ratio` DECIMAL(5, 2) NULL,
 
+    INDEX `etf_pdf_etf_id_fkey`(`etf_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -146,6 +151,7 @@ CREATE TABLE `user_etf_category` (
     `user_id` BIGINT NOT NULL,
     `etf_category_id` BIGINT NOT NULL,
 
+    INDEX `user_etf_category_etf_category_id_fkey`(`etf_category_id`),
     UNIQUE INDEX `user_etf_category_user_id_etf_category_id_key`(`user_id`, `etf_category_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -209,11 +215,11 @@ CREATE TABLE `financial_product` (
 CREATE TABLE `general_holding_snapshot` (
     `id` BIGINT NOT NULL AUTO_INCREMENT,
     `isa_account_id` BIGINT NOT NULL,
-    `instrument_type` ENUM('FUND', 'ELS', 'BOND') NOT NULL,
+    `snapshot_type` ENUM('GENERAL', 'CASH') NOT NULL,
     `snapshot_date` DATETIME(3) NOT NULL,
     `evaluated_amount` DECIMAL(20, 2) NOT NULL,
 
-    UNIQUE INDEX `general_holding_snapshot_isa_account_id_snapshot_date_key`(`isa_account_id`, `snapshot_date`),
+    UNIQUE INDEX `general_holding_snapshot_isa_account_id_snapshot_date_snapsh_key`(`isa_account_id`, `snapshot_date`, `snapshot_type`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -224,7 +230,9 @@ CREATE TABLE `etf_holding_snapshot` (
     `etf_id` BIGINT NOT NULL,
     `snapshot_date` DATETIME(3) NOT NULL,
     `evaluated_amount` DECIMAL(20, 2) NOT NULL,
+    `profit` DECIMAL(20, 2) NOT NULL,
 
+    INDEX `etf_holding_snapshot_etf_id_fkey`(`etf_id`),
     UNIQUE INDEX `etf_holding_snapshot_isa_account_id_etf_id_snapshot_date_key`(`isa_account_id`, `etf_id`, `snapshot_date`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -239,6 +247,7 @@ CREATE TABLE `etf_holding` (
     `acquired_at` DATETIME(3) NOT NULL,
     `updated_at` DATETIME(3) NOT NULL,
 
+    INDEX `etf_holding_etf_id_fkey`(`etf_id`),
     UNIQUE INDEX `etf_holding_isa_account_id_etf_id_key`(`isa_account_id`, `etf_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -252,6 +261,7 @@ CREATE TABLE `general_holding` (
     `acquired_at` DATETIME(3) NOT NULL,
     `updated_at` DATETIME(3) NOT NULL,
 
+    INDEX `general_holding_product_id_fkey`(`product_id`),
     UNIQUE INDEX `general_holding_isa_account_id_product_id_key`(`isa_account_id`, `product_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -261,11 +271,13 @@ CREATE TABLE `etf_transaction` (
     `id` BIGINT NOT NULL AUTO_INCREMENT,
     `etf_id` BIGINT NOT NULL,
     `isa_account_id` BIGINT NOT NULL,
-    `transaction_type` ENUM('BUY', 'SELL', 'DIVIDEND', 'INTEREST') NOT NULL,
+    `transaction_type` ENUM('BUY', 'SELL', 'DIVIDEND', 'INTEREST', 'CHALLENGE_REWARD') NOT NULL,
     `quantity` DECIMAL(20, 6) NOT NULL,
     `price` DECIMAL(20, 6) NOT NULL,
     `transaction_at` DATETIME(3) NOT NULL,
 
+    INDEX `etf_transaction_etf_id_fkey`(`etf_id`),
+    INDEX `etf_transaction_isa_account_id_fkey`(`isa_account_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -274,10 +286,12 @@ CREATE TABLE `general_transaction` (
     `id` BIGINT NOT NULL AUTO_INCREMENT,
     `product_id` BIGINT NOT NULL,
     `isa_account_id` BIGINT NOT NULL,
-    `transaction_type` ENUM('BUY', 'SELL', 'DIVIDEND', 'INTEREST') NOT NULL,
+    `transaction_type` ENUM('BUY', 'SELL', 'DIVIDEND', 'INTEREST', 'CHALLENGE_REWARD') NOT NULL,
     `price` DECIMAL(20, 6) NULL,
     `transaction_at` DATETIME(3) NOT NULL,
 
+    INDEX `general_transaction_isa_account_id_fkey`(`isa_account_id`),
+    INDEX `general_transaction_product_id_fkey`(`product_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -296,10 +310,10 @@ CREATE TABLE `monthly_return` (
 ALTER TABLE `challenge` ADD CONSTRAINT `challenge_etf_id_fkey` FOREIGN KEY (`etf_id`) REFERENCES `etf`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `user_challenge_claim` ADD CONSTRAINT `user_challenge_claim_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `user_challenge_claim` ADD CONSTRAINT `user_challenge_claim_challenge_id_fkey` FOREIGN KEY (`challenge_id`) REFERENCES `challenge`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `user_challenge_claim` ADD CONSTRAINT `user_challenge_claim_challenge_id_fkey` FOREIGN KEY (`challenge_id`) REFERENCES `challenge`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `user_challenge_claim` ADD CONSTRAINT `user_challenge_claim_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `etf` ADD CONSTRAINT `etf_etf_category_id_fkey` FOREIGN KEY (`etf_category_id`) REFERENCES `etf_category`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
@@ -314,10 +328,10 @@ ALTER TABLE `etf_daily_trading` ADD CONSTRAINT `etf_daily_trading_etf_id_fkey` F
 ALTER TABLE `investment_profile` ADD CONSTRAINT `investment_profile_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `user_etf_category` ADD CONSTRAINT `user_etf_category_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `user_etf_category` ADD CONSTRAINT `user_etf_category_etf_category_id_fkey` FOREIGN KEY (`etf_category_id`) REFERENCES `etf_category`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `user_etf_category` ADD CONSTRAINT `user_etf_category_etf_category_id_fkey` FOREIGN KEY (`etf_category_id`) REFERENCES `etf_category`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `user_etf_category` ADD CONSTRAINT `user_etf_category_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `quiz_calendar` ADD CONSTRAINT `quiz_calendar_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
@@ -332,10 +346,10 @@ ALTER TABLE `isa_account` ADD CONSTRAINT `isa_account_user_id_fkey` FOREIGN KEY 
 ALTER TABLE `general_holding_snapshot` ADD CONSTRAINT `general_holding_snapshot_isa_account_id_fkey` FOREIGN KEY (`isa_account_id`) REFERENCES `isa_account`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `etf_holding_snapshot` ADD CONSTRAINT `etf_holding_snapshot_isa_account_id_fkey` FOREIGN KEY (`isa_account_id`) REFERENCES `isa_account`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `etf_holding_snapshot` ADD CONSTRAINT `etf_holding_snapshot_etf_id_fkey` FOREIGN KEY (`etf_id`) REFERENCES `etf`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `etf_holding_snapshot` ADD CONSTRAINT `etf_holding_snapshot_etf_id_fkey` FOREIGN KEY (`etf_id`) REFERENCES `etf`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `etf_holding_snapshot` ADD CONSTRAINT `etf_holding_snapshot_isa_account_id_fkey` FOREIGN KEY (`isa_account_id`) REFERENCES `isa_account`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `etf_holding` ADD CONSTRAINT `etf_holding_etf_id_fkey` FOREIGN KEY (`etf_id`) REFERENCES `etf`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
@@ -344,10 +358,10 @@ ALTER TABLE `etf_holding` ADD CONSTRAINT `etf_holding_etf_id_fkey` FOREIGN KEY (
 ALTER TABLE `etf_holding` ADD CONSTRAINT `etf_holding_isa_account_id_fkey` FOREIGN KEY (`isa_account_id`) REFERENCES `isa_account`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `general_holding` ADD CONSTRAINT `general_holding_product_id_fkey` FOREIGN KEY (`product_id`) REFERENCES `financial_product`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `general_holding` ADD CONSTRAINT `general_holding_isa_account_id_fkey` FOREIGN KEY (`isa_account_id`) REFERENCES `isa_account`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `general_holding` ADD CONSTRAINT `general_holding_isa_account_id_fkey` FOREIGN KEY (`isa_account_id`) REFERENCES `isa_account`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `general_holding` ADD CONSTRAINT `general_holding_product_id_fkey` FOREIGN KEY (`product_id`) REFERENCES `financial_product`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `etf_transaction` ADD CONSTRAINT `etf_transaction_etf_id_fkey` FOREIGN KEY (`etf_id`) REFERENCES `etf`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
@@ -356,10 +370,10 @@ ALTER TABLE `etf_transaction` ADD CONSTRAINT `etf_transaction_etf_id_fkey` FOREI
 ALTER TABLE `etf_transaction` ADD CONSTRAINT `etf_transaction_isa_account_id_fkey` FOREIGN KEY (`isa_account_id`) REFERENCES `isa_account`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `general_transaction` ADD CONSTRAINT `general_transaction_product_id_fkey` FOREIGN KEY (`product_id`) REFERENCES `financial_product`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `general_transaction` ADD CONSTRAINT `general_transaction_isa_account_id_fkey` FOREIGN KEY (`isa_account_id`) REFERENCES `isa_account`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `general_transaction` ADD CONSTRAINT `general_transaction_isa_account_id_fkey` FOREIGN KEY (`isa_account_id`) REFERENCES `isa_account`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `general_transaction` ADD CONSTRAINT `general_transaction_product_id_fkey` FOREIGN KEY (`product_id`) REFERENCES `financial_product`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `monthly_return` ADD CONSTRAINT `monthly_return_isa_account_id_fkey` FOREIGN KEY (`isa_account_id`) REFERENCES `isa_account`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;

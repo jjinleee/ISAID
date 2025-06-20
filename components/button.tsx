@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import type { ButtonProps } from '@/types/components.ts';
 
 // onClick event 가 있는 컴포넌트입니다. 부모 컴포넌트에서 use client 선언을 해주셔야 오류 없이 사용 가능합니다.
@@ -20,10 +21,10 @@ export const Button = ({
   className = '',
 }: ButtonProps) => {
   const computedClassName = `
-  w-full text-center font-semibold rounded-md cursor-pointer
+  w-full text-center font-semibold rounded-md
   ${
     disabled
-      ? 'bg-subtitle text-white py-4 cursor-not-allowed'
+      ? 'bg-subtitle text-white py-4 cursor-not-allowed pointer-events-none'
       : active
         ? 'bg-primary text-white py-4'
         : thin
@@ -32,12 +33,14 @@ export const Button = ({
   }
   ${className}
 `.trim();
-
+  useEffect(() => {
+    console.log('disabled', disabled);
+  }, [disabled]);
   return (
     <button
       disabled={disabled}
       className={computedClassName}
-      {...(onClick && { onClick })}
+      onClick={!disabled ? onClick : undefined}
     >
       {text}
     </button>
