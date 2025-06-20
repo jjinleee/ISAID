@@ -1,32 +1,51 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { FormData } from '@/app/(routes)/(auth)/register/_components/register-form';
 import { useHeader } from '@/context/header-context';
 import Button from '@/components/button';
 import CustomInput from '@/components/input';
+import { fetchMyInfo } from '@/lib/api/my-page';
 import { validateField } from '@/lib/utils';
+import { submitUserUpdate } from '../../utils';
 
 interface PhoneData {
   phone: string;
-  verificationCode: string;
+  verificationCode?: string;
 }
 
 interface ValidationErrors {
   phone: boolean;
-  verificationCode: boolean;
+  verificationCode?: boolean;
 }
 
 export const EditPhoneContainer = () => {
   const { setHeader } = useHeader();
+
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     setHeader('내 정보 수정하기', '전화번호 수정');
   }, []);
 
   const [phoneData, setPhoneData] = useState<PhoneData>({
-    phone: '01012323332',
+    phone: '',
     verificationCode: '',
   });
+
+  useEffect(() => {
+    setHeader('내 정보 수정하기', '전화번호 수정');
+    const fetchMe = async () => {
+      const res = await fetchMyInfo();
+      setPhoneData({
+        phone: res.phone || '',
+      });
+    };
+    fetchMe();
+  }, []);
+
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>({
     phone: false,
     verificationCode: true,
@@ -61,6 +80,16 @@ export const EditPhoneContainer = () => {
       }));
       return;
     }
+  };
+
+  const submitData = async () => {
+    const data = { phone: phoneData.phone };
+    setLoading(true);
+    await submitUserUpdate({
+      data: data,
+      onSuccess: () => router.back(),
+      onFinally: () => setLoading(false),
+    });
   };
 
   return (
@@ -102,6 +131,8 @@ export const EditPhoneContainer = () => {
         text={'전화번호 변경'}
         thin={false}
         active={!validationErrors.phone && !validationErrors.verificationCode}
+        onClick={submitData}
+        disabled={validationErrors.phone || validationErrors.verificationCode}
       />
     </div>
   );
