@@ -5,9 +5,5 @@ export default function AuthLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
-    <html lang='en'>
-      <body className='pt-14'>{children}</body>
-    </html>
-  );
+  return <div className='pt-14 scrollbar-hide'>{children}</div>;
 }
