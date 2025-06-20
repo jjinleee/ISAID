@@ -5,7 +5,8 @@ import { createContext, useContext, useState } from 'react';
 interface HeaderContextProps {
   title: string;
   subtitle?: string;
-  setHeader: (title: string, subtitle?: string) => void;
+  onBack?: () => void;
+  setHeader: (title: string, subtitle?: string, onBack?: () => void) => void;
 }
 
 const HeaderContext = createContext<HeaderContextProps | null>(null);
@@ -13,14 +14,20 @@ const HeaderContext = createContext<HeaderContextProps | null>(null);
 export const HeaderProvider = ({ children }: { children: React.ReactNode }) => {
   const [title, setTitle] = useState('default');
   const [subtitle, setSubtitle] = useState<string | undefined>();
+  const [onBack, setOnBack] = useState<(() => void) | undefined>(undefined);
 
-  const setHeader = (newTitle: string, newSubtitle?: string) => {
+  const setHeader = (
+    newTitle: string,
+    newSubtitle?: string,
+    newOnBack?: () => void
+  ) => {
     setTitle(newTitle);
     setSubtitle(newSubtitle);
+    setOnBack(() => newOnBack);
   };
 
   return (
-    <HeaderContext.Provider value={{ title, subtitle, setHeader }}>
+    <HeaderContext.Provider value={{ title, subtitle, onBack, setHeader }}>
       {children}
     </HeaderContext.Provider>
   );

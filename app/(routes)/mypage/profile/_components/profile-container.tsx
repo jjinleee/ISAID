@@ -4,34 +4,36 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useHeader } from '@/context/header-context';
 import ArrowIcon from '@/public/images/arrow-icon';
+import ModalWrapper from '@/utils/modal';
 import Button from '@/components/button';
-import {
-  formatProfilePHN,
-  formatProfileRRN,
-  maskProfileEmail,
-} from '@/lib/utils';
+import { fetchMyInfo } from '@/lib/api/my-page';
+import { formatProfilePHN, maskProfileEmail } from '@/lib/utils';
+import LeaveModal from '../../_components/leave-modal';
 
 export const ProfileContainer = () => {
   const { setHeader } = useHeader();
   const router = useRouter();
+
+  const [name, setName] = useState('');
+  const [engName, setEngName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
+  const [address, setAddress] = useState('');
+  const [telNo, setTelNo] = useState('');
+  const [showLeaveModal, setShowLeaveModal] = useState(false);
+
   useEffect(() => {
+    const fetchMe = async () => {
+      const res = await fetchMyInfo();
+      setName(res.name);
+      setEngName(res.engName);
+      setPhone(formatProfilePHN(res.phone));
+      setEmail(maskProfileEmail(res.email));
+      setAddress(res.address);
+      setTelNo(formatProfilePHN(res.telno));
+    };
+    fetchMe();
     setHeader('내 정보 수정하기', '당신의 금융 발자취를 확인해보세요');
-  }, []);
-  const [name, setName] = useState(''); // 수정 가능하게
-  const [engName, setEngName] = useState(''); // 수정 가능하게
-  const [rrn, setRRN] = useState('');
-  const [phone, setPhone] = useState(''); // 수정 가능하게
-  const [email, setEmail] = useState(''); // 수정 가능하게
-  const [address, setAddress] = useState(''); // 수정 가능하게
-  const [telNo, setTelNo] = useState(''); // 수정 가능하게
-  useEffect(() => {
-    setName('이진');
-    setEngName('Lee Jin');
-    setRRN(formatProfileRRN('000207-3123456'));
-    setPhone(formatProfilePHN('010-1234-5678'));
-    setEmail(maskProfileEmail('ijin1234@gmail.com'));
-    setAddress('경기도 용인시 수지구');
-    setTelNo(formatProfilePHN('031-493-1234'));
   }, []);
 
   return (
@@ -45,7 +47,7 @@ export const ProfileContainer = () => {
           <span className='text-sm'>수정하기 </span>
           <ArrowIcon
             direction='right'
-            color='#c9c9c9'
+            color='#000000'
             className='w-4 h-4'
             viewBox='0 0 11 28'
           />
@@ -60,10 +62,6 @@ export const ProfileContainer = () => {
         <div className='w-full flex justify-between items-center'>
           <span className='text-subtitle'>영문이름</span>
           <span>{engName}</span>
-        </div>
-        <div className='w-full flex justify-between items-center'>
-          <span className='text-subtitle'>주민등록번호</span>
-          <span>{rrn}</span>
         </div>
         <div className='w-full flex justify-between items-center'>
           <span className='text-subtitle'>휴대폰번호</span>
@@ -87,17 +85,19 @@ export const ProfileContainer = () => {
           <span>{telNo}</span>
         </div>
       </div>
-      {/*<div className='flex justify-end items-center cursor-pointer'>*/}
-      {/*  <span className='text-sm'>수정하기 </span>*/}
-      {/*  <ArrowIcon*/}
-      {/*    direction='right'*/}
-      {/*    color='#c9c9c9'*/}
-      {/*    className='w-4 h-4'*/}
-      {/*    viewBox='0 0 11 28'*/}
-      {/*  />*/}
       <div className='flex flex-col gap-2'>
-        <Button text={'탈퇴하기'} thin={false} active={false} />
+        <Button
+          text={'탈퇴하기'}
+          thin={false}
+          active={false}
+          onClick={() => setShowLeaveModal(true)}
+        />
       </div>
+      {showLeaveModal && (
+        <ModalWrapper headerOnly={false}>
+          <LeaveModal onClose={() => setShowLeaveModal(false)} />
+        </ModalWrapper>
+      )}
     </div>
   );
 };

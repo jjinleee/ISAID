@@ -55,7 +55,7 @@ export default function AddressSearch({
   }, [openState]);
 
   return (
-    <div className='fixed inset-0  flex items-end w-full'>
+    <div className='fixed inset-0 flex items-end w-full'>
       <div className='absolute inset-0 z-50 bg-black opacity-50'></div>
       <div
         className={`w-full h-[70%] bg-white rounded-t-3xl z-51 ${

@@ -6,17 +6,14 @@ import { useRouter } from 'next/navigation';
 import ETFInfoSection from '@/app/(routes)/mypage/_components/etf-info-section';
 import IsaAccountSection from '@/app/(routes)/mypage/_components/isa-account-section';
 import ArrowIcon from '@/public/images/arrow-icon';
-import HanaIcon from '@/public/images/bank-icons/hana-icon';
-import StarBoyGirl from '@/public/images/my-page/star-boy-girl.svg';
 import StarBoy from '@/public/images/star-boy';
-import { ChartData } from '@/types/my-page';
-import Button from '@/components/button';
+import { ChartData, type Account } from '@/types/my-page';
 import ProgressBar from '@/components/progress-bar';
 import Tab from '@/components/tab';
+import { fetchISAInfo } from '@/lib/api/my-page';
 import EtfDetailRatioChart from '../_components/ratio-chart';
 import { etfDetailMap } from '../data/ratio-data';
 import type { EtfInfo } from '../data/ratio-data';
-import DeleteSheet from './delete-sheet';
 
 interface Props {
   session: Session;
@@ -25,11 +22,7 @@ interface Props {
 export const MyPageContainer = ({ session }: Props) => {
   const router = useRouter();
   const [selectedTab, setSelectedTab] = useState<number>(0);
-  const [connected, setConnected] = useState(true);
-  const [bankType, setBankType] = useState<string>('하나');
-  const [accountName, setAccountName] = useState<string>('하나은행 ISA 계좌');
-  const [accountNumber, setAccountNumber] =
-    useState<string>('592-910508-29670');
+  const [connected, setConnected] = useState(false);
   const [selectedItem, setSelectedItem] = useState<string>('');
   const [selectedEtf, setSelectedEtf] = useState<EtfInfo>({
     name: '',
@@ -38,6 +31,15 @@ export const MyPageContainer = ({ session }: Props) => {
     returnRate: 0,
     quantity: 0,
     portionOfTotal: 0,
+  });
+  const [account, setAccount] = useState<Account>({
+    id: '',
+    userId: '',
+    bankCode: '하나증권',
+    accountNum: '',
+    connectedAt: '',
+    currentBalance: 0,
+    accountType: '',
   });
 
   const chartData: ChartData[] = Object.entries(etfDetailMap).map(
@@ -49,6 +51,31 @@ export const MyPageContainer = ({ session }: Props) => {
   );
 
   const tabs = ['보유 ETF', '연결 계좌'];
+
+  useEffect(() => {
+    const fetchISA = async () => {
+      const res = await fetchISAInfo();
+      console.log('res : ', res);
+
+      if ('error' in res) {
+        if (res.error === 'NOT_FOUND') {
+          setConnected(false);
+          console.log('ISA 계좌가 없습니다.');
+        } else {
+          console.log('에러 발생: ', res.status || res.error);
+        }
+      } else {
+        setConnected(true);
+        console.log('res : ', res);
+        setAccount(res);
+      }
+    };
+    fetchISA();
+  }, []);
+
+  useEffect(() => {
+    console.log('account : ', account);
+  }, [account]);
 
   useEffect(() => {
     setSelectedEtf(etfDetailMap[selectedItem]);
@@ -85,9 +112,11 @@ export const MyPageContainer = ({ session }: Props) => {
           <h1 className='font-semibold'>ESFP : 자유로운 영혼의 연예인</h1>
           <div
             className='flex justify-end items-center absolute bottom-4 right-3 cursor-pointer'
-            onClick={() => router.push('mypage/edit-profile')}
+            onClick={() => router.push('mypage/profile')}
           >
-            <span className='font-light text-sm'>내 정보 수정하기 </span>
+            <span className='font-light text-sm'>
+              내 정보 확인 <span className='opacity-50'>/</span> 수정하기
+            </span>
             <ArrowIcon
               direction='right'
               color='#c9c9c9'
@@ -121,10 +150,8 @@ export const MyPageContainer = ({ session }: Props) => {
       {selectedTab === 1 && (
         <IsaAccountSection
           connected={connected}
-          accountName={accountName}
-          accountNumber={accountNumber}
-          bankType={bankType}
           userName={String(session.user.name)}
+          account={account}
         />
       )}
     </div>

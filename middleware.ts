@@ -12,7 +12,7 @@ export async function middleware(req: NextRequest) {
   );
 
   if (isProtected && !token) {
-    // return NextResponse.redirect(new URL('/', req.url));
+    return NextResponse.redirect(new URL('/', req.url));
   }
 
   return NextResponse.next();

@@ -16,7 +16,7 @@ export default function ResultPage({ questions, answers }: ResultPageProps) {
   const today = new Date();
   const router = useRouter();
 
-  // ✅ 1. 퀴즈 완료 날짜 저장 로직
+  // 퀴즈 완료 날짜 저장 로직
   useEffect(() => {
     const key = 'quizCompletedDates';
     const stored = localStorage.getItem(key);
@@ -31,7 +31,7 @@ export default function ResultPage({ questions, answers }: ResultPageProps) {
     }
   }, []);
 
-  // ✅ 2. 기존 결과 렌더링 로직
+  // 2. 기존 결과 렌더링 로직
   const wrongList = questions
     .map((q, idx) => ({ question: q, answer: answers[idx], index: idx }))
     .filter(

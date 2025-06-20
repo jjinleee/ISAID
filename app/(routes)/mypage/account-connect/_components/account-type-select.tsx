@@ -21,7 +21,7 @@ const AccountSelectSection = ({
   kindError,
 }: Props) => {
   const typeOptions = ['일반형', '서민형'];
-  const kindOptions = ['중개형', '신탁형', '일임형'];
+  const kindOptions = ['중개형'];
 
   const [openMenu, setOpenMenu] = useState<'type' | 'kind' | null>(null);
 

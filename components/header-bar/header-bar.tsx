@@ -1,19 +1,28 @@
 'use client';
 
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { useHeader } from '@/context/header-context';
 import BackIcon from '@/public/images/back-icon';
-import MenuIcon from '@/public/images/menu-icon';
+import User from '@/public/images/common/user.svg';
 import { HeaderBarProps } from '@/types/components';
 
 const HeaderBar = ({ title, subtitle, onMenuClick }: HeaderBarProps) => {
   const router = useRouter();
+  const { onBack } = useHeader();
+
+  const handleBack = () => {
+    if (onBack) {
+      onBack();
+    } else {
+      router.back();
+    }
+  };
 
   return (
     <div className='w-full bg-white px-6 py-3'>
       <div className='flex items-center justify-between'>
         <div className='flex gap-6 items-center'>
-          <button onClick={() => router.back()} className='cursor-pointer'>
+          <button onClick={handleBack} className='cursor-pointer'>
             <BackIcon />
           </button>
 
@@ -24,7 +33,7 @@ const HeaderBar = ({ title, subtitle, onMenuClick }: HeaderBarProps) => {
         </div>
 
         <button onClick={onMenuClick} className='cursor-pointer'>
-          <MenuIcon />
+          <User />
         </button>
       </div>
     </div>

@@ -38,7 +38,7 @@ export default function LoginPage() {
   return (
     <form
       onSubmit={handleLogin}
-      className='pt-20 px-7 flex flex-col gap-10 max-w-sm mx-auto'
+      className='px-7 flex flex-col gap-10 max-w-sm mx-auto'
     >
       <div
         className='

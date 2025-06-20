@@ -1,16 +1,21 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { toast } from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
 import AddressSearch from '@/app/(routes)/(auth)/register/_components/address-modal';
 import { FormData } from '@/app/(routes)/(auth)/register/_components/register-form';
+import { submitUserUpdate } from '@/app/(routes)/mypage/edit-profile/utils';
 import { useHeader } from '@/context/header-context';
+import ModalWrapper from '@/utils/modal';
 import Button from '@/components/button';
 import CustomInput from '@/components/input';
+import { fetchMyInfo, updateUser } from '@/lib/api/my-page';
 import { formatTelNo, validateField } from '@/lib/utils';
 
 interface HomeData {
   address: string;
-  telNo: string;
+  telNo?: string;
 }
 
 interface ValidationErrors {
@@ -19,14 +24,31 @@ interface ValidationErrors {
 
 export const EditHomeContainer = () => {
   const { setHeader } = useHeader();
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     setHeader('내 정보 수정하기', '자택 정보 수정');
   }, []);
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [homeData, setHomeData] = useState<HomeData>({
-    address: '경기도 용인시 수지구',
-    telNo: '021234567',
+    address: '',
+    telNo: '',
   });
+
+  useEffect(() => {
+    setHeader('내 정보 수정하기', '자택 정보 수정');
+    const fetchMe = async () => {
+      const res = await fetchMyInfo();
+
+      setHomeData({
+        address: res.address || '',
+        telNo: res.telno || '',
+      });
+    };
+    fetchMe();
+  }, []);
+
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>({
     address: false,
   });
@@ -45,6 +67,20 @@ export const EditHomeContainer = () => {
       }));
     }
   };
+
+  const submitData = async () => {
+    const data = {
+      address: homeData.address,
+      telno: homeData.telNo || '',
+    };
+    setLoading(true);
+    await submitUserUpdate({
+      data: data,
+      onSuccess: () => router.push('/mypage/edit-profile'),
+      onFinally: () => setLoading(false),
+    });
+  };
+
   return (
     <div className='w-full pt-8 pb-10 px-7 flex flex-col gap-5'>
       <h1 className='text-xl font-semibold'>자택 정보 변경</h1>
@@ -71,7 +107,7 @@ export const EditHomeContainer = () => {
             field='telNo'
             placeholder={''}
             value={homeData.telNo}
-            displayValue={formatTelNo(homeData.telNo)}
+            displayValue={homeData.telNo ? formatTelNo(homeData.telNo) : ''}
             onChangeField={handleInputChange}
           />
         </div>
@@ -80,13 +116,17 @@ export const EditHomeContainer = () => {
         text={'자택 정보 변경'}
         thin={false}
         active={!validationErrors.address}
+        disabled={loading}
+        onClick={submitData || validationErrors.address}
       />
       {showAddressModal && (
-        <AddressSearch
-          onCompleteAction={(addr) => handleAddressSelect(addr)}
-          onCloseAction={() => setShowAddressModal(false)}
-          openState={showAddressModal}
-        />
+        <ModalWrapper headerOnly={true}>
+          <AddressSearch
+            onCompleteAction={(addr) => handleAddressSelect(addr)}
+            onCloseAction={() => setShowAddressModal(false)}
+            openState={showAddressModal}
+          />
+        </ModalWrapper>
       )}
     </div>
   );
