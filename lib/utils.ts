@@ -269,3 +269,19 @@ export const addYears = (isoDateStr: string, years: number): string => {
   date.setFullYear(date.getFullYear() + years);
   return date.toISOString(); // 필요 시 다른 포맷으로 변환 가능
 };
+
+// 한국 시간(KST) 기준 오늘 날짜 YYYY-MM-DD 반환
+export function getTodayKSTString(): string {
+  const now = new Date();
+  const kstNow = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+  return kstNow.toISOString().split('T')[0];
+}
+export function getTodayKSTDate(): Date {
+  const now = new Date(); // 이미 KST
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+}
+export function getKSTDateFromISOString(dateStr: string): Date {
+  const utc = new Date(dateStr);
+  const kst = new Date(utc.getTime() + 9 * 60 * 60 * 1000);
+  return new Date(kst.getFullYear(), kst.getMonth(), kst.getDate());
+}

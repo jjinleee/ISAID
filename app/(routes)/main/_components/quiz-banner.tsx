@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import QuizBannerCharater from '@/public/images/quiz-banner-character.svg';
 import QUizBannerGift from '@/public/images/quiz-banner-gift.svg';
 import { isSameDay } from 'date-fns';
+import { getTodayKSTDate } from '@/lib/utils';
 
 interface Props {
   onComplete: (date: Date) => void;
@@ -19,12 +20,14 @@ export default function QuizBanner({
 }: Props) {
   const router = useRouter();
 
-  const today = new Date();
+  const today = getTodayKSTDate();
   const alreadyCompleted = completedDates.some((d) => isSameDay(d, today));
 
   const handleClick = () => {
     if (alreadyCompleted) {
       toast.success('문제를 복기합니다');
+      router.push('/quiz?review=true');
+      return;
     }
 
     router.push('/quiz');
