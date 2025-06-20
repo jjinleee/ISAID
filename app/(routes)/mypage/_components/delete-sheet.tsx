@@ -1,8 +1,11 @@
 'use client';
 
+import { useState } from 'react';
+import { toast } from 'react-hot-toast';
 import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import Button from '@/components/button';
+import SecurePinModal from '@/components/secure-pin-modal';
 
 interface Props {
   visible: boolean;
@@ -21,6 +24,22 @@ const slideUp = {
 };
 
 const DeleteSheet = ({ visible, onClose, deleteAccount }: Props) => {
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const handleVerifyPin = async (pin: string) => {
+    try {
+      if (pin !== '123456') {
+        toast.error('비밀번호가 올바르지 않습니다.');
+        return false;
+      }
+      deleteAccount();
+      return true;
+    } catch (err) {
+      toast.error('서버 오류가 발생했습니다.');
+      return false;
+    }
+  };
+
   return (
     <AnimatePresence>
       {visible && (
@@ -64,9 +83,14 @@ const DeleteSheet = ({ visible, onClose, deleteAccount }: Props) => {
                     thin={false}
                     active={false}
                     className={'!rounded-xl'}
-                    onClick={() => deleteAccount()}
+                    onClick={() => setModalOpen(true)}
                   />
                 </div>
+                <SecurePinModal
+                  visible={modalOpen}
+                  onClose={() => setModalOpen(false)}
+                  onSubmit={handleVerifyPin}
+                />
               </div>
             </motion.div>
           </div>
