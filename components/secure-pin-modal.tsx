@@ -32,10 +32,6 @@ export default function PinCodeSheet({ visible, onClose, onSubmit }: Props) {
   const handleDelete = () => setPin((prev) => prev.slice(0, -1));
   const handleReset = () => setPin('');
 
-  if (pin.length === 6) {
-    setTimeout(() => onSubmit(pin), 150);
-  }
-
   const generateShuffledDigits = (): string[] => {
     const nums = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
     for (let i = nums.length - 1; i > 0; i--) {
