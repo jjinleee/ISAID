@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ArrowLeft from '@/public/images/arrow-left.svg';
 import { CustomInput } from '@/components/input';
+import SecurePinModal from '@/components/secure-pin-modal';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { formatPhoneNumber, formatTelNo, validateField } from '@/lib/utils';
@@ -20,6 +21,7 @@ export interface FormData {
   email: string;
   password: string;
   passwordConfirm: string;
+  pinCode: string;
 }
 
 interface ValidationErrors {
@@ -32,10 +34,13 @@ interface ValidationErrors {
   email: boolean;
   password: boolean;
   passwordConfirm: boolean;
+  pinCode: boolean;
 }
 
 export default function RegisterForm() {
   const [currentStep, setCurrentStep] = useState(0);
+  const [showSecurePinModal, setShowSecurePinModal] = useState(false);
+
   const [formData, setFormData] = useState<FormData>({
     name: '',
     nameEng: '',
@@ -47,6 +52,7 @@ export default function RegisterForm() {
     email: '',
     password: '',
     passwordConfirm: '',
+    pinCode: '',
   });
 
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>({
@@ -59,10 +65,12 @@ export default function RegisterForm() {
     email: false,
     password: false,
     passwordConfirm: false,
+    pinCode: false,
   });
   const [showAddressModal, setShowAddressModal] = useState(false);
 
   const [showPasswordError, setShowPasswordError] = useState(false);
+  const [showPinError, setShowPinError] = useState(false);
   const [isCodeSent, setIsCodeSent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -143,7 +151,12 @@ export default function RegisterForm() {
         return (
           validateField('email', formData.email, formData) &&
           validateField('password', formData.password, formData) &&
-          validateField('passwordConfirm', formData.passwordConfirm, formData)
+          validateField(
+            'passwordConfirm',
+            formData.passwordConfirm,
+            formData
+          ) &&
+          validateField('pinCode', formData.pinCode, formData)
         );
 
       default:
@@ -168,6 +181,7 @@ export default function RegisterForm() {
           phone: formData.phone,
           address: formData.address,
           telno: formData.telNo,
+          pinCode: formData.pinCode,
         }),
       });
 
@@ -201,6 +215,8 @@ export default function RegisterForm() {
   const handleBack = () => {
     if (currentStep > 0) {
       setCurrentStep((prev) => prev - 1);
+    } else {
+      router.back();
     }
   };
 
@@ -471,6 +487,34 @@ export default function RegisterForm() {
                     비밀번호를 한번 더 입력해주세요.
                   </p>
                 </div>
+                <div className='space-y-2'>
+                  <Label htmlFor='password' className='text-gray-600'>
+                    간편 비밀번호
+                  </Label>
+                  <div onClick={() => setShowSecurePinModal(true)}>
+                    <CustomInput
+                      type='password'
+                      thin={true}
+                      placeholder='간편 비밀번호'
+                      name='pinCode'
+                      field='pinCode'
+                      value={'●'.repeat(formData.pinCode.length)}
+                      onChangeField={() => {}}
+                    />
+                  </div>
+
+                  <p
+                    className={`text-xs text-gray-500 ${
+                      formData.pinCode
+                        ? showPinError
+                          ? 'text-red-500'
+                          : 'text-primary'
+                        : 'text-gray-500'
+                    }`}
+                  >
+                    숫자 6자리를 조합해서 만들어 주세요.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -495,6 +539,19 @@ export default function RegisterForm() {
           onCompleteAction={(addr) => handleAddressSelect(addr)}
           onCloseAction={() => setShowAddressModal(false)}
           openState={showAddressModal}
+        />
+      )}
+      {showSecurePinModal && (
+        <SecurePinModal
+          visible={showSecurePinModal}
+          onClose={() => setShowSecurePinModal(false)}
+          onSubmit={async (pin) => {
+            setFormData((prev) => ({ ...prev, pinCode: pin }));
+            setShowSecurePinModal(false);
+            const isValid = validateField('pinCode', pin, formData);
+            setShowPinError(!isValid);
+            return true;
+          }}
         />
       )}
     </div>

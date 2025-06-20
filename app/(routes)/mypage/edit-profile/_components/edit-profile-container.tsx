@@ -23,6 +23,7 @@ export const EditProfileContainer = () => {
     { target: '자택 정보', path: 'home' },
     { target: '이메일', path: 'email' },
     { target: '비밀번호', path: 'password' },
+    { target: '간편비밀번호', path: 'pin' },
   ];
 
   return (

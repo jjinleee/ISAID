@@ -12,7 +12,6 @@ export const submitUserUpdate = async ({
   onFinally?: () => void;
 }) => {
   const res = await updateUser(data);
-  console.log('res : ', res);
 
   if (res.success) {
     toast.success('정보 수정이 완료되었습니다!', {
