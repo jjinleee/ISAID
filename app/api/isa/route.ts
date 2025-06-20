@@ -42,7 +42,6 @@ export async function POST(req: NextRequest) {
         },
         generalHoldingSnapshots: {
           create: {
-            instrumentType: 'BOND',
             snapshotDate: new Date(),
             evaluatedAmount: currentBalance,
             snapshotType: 'CASH',
