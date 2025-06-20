@@ -1,26 +1,156 @@
-// utils/etfPersonality.ts
-
-// 1. 리스크 성향 판단 (Q1~Q6 기준)
-export const getRiskType = (answers: (number | null)[] = []): string => {
-  if (!Array.isArray(answers) || answers.length < 6) return '안정형';
-
-  const score = answers
-    .slice(0, 6)
-    .map((v) => v ?? 0)
-    .reduce((acc, v) => acc + v, 0);
-
-  if (score <= 6) return '안정형';
-  if (score <= 10) return '안정추구형';
-  if (score <= 15) return '위험중립형';
-  if (score <= 20) return '적극투자형';
-  return '공격투자형';
+export type Question = {
+  id: number;
+  question: string;
+  options: string[];
 };
 
-// 2. ETF 분류체계별 임팩트/해시태그 정보
-const etfMetaMap: Record<
-  string,
-  { impact: string; hashtags: string[]; description: string }
-> = {
+export const questions: Question[] = [
+  {
+    id: 1,
+    question: '투자로 어떤 결과를 기대하시나요?',
+    options: [
+      '손해만 안 보면 돼요',
+      '예금보다 조금 더 수익 나면 좋겠어요',
+      '적당히 벌고 잃지 않으면 만족해요',
+      '수익을 조금 더 적극적으로 노리고 싶어요',
+      '리스크 있어도 고수익이 목표예요',
+    ],
+  },
+  {
+    id: 2,
+    question: '지금까지 해본 투자는 어떤 게 있나요?',
+    options: [
+      '전혀 없어요',
+      '예금/적금만 해봤어요',
+      '펀드/보험 같은 간접투자만',
+      '주식이나 ETF를 조금 해봤어요',
+      '이것저것 많이 해봤어요 (주식, ETF, 코인 등)',
+    ],
+  },
+  {
+    id: 3,
+    question: '돈을 얼마나 오래 투자하실 생각이신가요?',
+    options: ['6개월 이내', '1년 정도', '2~3년', '3~5년', '5년 이상'],
+  },
+  {
+    id: 4,
+    question: '투자한 금액이 줄어들면 어느 정도까지 괜찮으세요?',
+    options: [
+      '5%만 떨어져도 불안해요',
+      '10% 정도는 버틸 수 있어요',
+      '20%까지는 감수 가능해요',
+      '30% 손실도 괜찮아요',
+      '절반 가까이 줄어도 괜찮아요',
+    ],
+  },
+  {
+    id: 5,
+    question: '나이대를 선택해주세요',
+    options: ['65세 이상', '55~64세', '45~54세', '35~44세', '34세 이하'],
+  },
+  {
+    id: 6,
+    question: '연소득 대비, 지금 투자하려는 금액의 비중은요?',
+    options: [
+      '30% 이상이에요',
+      '20~30%예요',
+      '10~20%예요',
+      '5~10%예요',
+      '5% 이하예요',
+    ],
+  },
+  {
+    id: 7,
+    question: '나는 친구들 사이에서 어떤 사람인가?',
+    options: [
+      '주변 모두를 챙기는 믿음직한 친구',
+      '새로운 트렌드를 빠르게 찾는 친구',
+      '독특한 분야에 몰입하는 친구',
+    ],
+  },
+  {
+    id: 8,
+    question: '선호하는 여행 스타일은?',
+    options: [
+      '편안한 호텔이나 리조트',
+      '독특한 도시 탐방 및 인프라 경험',
+      '현지인처럼 장기적으로 머무는 여행',
+    ],
+  },
+  {
+    id: 9,
+    question: '관심있는 유튜브 콘텐츠는?',
+    options: [
+      '현실적이고 실용적인 정보',
+      '미래 기술 및 트렌드 소개',
+      '일상 리뷰 및 생활 관련 브이로그',
+    ],
+  },
+  {
+    id: 10,
+    question: '새로운 앱 출시 반응은?',
+    options: [
+      '안정적이고 유명한 앱 선택',
+      '혁신적이고 트렌디한 앱 선택',
+      '꼼꼼히 분석하여 앱 사용',
+    ],
+  },
+  {
+    id: 11,
+    question: '영화/드라마 장르 선호는?',
+    options: [
+      '힐링, 로맨스, 코미디',
+      '현실적, 역사적 다큐멘터리',
+      '액션, 서스펜스',
+    ],
+  },
+  {
+    id: 12,
+    question: '가장 끌리는 취미활동/부업은?',
+    options: [
+      '온라인으로 집에서 쉽게 수익 창출',
+      '오래 걸리더라도 중장기 산업 관련 공부나 사업',
+      '트렌디한 취미 클래스 경험',
+    ],
+  },
+  {
+    id: 13,
+    question: '하루 일과를 마치고 잠들기 전 나는?',
+    options: [
+      '일과를 분석적으로 정리하고 휴식',
+      '내일을 위한 새로운 아이디어 구상',
+      '오늘 하루를 돌아보며 편안하게 쉬기',
+    ],
+  },
+  {
+    id: 14,
+    question: '투자 스타일을 한 문장으로 표현한다면?',
+    options: [
+      '안정적이고 그룹 중심 투자',
+      '모험과 리스크를 즐기는 투자',
+      '내재적 가치와 실물 경제 분석 투자',
+    ],
+  },
+  {
+    id: 15,
+    question: '내 성격과 비슷한 취미활동은?',
+    options: [
+      '팀/그룹 활동 선호',
+      '경제·금융 관련 분석 활동',
+      '제조·산업 기반 프로젝트 참여',
+    ],
+  },
+  {
+    id: 16,
+    question: '내가 중요하게 생각하는 투자 가치는?',
+    options: [
+      '산업 전체 흐름 이해',
+      '실물경제 기반 안정적 성장',
+      '리스크를 통한 차별화 수익 추구',
+    ],
+  },
+];
+export const etfMetaMapData = {
   '주식-전략-성장': {
     impact: '🚀 미래 먹거리 픽!',
     hashtags: ['#성장주', '#미래유망기업', '#고성장'],
@@ -179,15 +309,7 @@ const etfMetaMap: Record<
   },
 };
 
-// 3. 메타정보 추출 함수
-const getMetaForType = (name: string) =>
-  etfMetaMap[name] || { impact: '✨ 설명 준비중', hashtags: ['#ETF'] };
-
-// 4. 질문 번호 ~ 선택지에 따른 분류체계/이유 매핑
-const questionReasonMap: Record<
-  number,
-  Record<number, { types: string[]; reason: string }>
-> = {
+export const questionReasonMapData = {
   6: {
     0: {
       types: ['혼합자산-주식+채권', '주식-업종섹터'],
@@ -328,46 +450,4 @@ const questionReasonMap: Record<
       reason: '리스크 기반 차별화 전략에 끌리셨어요 (Q16).',
     },
   },
-};
-
-// 5. 최종 추천 타입 추출 함수 (count + reason + meta 통합)
-export const getRecommendedTypesWithReasons = (
-  answers: (number | null)[]
-): {
-  description: string;
-  name: string;
-  reason: string[];
-  impact: string;
-  hashtags: string[];
-}[] => {
-  if (!Array.isArray(answers) || answers.length < 16) return [];
-
-  const counts: Record<string, number> = {};
-  const reasonsMap: Record<string, string[]> = {};
-
-  for (let i = 6; i <= 15; i++) {
-    const answer = answers[i];
-    if (answer == null) continue;
-
-    const qMap = questionReasonMap[i];
-    const entry = qMap?.[answer];
-    if (!entry) continue;
-
-    entry.types.forEach((type) => {
-      counts[type] = (counts[type] || 0) + 1;
-      if (!reasonsMap[type]) reasonsMap[type] = [];
-      if (!reasonsMap[type].includes(entry.reason)) {
-        reasonsMap[type].push(entry.reason);
-      }
-    });
-  }
-
-  return Object.entries(counts)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 3)
-    .map(([name]) => ({
-      name,
-      reason: reasonsMap[name] ?? ['-'], // ✅ 배열로 유지
-      ...getMetaForType(name),
-    }));
 };

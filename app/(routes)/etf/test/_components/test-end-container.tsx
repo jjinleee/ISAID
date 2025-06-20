@@ -1,13 +1,9 @@
 'use client';
 
 import { useEffect } from 'react';
-import Image from 'next/image';
 import StayBoyTest from '@/public/images/star-boy-test.svg';
-import {
-  getRecommendedTypesWithReasons,
-  getRiskType,
-} from '@/utils/etfPersonality';
 import Button from '@/components/button';
+import { getRecommendedTypesWithReasons, getRiskType } from '@/lib/test/utils';
 
 interface TestEndContainerProps {
   btnClick: () => void;
@@ -38,29 +34,29 @@ export const TestEndContainer = ({
       <div className='flex flex-col gap-8 mt-8 w-full max-w-xl'>
         {recommended.map((item) => (
           <div key={item.name} className='p-6 rounded-xl shadow-lg bg-white'>
-            {/* 👉 분류체계 이름 */}
+            {/* 분류체계 이름 */}
             <div className='text-sm text-gray-500 font-mono mb-1'>
               [{item.name}]
             </div>
 
-            {/* 👉 임팩트 문구 */}
+            {/* 임팩트 문구 */}
             <div className='text-xl font-semibold text-primary'>
               {item.impact}
             </div>
 
-            {/* 👉 줄바꿈 된 추천 이유 목록 */}
+            {/* 줄바꿈 된 추천 이유 목록 */}
             <div className='text-base mt-3 text-gray-800'>
               {item.reason.map((line, idx) => (
                 <p key={idx}>• {line}</p>
               ))}
             </div>
 
-            {/* 👉 설명 */}
+            {/* 설명 */}
             <div className='text-base mt-4 text-gray-900 leading-relaxed'>
               {item.description}
             </div>
 
-            {/* 👉 해시태그 */}
+            {/* 해시태그 */}
             <div className='flex flex-wrap gap-2 mt-4'>
               {item.hashtags.map((tag) => (
                 <span
