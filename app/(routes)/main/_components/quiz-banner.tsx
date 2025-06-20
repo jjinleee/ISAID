@@ -2,7 +2,7 @@
 
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
-import QuizBannerCharater from '@/public/images/quiz-banner-character.svg';
+import QuizBannerCharacter from '@/public/images/quiz-banner-character.svg';
 import QUizBannerGift from '@/public/images/quiz-banner-gift.svg';
 import { isSameDay } from 'date-fns';
 import { getTodayKSTDate } from '@/lib/utils';
@@ -37,7 +37,7 @@ export default function QuizBanner({
     <div className='bg-primary rounded-xl px-4 pb-3 text-white flex items-center gap-3 cursor-pointer'>
       {/* 캐릭터 */}
       <div className='flex-shrink-0'>
-        <QuizBannerCharater />
+        <QuizBannerCharacter />
       </div>
 
       {/* 가운데 텍스트 */}

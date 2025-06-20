@@ -19,6 +19,15 @@ const MainPageContainer = () => {
 
     if (sorted.length === 0) return '퀴즈를 풀고 출석해보세요!';
 
+    const today = getTodayKSTDate();
+    const last = sorted[sorted.length - 1];
+
+    // 1. 오늘 출석 안 했으면 → 출석 유도 문구
+    if (!isSameDay(last, today)) {
+      return '퀴즈를 풀고 출석해보세요!';
+    }
+
+    // 2. 오늘 출석한 경우 → 뒤에서부터 연속성 계산
     let count = 1;
     for (let i = sorted.length - 1; i > 0; i--) {
       const curr = sorted[i];
@@ -28,7 +37,7 @@ const MainPageContainer = () => {
       if (diff === 1) {
         count++;
       } else {
-        break;
+        break; // 하루라도 끊기면 종료
       }
     }
 
