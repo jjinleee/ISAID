@@ -5,7 +5,8 @@ import { createContext, useContext, useState } from 'react';
 interface HeaderContextProps {
   title: string;
   subtitle?: string;
-  setHeader: (title: string, subtitle?: string) => void;
+  onBack?: () => void;
+  setHeader: (title: string, subtitle?: string, onBack?: () => void) => void;
 }
 
 const HeaderContext = createContext<HeaderContextProps | null>(null);
