@@ -27,8 +27,10 @@ export default function PageHeader() {
       return false;
     }
     setPinVerified();
-    setModalOpen(false);
-    router.push('/mypage');
+    setTimeout(() => {
+      setModalOpen(false);
+      router.push('/mypage');
+    }, 300);
     return true;
   };
 

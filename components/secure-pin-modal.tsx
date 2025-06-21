@@ -81,7 +81,7 @@ export default function PinCodeSheet({ visible, onClose, onSubmit }: Props) {
           {/* Bottom Sheet */}
           <div className='fixed bottom-0 left-0 right-0 z-60 flex justify-center '>
             <motion.div
-              className='w-full max-w-[768px] bg-white h-[70vh] px-6 pt-8 pb-10 rounded-t-2xl'
+              className='w-full max-w-[768px] bg-white min-h-[66dvh] max-h-[calc(100dvh-80px)] px-6 pt-8 rounded-t-2xl'
               initial='hidden'
               animate='visible'
               exit='hidden'
