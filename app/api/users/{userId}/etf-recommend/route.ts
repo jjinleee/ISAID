@@ -15,7 +15,7 @@ import { prisma } from '@/lib/prisma';
 interface EtfRecommendationRequest {
   limit?: number;
   categoryFilter?: string[];
-  riskPreference?:
+  investType?:
     | 'CONSERVATIVE'
     | 'MODERATE'
     | 'NEUTRAL'
@@ -45,7 +45,7 @@ interface EtfRecommendationResponse {
 
 // 하나증권 위험등급 분류 함수 (5단계)
 function classifyRiskGrade(volatility: number): number {
-  // 월간 변동성을 연간 변동성으로 변환 (√12)
+  // 월간 변동성을 연간 변동성으로 변환
   const annualVolatility = volatility * Math.sqrt(12);
 
   // 하나증권 5단계 위험등급 기준
@@ -90,49 +90,49 @@ function calculateSharpeRatio(return1y: number, volatility: number): number {
 function getRiskBasedWeights(investType: InvestType) {
   const weights = {
     CONSERVATIVE: {
-      sharpeRatio: 0.25,
-      totalFee: 0.2,
-      tradingVolume: 0.15,
+      sharpeRatio: 0.1,
+      totalFee: 0.3,
+      tradingVolume: 0.2,
       netAssetValue: 0.2,
-      trackingError: 0.1,
-      divergenceRate: 0.05,
-      volatility: 0.05,
-    },
-    MODERATE: {
-      sharpeRatio: 0.3,
-      totalFee: 0.15,
-      tradingVolume: 0.15,
-      netAssetValue: 0.15,
-      trackingError: 0.1,
+      trackingError: 0.05,
       divergenceRate: 0.05,
       volatility: 0.1,
     },
-    NEUTRAL: {
-      sharpeRatio: 0.25,
-      totalFee: 0.15,
+    MODERATE: {
+      sharpeRatio: 0.15,
+      totalFee: 0.25,
       tradingVolume: 0.15,
       netAssetValue: 0.15,
-      trackingError: 0.1,
-      divergenceRate: 0.05,
+      trackingError: 0.05,
+      divergenceRate: 0.1,
+      volatility: 0.15,
+    },
+    NEUTRAL: {
+      sharpeRatio: 0.2,
+      totalFee: 0.2,
+      tradingVolume: 0.15,
+      netAssetValue: 0.15,
+      trackingError: 0.05,
+      divergenceRate: 0.15,
       volatility: 0.15,
     },
     ACTIVE: {
-      sharpeRatio: 0.2,
-      totalFee: 0.1,
+      sharpeRatio: 0.25,
+      totalFee: 0.15,
       tradingVolume: 0.2,
       netAssetValue: 0.1,
-      trackingError: 0.1,
+      trackingError: 0.05,
       divergenceRate: 0.1,
-      volatility: 0.1,
+      volatility: 0.15,
     },
     AGGRESSIVE: {
-      sharpeRatio: 0.15,
-      totalFee: 0.05,
-      tradingVolume: 0.25,
+      sharpeRatio: 0.3,
+      totalFee: 0.1,
+      tradingVolume: 0.2,
       netAssetValue: 0.05,
-      trackingError: 0.1,
-      divergenceRate: 0.15,
-      volatility: 0.15,
+      trackingError: 0.05,
+      divergenceRate: 0.1,
+      volatility: 0.2,
     },
   };
 
