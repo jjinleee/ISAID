@@ -75,8 +75,11 @@ export default function GuidePageContainer() {
           ))}
         </div>
         <div className='flex items-center justify-between'>
-          <h2 className='text-lg font-semibold text-gray-900'>숏츠 가이드</h2>
-          <div className='flex items-end'>
+          <h2 className='text-lg font-semibold'>숏츠 가이드</h2>
+          <div
+            className='flex items-end'
+            onClick={() => router.push('/guide/shorts-viewer')}
+          >
             <span>더 보기</span>
             <ArrowIcon
               direction='right'
@@ -87,7 +90,7 @@ export default function GuidePageContainer() {
         </div>
         <div>
           <div className='grid grid-cols-2 gap-3'>
-            {shortVideos.map((video) => (
+            {shortVideos.slice(0, 4).map((video) => (
               <VideoPreview
                 key={video.id}
                 id={video.id}

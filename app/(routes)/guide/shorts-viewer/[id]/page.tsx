@@ -1,5 +1,3 @@
-// app/guide/shorts-viewer/[id]/page.tsx
-
 import { notFound } from 'next/navigation';
 import { shortVideos } from '../../data/video-data';
 import ShortsViewer from './_components/shorts-viewer';
