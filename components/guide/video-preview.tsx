@@ -46,11 +46,9 @@ export const VideoPreview = ({
 }: VideoPreviewProps) => {
   const router = useRouter();
   const videoId = getYoutubeVideoId(videoUrl);
-  console.log('videoId : ', videoId);
   const thumbnailUrl = videoId
     ? `https://img.youtube.com/vi/${videoId}/0.jpg`
     : null;
-  console.log('thumbnailUrl : ', thumbnailUrl);
   const handleClick = (id: string) => {
     router.push(`/guide/shorts-viewer/${id}`);
   };
