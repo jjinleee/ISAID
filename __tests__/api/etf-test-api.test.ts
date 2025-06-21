@@ -5,7 +5,6 @@ import { getServerSession } from 'next-auth';
 import { NextRequest } from 'next/server';
 import { GET, POST } from '@/app/api/etf/mbti/route';
 import { InvestType } from '@prisma/client';
-import { prisma as mockPrisma } from '@/lib/prisma';
 import {
   createMockEtfCategories,
   createMockSession,
@@ -18,33 +17,38 @@ jest.mock('next-auth', () => ({
   getServerSession: jest.fn(),
 }));
 
+// lazy loading으로 prisma mock 설정
 jest.mock('@/lib/prisma', () => {
-  const mockPrisma = {
-    $transaction: jest.fn(),
-    investmentProfile: {
-      findUnique: jest.fn(),
-      upsert: jest.fn(),
+  const { createPrismaMock } = require('@/__mocks__/prisma-factory');
+  let mockPrisma: ReturnType<typeof createPrismaMock>;
+
+  return {
+    get prisma() {
+      if (!mockPrisma) {
+        mockPrisma = createPrismaMock();
+      }
+      return mockPrisma;
     },
-    user: {
-      findUnique: jest.fn(),
-    },
-    etfCategory: {
-      findMany: jest.fn(),
-    },
-    userEtfCategory: {
-      deleteMany: jest.fn(),
-      createMany: jest.fn(),
+    __resetMockPrisma() {
+      mockPrisma = createPrismaMock();
+      return mockPrisma;
     },
   };
-  return { prisma: mockPrisma };
 });
 
 const mockGetServerSession = getServerSession as jest.Mock;
 
+const getMockPrisma = () => {
+  const prismaMock = require('@/lib/prisma');
+  return prismaMock.__resetMockPrisma();
+};
+
 describe('/api/etf/mbti', () => {
+  let mockPrisma: any;
+
   beforeEach(() => {
     jest.clearAllMocks();
-    // mockPrisma.investmentProfile.upsert.mockReset();
+    mockPrisma = getMockPrisma();
   });
 
   describe('POST', () => {

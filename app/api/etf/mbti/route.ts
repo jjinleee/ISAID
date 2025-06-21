@@ -74,6 +74,17 @@ export async function GET(req: NextRequest) {
       );
     }
 
+    // 3. BigInt 변환 Number(category.id) or category.id.toString()
+    // const serializedProfile = {
+    //   investType: profile.investType,
+    //   preferredCategories: profile.preferredCategories.map((category) => ({
+    //     id: Number(category.id),
+    //     fullPath: category.fullPath,
+    //   })),
+    // };
+
+    // return NextResponse.json(serializedProfile);
+
     return NextResponse.json(profile);
   } catch (error) {
     console.error('MBTI GET API 오류:', error);
