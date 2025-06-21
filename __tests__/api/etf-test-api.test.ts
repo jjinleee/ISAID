@@ -3,9 +3,9 @@
  */
 import { getServerSession } from 'next-auth';
 import { NextRequest } from 'next/server';
-import { createPrismaMock } from '@/__mocks__/prisma-factory';
 import { GET, POST } from '@/app/api/etf/mbti/route';
 import { InvestType } from '@prisma/client';
+import { prisma as mockPrisma } from '@/lib/prisma';
 import {
   createMockEtfCategories,
   createMockSession,
@@ -18,19 +18,33 @@ jest.mock('next-auth', () => ({
   getServerSession: jest.fn(),
 }));
 
-jest.mock('@/lib/prisma', () => ({
-  get prisma() {
-    return mockPrisma;
-  },
-}));
+jest.mock('@/lib/prisma', () => {
+  const mockPrisma = {
+    $transaction: jest.fn(),
+    investmentProfile: {
+      findUnique: jest.fn(),
+      upsert: jest.fn(),
+    },
+    user: {
+      findUnique: jest.fn(),
+    },
+    etfCategory: {
+      findMany: jest.fn(),
+    },
+    userEtfCategory: {
+      deleteMany: jest.fn(),
+      createMany: jest.fn(),
+    },
+  };
+  return { prisma: mockPrisma };
+});
 
-let mockPrisma: ReturnType<typeof createPrismaMock>;
 const mockGetServerSession = getServerSession as jest.Mock;
 
 describe('/api/etf/mbti', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockPrisma = createPrismaMock();
+    // mockPrisma.investmentProfile.upsert.mockReset();
   });
 
   describe('POST', () => {
@@ -200,9 +214,9 @@ describe('/api/etf/mbti', () => {
       expect(data).toEqual({
         investType: InvestType.CONSERVATIVE,
         preferredCategories: [
-          { id: 6n, fullPath: '주식-업종섹터-금융' },
-          { id: 11n, fullPath: '주식-업종섹터-정보기술' },
-          { id: 10n, fullPath: '주식-업종섹터-헬스케어' },
+          { id: 6, fullPath: '주식-업종섹터-금융' },
+          { id: 11, fullPath: '주식-업종섹터-정보기술' },
+          { id: 10, fullPath: '주식-업종섹터-헬스케어' },
         ],
       });
     });

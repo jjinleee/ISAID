@@ -18,9 +18,9 @@ export const mockInvestmentProfileResult = {
 // 사용자 선호 ETF 카테고리 조회 mock 응답
 export const mockUserEtfCategoriesResult = {
   userEtfCategories: [
-    { etfCategory: { id: 6n, fullPath: '주식-업종섹터-금융' } },
-    { etfCategory: { id: 11n, fullPath: '주식-업종섹터-정보기술' } },
-    { etfCategory: { id: 10n, fullPath: '주식-업종섹터-헬스케어' } },
+    { etfCategory: { id: 6, fullPath: '주식-업종섹터-금융' } },
+    { etfCategory: { id: 11, fullPath: '주식-업종섹터-정보기술' } },
+    { etfCategory: { id: 10, fullPath: '주식-업종섹터-헬스케어' } },
   ],
 };
 

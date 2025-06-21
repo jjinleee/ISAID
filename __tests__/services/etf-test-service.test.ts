@@ -43,9 +43,7 @@ describe('EtfTestService', () => {
       const mockCategories = createMockEtfCategories();
       const mockTransaction = jest.fn().mockImplementation(async (callback) => {
         const mockTx = {
-          investmentProfile: {
-            upsert: jest.fn(),
-          },
+          investmentProfile: { upsert: jest.fn() },
           etfCategory: {
             findMany: jest
               .fn()
@@ -64,7 +62,6 @@ describe('EtfTestService', () => {
       });
 
       mockPrisma.$transaction = mockTransaction;
-
       await etfMbtiService.saveMbtiResult(validParams);
 
       expect(mockTransaction).toHaveBeenCalledTimes(1);
@@ -83,12 +80,8 @@ describe('EtfTestService', () => {
 
       const mockTransaction = jest.fn().mockImplementation(async (callback) => {
         const mockTx = {
-          investmentProfile: {
-            upsert: mockUpsert,
-          },
-          etfCategory: {
-            findMany: mockFindMany,
-          },
+          investmentProfile: { upsert: mockUpsert },
+          etfCategory: { findMany: mockFindMany },
           userEtfCategory: {
             deleteMany: mockDeleteMany,
             createMany: mockCreateMany,
@@ -157,12 +150,8 @@ describe('EtfTestService', () => {
 
       const mockTransaction = jest.fn().mockImplementation(async (callback) => {
         const mockTx = {
-          investmentProfile: {
-            upsert: jest.fn(),
-          },
-          etfCategory: {
-            findMany: jest.fn().mockResolvedValue([]),
-          },
+          investmentProfile: { upsert: jest.fn() },
+          etfCategory: { findMany: jest.fn().mockResolvedValue([]) },
           userEtfCategory: {
             deleteMany: jest.fn(),
             createMany: jest.fn(),
@@ -192,9 +181,9 @@ describe('EtfTestService', () => {
       expect(result).toEqual({
         investType: InvestType.CONSERVATIVE,
         preferredCategories: [
-          { id: 6n, fullPath: '주식-업종섹터-금융' },
-          { id: 11n, fullPath: '주식-업종섹터-정보기술' },
-          { id: 10n, fullPath: '주식-업종섹터-헬스케어' },
+          { id: 6, fullPath: '주식-업종섹터-금융' },
+          { id: 11, fullPath: '주식-업종섹터-정보기술' },
+          { id: 10, fullPath: '주식-업종섹터-헬스케어' },
         ],
       });
     });
