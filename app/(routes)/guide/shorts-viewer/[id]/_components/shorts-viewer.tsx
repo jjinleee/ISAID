@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useHeader } from '@/context/header-context';
-import { Bookmark, Heart, Share, Volume2, VolumeX } from 'lucide-react';
+import { Bookmark, Share, Volume2, VolumeX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ShareSheet from './share-sheet';
 
@@ -133,21 +133,6 @@ export default function ShortsViewer({ video }: ShortsViewerProps) {
 
             {/* 버튼 그룹 */}
             <div className='absolute bottom-0 right-0 p-4 z-10 flex flex-col items-center gap-4'>
-              <Button
-                variant='ghost'
-                size='icon'
-                className='text-white hover:bg-white/20 flex-col h-auto p-2'
-                onClick={() => setLiked((prev) => !prev)}
-              >
-                <Heart
-                  className={`h-6 w-6 ${
-                    liked ? 'fill-red-500 text-red-500' : ''
-                  }`}
-                />
-                <span className='text-xs mt-1'>
-                  {liked ? video.likes + 1 : video.likes}
-                </span>
-              </Button>
               <Button
                 variant='ghost'
                 size='icon'
