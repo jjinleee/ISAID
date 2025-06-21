@@ -12,7 +12,7 @@ export default function BodyWrapper({
 
   return (
     <div
-      className={`scrollbar-hide antialiased ${isRoot ? '' : 'pt-20 pb-20 '}`}
+      className={`scrollbar-hide antialiased ${isRoot ? '' : 'pt-14 pb-20 '}`}
     >
       {children}
     </div>
