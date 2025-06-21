@@ -47,7 +47,7 @@ export default function GuidePageContainer() {
             <Card
               key={index}
               className='hover:shadow-md transition-shadow cursor-pointer'
-              onClick={() => router.push('guide-category')}
+              onClick={() => router.push('/guide/category/' + category.title)}
             >
               <CardContent className='p-4'>
                 <div className='flex items-start gap-4'>

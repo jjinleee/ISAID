@@ -1,16 +1,8 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import {
-  ArrowLeft,
-  Bookmark,
-  Heart,
-  MoreVertical,
-  Share,
-  Volume2,
-  VolumeX,
-  X,
-} from 'lucide-react';
+import { useHeader } from '@/context/header-context';
+import { Bookmark, Heart, Share, Volume2, VolumeX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ShareSheet from './share-sheet';
 
@@ -36,6 +28,13 @@ export default function ShortsViewer({ video }: ShortsViewerProps) {
   const [liked, setLiked] = useState(false);
   const [bookmarked, setBookmarked] = useState(false);
   const [shareVisible, setShareVisible] = useState(false);
+  const { setHeader } = useHeader();
+  console.log('video : ', video);
+  useEffect(() => {
+    if (video) {
+      setHeader('숏츠 가이드', video.title);
+    }
+  }, [video]);
 
   const getYoutubeId = (url: string): string | null => {
     try {
