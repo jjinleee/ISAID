@@ -9,6 +9,9 @@ const nextConfig: NextConfig = {
     });
     return config;
   },
+  images: {
+    domains: ['img.youtube.com'],
+  },
 };
 
 export default nextConfig;

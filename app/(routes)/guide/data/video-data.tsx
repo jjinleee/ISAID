@@ -1,0 +1,48 @@
+export const shortVideos = [
+  {
+    id: '1',
+    title: '3분만에 알아보는 ETF',
+    description: 'ETF가 뭔지 모르겠다고? 3분이면 전문가가 될 수 있어요! 🚀',
+    duration: '3:24',
+    views: '12.5K',
+    likes: 892,
+    author: '금융쌤',
+    videoUrl: 'https://www.youtube.com/embed/lsMZPZIa1tU',
+    tags: ['ETF', '기초', '투자'],
+  },
+  {
+    id: '2',
+    title: 'ISA 계좌 완전정복',
+    description:
+      '세금 아끼는 ISA 계좌의 모든 것! 이거 모르면 손해 보는 거예요 💰',
+    duration: '4:12',
+    views: '8.9K',
+    likes: 654,
+    author: '절세왕',
+    videoUrl: 'https://www.youtube.com/embed/lsMZPZIa1tU',
+    tags: ['ISA', '절세', '계좌'],
+  },
+  {
+    id: '3',
+    title: '20대 투자 시작하기',
+    description: '20대부터 시작하는 똑똑한 투자법! 미래의 나를 위한 선택 ✨',
+    duration: '2:45',
+    views: '15.2K',
+    likes: 1203,
+    author: '투자멘토',
+    videoUrl: 'https://www.youtube.com/embed/lsMZPZIa1tU',
+    tags: ['20대', '투자', '시작'],
+  },
+  {
+    id: '4',
+    title: '리밸런싱이란?',
+    description:
+      '포트폴리오 리밸런싱으로 수익률 UP! 언제, 어떻게 해야 할까요? ⚖️',
+    duration: '3:56',
+    views: '6.7K',
+    likes: 445,
+    author: '포트폴리오마스터',
+    videoUrl: 'https://www.youtube.com/embed/lsMZPZIa1tU',
+    tags: ['리밸런싱', '포트폴리오', '전략'],
+  },
+];
