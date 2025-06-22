@@ -6,6 +6,8 @@
 // 괴리율 -> etf.divergence_rate
 // 변동성 -> etf.volatility
 
+// 사용자 성향에 따라서 추천 가능한 상품 필터링 되어야함
+
 import { getServerSession } from 'next-auth';
 import { NextRequest, NextResponse } from 'next/server';
 import { InvestType } from '@prisma/client';
@@ -113,7 +115,7 @@ function getRiskBasedWeights(investType: InvestType) {
       tradingVolume: 0.15,
       netAssetValue: 0.15,
       trackingError: 0.05,
-      divergenceRate: 0.15,
+      divergenceRate: 0.1,
       volatility: 0.15,
     },
     ACTIVE: {
