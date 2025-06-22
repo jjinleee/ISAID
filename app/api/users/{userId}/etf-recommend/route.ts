@@ -7,6 +7,7 @@
 // 변동성 -> etf.volatility
 
 // 사용자 성향에 따라서 추천 가능한 상품 필터링 되어야함
+// 추천에 대한 화면 구성
 
 import { getServerSession } from 'next-auth';
 import { NextRequest, NextResponse } from 'next/server';
@@ -92,49 +93,49 @@ function calculateSharpeRatio(return1y: number, volatility: number): number {
 function getRiskBasedWeights(investType: InvestType) {
   const weights = {
     CONSERVATIVE: {
-      sharpeRatio: 0.1,
-      totalFee: 0.3,
-      tradingVolume: 0.2,
-      netAssetValue: 0.2,
-      trackingError: 0.05,
+      sharpeRatio: 0.05,
+      totalFee: 0.35,
+      tradingVolume: 0.1,
+      netAssetValue: 0.25,
+      trackingError: 0.1,
       divergenceRate: 0.05,
       volatility: 0.1,
     },
     MODERATE: {
-      sharpeRatio: 0.15,
+      sharpeRatio: 0.1,
       totalFee: 0.25,
       tradingVolume: 0.15,
-      netAssetValue: 0.15,
-      trackingError: 0.05,
+      netAssetValue: 0.2,
+      trackingError: 0.1,
       divergenceRate: 0.1,
-      volatility: 0.15,
+      volatility: 0.1,
     },
     NEUTRAL: {
-      sharpeRatio: 0.2,
+      sharpeRatio: 0.15,
       totalFee: 0.2,
       tradingVolume: 0.15,
       netAssetValue: 0.15,
-      trackingError: 0.05,
+      trackingError: 0.1,
       divergenceRate: 0.1,
       volatility: 0.15,
     },
     ACTIVE: {
-      sharpeRatio: 0.25,
+      sharpeRatio: 0.2,
       totalFee: 0.15,
       tradingVolume: 0.2,
       netAssetValue: 0.1,
-      trackingError: 0.05,
-      divergenceRate: 0.1,
-      volatility: 0.15,
+      trackingError: 0.1,
+      divergenceRate: 0.15,
+      volatility: 0.1,
     },
     AGGRESSIVE: {
-      sharpeRatio: 0.3,
+      sharpeRatio: 0.25,
       totalFee: 0.1,
-      tradingVolume: 0.2,
+      tradingVolume: 0.25,
       netAssetValue: 0.05,
-      trackingError: 0.05,
-      divergenceRate: 0.1,
-      volatility: 0.2,
+      trackingError: 0.1,
+      divergenceRate: 0.15,
+      volatility: 0.1,
     },
   };
 
