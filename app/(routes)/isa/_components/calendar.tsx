@@ -4,7 +4,6 @@ import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
 import { useState } from 'react';
 import { CalendarIcon } from '@/public/images/isa/calendar-icon';
-import { convertTxs } from '@/utils/convert-data';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 
