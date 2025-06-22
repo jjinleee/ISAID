@@ -6,7 +6,7 @@ import Account from './account';
 import ContributionLimit from './contribution-limit';
 import ISADetail from './isa-detail';
 
-const ISAPageContainer = () => {
+const ISAPageContainer = ({ taxData }: { taxData: any }) => {
   const { setHeader } = useHeader();
 
   useEffect(() => {
@@ -17,7 +17,7 @@ const ISAPageContainer = () => {
     <div className='flex-col px-5 pb-5 flex flex-1/2'>
       <Account />
       <ContributionLimit />
-      <ISADetail />
+      <ISADetail taxData={taxData} />
     </div>
   );
 };
