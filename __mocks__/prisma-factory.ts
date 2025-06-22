@@ -37,3 +37,32 @@ export const createPrismaMock = (overrides = {}) => {
     ...overrides,
   };
 };
+
+// 투자성향 조회용 Mock
+export const createInvestProfileMock = () => {
+  return createPrismaMock({
+    investmentProfile: {
+      findUnique: jest.fn(),
+    },
+    user: {
+      findUnique: jest.fn(),
+    },
+    $transaction: jest.fn(),
+  });
+};
+
+// 선호 카테고리 조회용 Mock
+export const createPreferredCategoryMock = () => {
+  return createPrismaMock({
+    etfCategory: {
+      findMany: jest.fn(),
+    },
+    userEtfCategory: {
+      findMany: jest.fn(),
+    },
+    user: {
+      findUnique: jest.fn(),
+    },
+    $transaction: jest.fn(),
+  });
+};
