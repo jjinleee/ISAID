@@ -1,7 +1,11 @@
 import Calendar from './calendar';
 import ProgressBar from './progress-bar';
 
-const ContributionLimit = () => {
+const ContributionLimitAndCalendar = ({
+  transactions,
+}: {
+  transactions: any;
+}) => {
   return (
     <div className='flex flex-col p-4 gap-3'>
       <div className='flex w-full justify-between'>
@@ -13,9 +17,9 @@ const ContributionLimit = () => {
         <p className='font-semibold text-sm'>납입 금액: 1,700만 원</p>
         <p className='font-bold'>잔여 한도: 300만 원</p>
       </div>
-      <Calendar />
+      <Calendar data={transactions} />
     </div>
   );
 };
 
-export default ContributionLimit;
+export default ContributionLimitAndCalendar;

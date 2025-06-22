@@ -1,10 +1,15 @@
+import { getTransactions } from '@/app/actions/get-trasactions';
 import { taxSaving } from '@/app/actions/tax-saving';
+import { convertTxs } from '@/utils/convert-data';
 import ISAPageContainer from './_components/isa-page-container';
 
 const ISAPage = async () => {
-  const result = await taxSaving();
-  console.log(result);
-  return <ISAPageContainer taxData={result} />;
+  const taxData = await taxSaving();
+
+  const transactions = await getTransactions();
+  console.log(transactions);
+
+  return <ISAPageContainer taxData={taxData} transactions={transactions} />;
 };
 
 export default ISAPage;
