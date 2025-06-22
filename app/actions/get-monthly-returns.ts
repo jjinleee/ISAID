@@ -4,8 +4,7 @@ import { prisma } from '@/lib/prisma';
 
 export async function getMonthlyReturns(
   isaAccountId: number,
-  baseDate: string,
-  initialInvestment: number
+  baseDate: string
 ) {
   try {
     //월별 수익률 목록
@@ -62,7 +61,7 @@ export async function getMonthlyReturns(
       Number(etfEvaluated._sum.evaluatedAmount ?? 0) +
       Number(generalEvaluated._sum.evaluatedAmount ?? 0);
 
-    const totalInvestedAmount = initialInvestment;
+    const totalInvestedAmount = 17_000_000; // 고정 초기 투자금
 
     const 평가수익 = totalEvaluatedAmount - totalInvestedAmount;
 
