@@ -57,7 +57,7 @@ const Calendar = ({ data }: { data: any }) => {
             {format(selected!, 'M월 d일 (E)', { locale: ko })}
           </p>
           <ul className='space-y-3'>
-            {transactions.map((tx, idx) => (
+            {transactions.map((tx: Transaction, idx: number) => (
               <li
                 key={idx}
                 className='bg-white shadow rounded-xl px-4 py-3 flex justify-between items-center shadow-sm'
