@@ -29,7 +29,6 @@ export default function ShortsViewer({ video }: ShortsViewerProps) {
   const [bookmarked, setBookmarked] = useState(false);
   const [shareVisible, setShareVisible] = useState(false);
   const { setHeader } = useHeader();
-  console.log('video : ', video);
   useEffect(() => {
     if (video) {
       setHeader('숏츠 가이드', video.title);
