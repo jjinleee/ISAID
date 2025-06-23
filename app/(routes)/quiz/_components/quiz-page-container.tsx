@@ -2,41 +2,69 @@
 
 import { useEffect, useState } from 'react';
 import { useHeader } from '@/context/header-context';
-import { questions, QuizOption, QuizQuestion } from '../data/questions';
+import { getTodayKSTString } from '@/lib/utils';
+import { questions } from '../data/questions';
 import QUIZContent from './quiz-content';
 import ResultPage from './result-page';
 
 export default function QUIZPageContainer() {
   const { setHeader } = useHeader();
-
-  const total = questions.length;
-  const [current, setCurrent] = useState<number>(0);
   const [answers, setAnswers] = useState<Record<number, string>>({});
+  const [initialLoaded, setInitialLoaded] = useState(false);
+  const [showResult, setShowResult] = useState(false);
+  const [isReviewMode, setIsReviewMode] = useState(false);
+  const todayStr = getTodayKSTString();
+
   useEffect(() => {
-    const subtitle =
-      current === total ? '퀴즈 결과' : `${current + 1} / ${total}`;
-    setHeader('오늘의 금융 퀴즈', subtitle);
-  }, [setHeader, current, total]);
+    const key = 'quizAnswersByDate';
+    const stored = localStorage.getItem(key);
 
-  const selectAnswer = (value: string) =>
-    setAnswers((prev) => ({ ...prev, [current]: value }));
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (parsed[todayStr]) {
+        setAnswers(parsed[todayStr]);
+        setShowResult(true);
+        setIsReviewMode(true);
+      }
+    }
 
-  const goPrev = () => setCurrent((i) => Math.max(i - 1, 0));
-  const goNext = () => setCurrent((i) => Math.min(i + 1, total));
+    setInitialLoaded(true);
+  }, [todayStr]);
 
-  if (current === total) {
-    return <ResultPage questions={questions} answers={answers} />;
+  useEffect(() => {
+    if (!initialLoaded) return;
+    setHeader('오늘의 금융 퀴즈', showResult ? '퀴즈 결과' : '1 / 1');
+  }, [setHeader, showResult, initialLoaded]);
+
+  const handleSelect = (value: string) => {
+    const newAnswers = { 0: value };
+    setAnswers(newAnswers);
+    setShowResult(true);
+
+    const key = 'quizAnswersByDate';
+    const stored = localStorage.getItem(key);
+    const parsed = stored ? JSON.parse(stored) : {};
+    parsed[todayStr] = newAnswers;
+    localStorage.setItem(key, JSON.stringify(parsed));
+  };
+
+  if (!initialLoaded) return null;
+
+  if (showResult) {
+    return (
+      <ResultPage
+        questions={questions}
+        answers={answers}
+        isReviewMode={isReviewMode}
+      />
+    );
   }
 
   return (
     <QUIZContent
-      question={questions[current]}
-      current={current}
-      total={total}
-      selectedAnswer={answers[current] ?? null}
-      onSelect={selectAnswer}
-      onPrev={goPrev}
-      onNext={goNext}
+      question={questions[0]}
+      selectedAnswer={answers[0] ?? null}
+      onSelect={handleSelect}
     />
   );
 }
