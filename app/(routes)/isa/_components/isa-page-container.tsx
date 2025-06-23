@@ -12,12 +12,14 @@ const ISAPageContainer = ({
   taxData,
   transactions,
   ptData,
+  userName,
   monthlyReturnsData,
 }: {
   taxData: any;
   transactions: any;
   monthlyReturnsData: MonthlyReturnsSummary;
   ptData: PieChartData[];
+  userName: string;
 }) => {
   const { setHeader } = useHeader();
 
@@ -29,7 +31,7 @@ const ISAPageContainer = ({
     <div className='flex-col px-5 pb-5 flex flex-1/2'>
       <Account />
       <ContributionLimitAndCalendar transactions={transactions} />
-      <ISADetail taxData={taxData} monthlyReturnsData={monthlyReturnsData} ptData={ptData}/>
+      <ISADetail taxData={taxData} monthlyReturnsData={monthlyReturnsData} ptData={ptData} userName={userName}/>
     </div>
   );
 };
