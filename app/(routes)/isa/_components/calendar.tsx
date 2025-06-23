@@ -16,7 +16,6 @@ type Transaction = {
 const Calendar = ({ data }: { data: any }) => {
   const today = new Date();
   const [selected, setSelected] = useState<Date | undefined>();
-  console.log(data?.transactionDates);
 
   const formatDateKey = (date: Date) => format(date, 'yyyy-MM-dd');
 
