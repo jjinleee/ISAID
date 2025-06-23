@@ -10,14 +10,17 @@ export async function getISAPortfolio(yearMonth: string) {
   }
 
   const [year, month] = yearMonth.split('-').map(Number);
-  const snapshotDate = new Date(Date.UTC(year, month, 0, 23, 59, 59));
+  const snapshotDate = new Date(Date.UTC(year, month, 0));
 
   const isa = await prisma.iSAAccount.findUnique({
     where: { userId: BigInt(session.user.id) },
     select: {
       generalHoldingSnapshots: {
         where: {
-          snapshotDate: snapshotDate,
+          snapshotDate: {
+            gte: snapshotDate,
+            lt: new Date(snapshotDate.getTime() + 24 * 60 * 60 * 1000),
+          },
         },
         select: {
           evaluatedAmount: true,
@@ -36,7 +39,10 @@ export async function getISAPortfolio(yearMonth: string) {
       },
       etfHoldingSnapshots: {
         where: {
-          snapshotDate: snapshotDate,
+          snapshotDate: {
+            gte: snapshotDate,
+            lt: new Date(snapshotDate.getTime() + 24 * 60 * 60 * 1000),
+          },
         },
         select: {
           evaluatedAmount: true,
