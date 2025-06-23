@@ -19,7 +19,9 @@ const ISAPage = async () => {
     // 계좌가 없으면 아무것도 렌더링하지 않음
     return <ISAPageContainerWhenHasnot />;
   }
+
   const taxData = await taxSaving();
+
   const monthlyReturnsData: MonthlyReturnsSummary = await getMonthlyReturns(
     new Date().toISOString().slice(0, 10)
   );

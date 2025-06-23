@@ -11,8 +11,11 @@ const ISAPageContainerWhenHasnot = () => {
   }, []);
 
   return (
-    <div>
-      <p>계좌를 연결하면 사용할 수 있는 기능입니다!</p>
+    <div className='flex justify-center items-center w-full min-h-screen'>
+      <p>
+        이 페이지의 기능들을 이용하려면 <br />
+        먼저 ISA 계좌를 연결해 주세요!
+      </p>
     </div>
   );
 };
