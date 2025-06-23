@@ -1,50 +1,43 @@
 'use client';
 
-import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import QuizTrophy from '@/public/images/quiz-trophy.svg';
+import StarProQuiz from '@/public/images/Star_Pro_Quiz.svg';
 import QuestionOption from '@/components/question-option';
-import { getTodayKSTString } from '@/lib/utils';
-import { QuizQuestion } from '../data/questions';
 
-interface ResultPageProps {
-  questions: QuizQuestion[];
-  answers: Record<number, string>;
-  isReviewMode?: boolean;
+interface Selection {
+  id: string;
+  questionId: string;
+  content: string;
+}
+
+interface Question {
+  id: string;
+  content: string;
+  selections: Selection[];
+  description: string;
+}
+
+interface Props {
+  question: Question;
+  selectedId: string;
+  correctAnswerId: string;
+  isCorrect: boolean;
+  isReviewMode: boolean;
 }
 
 export default function ResultPage({
-  questions,
-  answers,
-  isReviewMode = false,
-}: ResultPageProps) {
+  question,
+  selectedId,
+  correctAnswerId,
+  isCorrect,
+  isReviewMode,
+}: Props) {
   const router = useRouter();
-  const todayStr = getTodayKSTString();
-
-  const question = questions[0];
-  const userAnswer = answers[0];
-
-  useEffect(() => {
-    if (isReviewMode) return;
-
-    const dateKey = 'quizCompletedDates';
-    const answerKey = 'quizAnswersByDate';
-
-    const storedDates = JSON.parse(localStorage.getItem(dateKey) || '[]');
-    if (!storedDates.includes(todayStr)) {
-      localStorage.setItem(dateKey, JSON.stringify([...storedDates, todayStr]));
-    }
-
-    const savedAnswers = JSON.parse(localStorage.getItem(answerKey) || '{}');
-    savedAnswers[todayStr] = answers;
-    localStorage.setItem(answerKey, JSON.stringify(savedAnswers));
-  }, [answers, isReviewMode, todayStr]);
-
-  const selectedOption = question.options.find((o) => o.value === userAnswer);
-  const isCorrect = selectedOption?.isCorrect ?? false;
 
   return (
     <div className='flex flex-col p-5 space-y-6'>
+      {/* 상단 메시지 */}
       <div className='w-full bg-primary rounded-lg p-6 text-center text-white'>
         <QuizTrophy className='mx-auto' />
         <h1 className='text-2xl font-bold mb-2'>퀴즈 완료!</h1>
@@ -57,27 +50,36 @@ export default function ResultPage({
         </p>
       </div>
 
+      {/* 문제/선택지 */}
       <div className='w-full h-full p-5 border-gray-2 shadow-[0px_4px_4px_rgba(0,0,0,0.25),0px_-2px_4px_rgba(0,0,0,0.15)] rounded-2xl'>
-        <div className='text-sm text-gray-500 mb-1'>문제 1</div>
-        <h2 className='text-lg font-semibold mb-10'>{question.question}</h2>
+        <div className='text-sm text-gray-500 mb-1'>오늘의 문제</div>
+        <h2 className='text-lg font-semibold mb-10'>{question.content}</h2>
 
         <div className='flex flex-col w-full gap-2 mb-10'>
-          {question.options.map((option) => {
-            const isSelected = option.value === userAnswer;
-            const isCorrect = option.isCorrect;
+          {question.selections.map((option) => {
+            const isSelected = option.id === selectedId;
+            const isAnswer = option.id === correctAnswerId;
             return (
               <QuestionOption
-                key={option.value}
-                text={option.label}
-                active={isCorrect}
-                error={isSelected && !isCorrect}
+                key={option.id}
+                text={option.content}
+                active={isAnswer}
+                error={isSelected && !isAnswer}
                 onClick={() => {}}
               />
             );
           })}
         </div>
+        <div className='w-full h-px bg-gray-300 px-4 my-4' />
+        <div className='flex gap-1 px-4 text-md font-bold'>
+          <div>
+            <StarProQuiz />
+          </div>
+          <div className='px-2 pt-10 '>{question.description}</div>
+        </div>
       </div>
 
+      {/* 메인으로 버튼 */}
       <button
         onClick={() => router.push('/main')}
         className='w-full py-4 text-lg font-semibold text-white bg-primary rounded-xl'
