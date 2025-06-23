@@ -11,6 +11,7 @@
 
 import { getServerSession } from 'next-auth';
 import { NextRequest, NextResponse } from 'next/server';
+import { EtfTestService } from '@/services/etf/etf-test-service';
 import { InvestType } from '@prisma/client';
 import { authOptions } from '@/lib/auth-options';
 import { prisma } from '@/lib/prisma';
@@ -224,6 +225,19 @@ function generateReasons(
   return reasons;
 }
 
+// 투자 성향별 허용 위험등급 설정
+function getAllowedRiskGrades(investType: InvestType): number[] {
+  const allowedGrades = {
+    CONSERVATIVE: [4, 5], // 저위험, 초저위험만 허용
+    MODERATE: [3, 4, 5], // 중위험, 저위험, 초저위험 허용
+    NEUTRAL: [2, 3, 4, 5], // 고위험, 중위험, 저위험, 초저위험 허용
+    ACTIVE: [1, 2, 3, 4, 5], // 모든 위험등급 허용
+    AGGRESSIVE: [1, 2, 3, 4, 5], // 모든 위험등급 허용
+  };
+
+  return allowedGrades[investType] || [3, 4, 5];
+}
+
 export async function GET(
   req: NextRequest,
   { params }: { params: { userId: string } }
@@ -243,15 +257,22 @@ export async function GET(
     const { searchParams } = new URL(req.url);
     const limit = parseInt(searchParams.get('limit') || '10');
     const categoryFilter = searchParams.get('category')?.split(',') || [];
-    const riskPreference =
-      (searchParams.get('risk') as InvestType) || 'NEUTRAL';
 
-    const userProfile = await prisma.investmentProfile.findUnique({
-      where: { userId: BigInt(userId) },
-      select: { investType: true },
-    });
+    // etf-test-service를 통해 사용자의 투자 성향 조회
+    const etfTestService = new EtfTestService();
+    const userInvestType = await etfTestService.getUserInvestType(
+      BigInt(userId)
+    );
 
-    const investType = userProfile?.investType || riskPreference;
+    // 사용자의 투자 성향이 없으면 추천 진행하지 않음
+    if (!userInvestType) {
+      return NextResponse.json(
+        { message: '투자 성향 테스트를 먼저 완료해주세요.' },
+        { status: 400 }
+      );
+    }
+
+    const investType = userInvestType;
 
     const etfs = await prisma.etf.findMany({
       where: {
@@ -338,107 +359,115 @@ export async function GET(
     const weights = getRiskBasedWeights(investType);
 
     // 각 ETF에 대한 종합 점수 계산
-    const scoredEtfs: EtfRecommendationResponse[] = etfs.map((etf) => {
-      const volatility = Number(etf.volatility) || 0;
-      const riskGrade = classifyRiskGrade(volatility);
+    const scoredEtfs: EtfRecommendationResponse[] = etfs
+      .map((etf) => {
+        const volatility = Number(etf.volatility) || 0;
+        const riskGrade = classifyRiskGrade(volatility);
 
-      // 샤프비율 계산 (하나증권 기준 적용)
-      const sharpeRatio = calculateSharpeRatio(
-        Number(etf.return1y) || 0,
-        volatility
-      );
+        // 투자 성향에 맞지 않는 위험등급은 제외
+        const allowedRiskGrades = getAllowedRiskGrades(investType);
+        if (!allowedRiskGrades.includes(riskGrade)) {
+          return null; // 필터링을 위해 null 반환
+        }
 
-      // 평균 거래대금 계산
-      const avgTradingVolume =
-        etf.tradings.length > 0
-          ? etf.tradings.reduce(
-              (sum, t) => sum + Number(t.accTotalValue) || 0,
-              0
-            ) / etf.tradings.length
-          : 0;
+        // 샤프비율 계산 (하나증권 기준 적용)
+        const sharpeRatio = calculateSharpeRatio(
+          Number(etf.return1y) || 0,
+          volatility
+        );
 
-      // 위험등급별 정규화된 변동성
-      const normalizedVolatility = normalizeVolatilityByRiskGrade(volatility);
+        // 평균 거래대금 계산
+        const avgTradingVolume =
+          etf.tradings.length > 0
+            ? etf.tradings.reduce(
+                (sum, t) => sum + Number(t.accTotalValue) || 0,
+                0
+              ) / etf.tradings.length
+            : 0;
 
-      // 각 지표 정규화 (0-1 범위)
-      const normalizedMetrics = {
-        sharpeRatio: normalize(sharpeRatio, -2, 2), // 샤프비율은 보통 -2~2 범위
-        totalFee:
-          1 -
-          normalize(
-            Number(etf.etfTotalFee) || 0,
-            metrics.etfTotalFee.min,
-            metrics.etfTotalFee.max
-          ), // 수수료는 낮을수록 좋음
-        tradingVolume: normalize(
-          avgTradingVolume,
-          tradingVolume.min,
-          tradingVolume.max
-        ),
-        netAssetValue: normalize(
-          Number(etf.netAssetTotalAmount) || 0,
-          metrics.netAssetTotalAmount.min,
-          metrics.netAssetTotalAmount.max
-        ),
-        trackingError:
-          1 -
-          normalize(
-            Number(etf.traceErrRate) || 0,
-            metrics.traceErrRate.min,
-            metrics.traceErrRate.max
-          ), // 추적오차는 낮을수록 좋음
-        divergenceRate:
-          1 -
-          normalize(
-            Math.abs(Number(etf.divergenceRate) || 0),
-            metrics.divergenceRate.min,
-            metrics.divergenceRate.max
-          ), // 괴리율은 낮을수록 좋음
-        volatility: normalizedVolatility, // 위험등급 기반 정규화된 변동성 사용
-      };
+        // 위험등급별 정규화된 변동성
+        const normalizedVolatility = normalizeVolatilityByRiskGrade(volatility);
 
-      // 가중 평균 점수 계산
-      const score =
-        normalizedMetrics.sharpeRatio * weights.sharpeRatio +
-        normalizedMetrics.totalFee * weights.totalFee +
-        normalizedMetrics.tradingVolume * weights.tradingVolume +
-        normalizedMetrics.netAssetValue * weights.netAssetValue +
-        normalizedMetrics.trackingError * weights.trackingError +
-        normalizedMetrics.divergenceRate * weights.divergenceRate +
-        normalizedMetrics.volatility * weights.volatility;
+        // 각 지표 정규화 (0-1 범위)
+        const normalizedMetrics = {
+          sharpeRatio: normalize(sharpeRatio, -2, 2), // 샤프비율은 보통 -2~2 범위
+          totalFee:
+            1 -
+            normalize(
+              Number(etf.etfTotalFee) || 0,
+              metrics.etfTotalFee.min,
+              metrics.etfTotalFee.max
+            ), // 수수료는 낮을수록 좋음
+          tradingVolume: normalize(
+            avgTradingVolume,
+            tradingVolume.min,
+            tradingVolume.max
+          ),
+          netAssetValue: normalize(
+            Number(etf.netAssetTotalAmount) || 0,
+            metrics.netAssetTotalAmount.min,
+            metrics.netAssetTotalAmount.max
+          ),
+          trackingError:
+            1 -
+            normalize(
+              Number(etf.traceErrRate) || 0,
+              metrics.traceErrRate.min,
+              metrics.traceErrRate.max
+            ), // 추적오차는 낮을수록 좋음
+          divergenceRate:
+            1 -
+            normalize(
+              Math.abs(Number(etf.divergenceRate) || 0),
+              metrics.divergenceRate.min,
+              metrics.divergenceRate.max
+            ), // 괴리율은 낮을수록 좋음
+          volatility: normalizedVolatility, // 위험등급 기반 정규화된 변동성 사용
+        };
 
-      return {
-        etfId: etf.id.toString(),
-        issueCode: etf.issueCode || '',
-        issueName: etf.issueName || '',
-        category: etf.category.fullPath,
-        score: Math.round(score * 100) / 100,
-        riskGrade: riskGrade, // 하나증권 위험등급 추가
-        metrics: {
-          sharpeRatio: Math.round(sharpeRatio * 100) / 100,
-          totalFee: Number(etf.etfTotalFee) || 0,
-          tradingVolume: avgTradingVolume,
-          netAssetValue: Number(etf.netAssetTotalAmount) || 0,
-          trackingError: Number(etf.traceErrRate) || 0,
-          divergenceRate: Number(etf.divergenceRate) || 0,
-          volatility: volatility,
-          normalizedVolatility: normalizedVolatility,
-        },
-        reasons: generateReasons(
-          etf,
-          {
-            sharpeRatio,
+        // 가중 평균 점수 계산
+        const score =
+          normalizedMetrics.sharpeRatio * weights.sharpeRatio +
+          normalizedMetrics.totalFee * weights.totalFee +
+          normalizedMetrics.tradingVolume * weights.tradingVolume +
+          normalizedMetrics.netAssetValue * weights.netAssetValue +
+          normalizedMetrics.trackingError * weights.trackingError +
+          normalizedMetrics.divergenceRate * weights.divergenceRate +
+          normalizedMetrics.volatility * weights.volatility;
+
+        return {
+          etfId: etf.id.toString(),
+          issueCode: etf.issueCode || '',
+          issueName: etf.issueName || '',
+          category: etf.category.fullPath,
+          score: Math.round(score * 100) / 100,
+          riskGrade: riskGrade, // 하나증권 위험등급 추가
+          metrics: {
+            sharpeRatio: Math.round(sharpeRatio * 100) / 100,
             totalFee: Number(etf.etfTotalFee) || 0,
             tradingVolume: avgTradingVolume,
             netAssetValue: Number(etf.netAssetTotalAmount) || 0,
             trackingError: Number(etf.traceErrRate) || 0,
             divergenceRate: Number(etf.divergenceRate) || 0,
             volatility: volatility,
+            normalizedVolatility: normalizedVolatility,
           },
-          investType
-        ),
-      };
-    });
+          reasons: generateReasons(
+            etf,
+            {
+              sharpeRatio,
+              totalFee: Number(etf.etfTotalFee) || 0,
+              tradingVolume: avgTradingVolume,
+              netAssetValue: Number(etf.netAssetTotalAmount) || 0,
+              trackingError: Number(etf.traceErrRate) || 0,
+              divergenceRate: Number(etf.divergenceRate) || 0,
+              volatility: volatility,
+            },
+            investType
+          ),
+        };
+      })
+      .filter((etf): etf is EtfRecommendationResponse => etf !== null); // null 값 필터링
 
     // 점수 기준으로 정렬하고 상위 결과 반환
     const recommendations = scoredEtfs
