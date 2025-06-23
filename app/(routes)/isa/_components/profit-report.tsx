@@ -10,6 +10,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
+import { formatComma } from '@/lib/utils';
 
 // const currentRate = 8.2;
 // const lastMonthRate = 5.4;
@@ -21,7 +22,6 @@ const ProfitReport = ({
 }: {
   monthlyReturnsData: MonthlyReturnsSummary;
 }) => {
-  console.log('monthlyReturnsData : ', monthlyReturnsData);
   const chartData = monthlyReturnsData.returns.map((entry) => {
     const [date, rate] = Object.entries(entry)[0];
     const monthLabel = `${new Date(date).getMonth() + 1}월`;
@@ -72,12 +72,19 @@ const ProfitReport = ({
         </div>
         <div>
           <p className='text-sm text-gray-500'>평가 수익</p>
-          <p className='text-hana-green font-bold text-lg'>+690,000원</p>
-          {evaluatedProfit}
+          <p
+            className={`${evaluatedProfit >= 0 ? 'text-hana-green' : 'text-blue-500'} font-bold text-lg`}
+          >
+            {evaluatedProfit >= 0
+              ? `+${formatComma(evaluatedProfit)} 원`
+              : `-${formatComma(evaluatedProfit)} 원`}
+          </p>
         </div>
         <div>
           <p className='text-sm text-gray-500'>평가 금액</p>
-          <p className='text-blue-500 font-bold text-lg'>9,190,000원</p>
+          <p className='text-blue-500 font-bold text-lg'>
+            {formatComma(evaluatedAmount)}원
+          </p>
         </div>
       </div>
 
@@ -99,10 +106,14 @@ const ProfitReport = ({
             />
             <Bar
               dataKey='rate'
-              fill='#10b981'
+              // fill={`#10b981 ${}`}
+
               barSize={24}
               radius={[6, 6, 0, 0]}
               isAnimationActive
+              onClick={(value) => {
+                console.log('value : ', value.rate);
+              }}
             />
           </BarChart>
         </ResponsiveContainer>
