@@ -12,8 +12,7 @@ import ProgressBar from '@/components/progress-bar';
 import Tab from '@/components/tab';
 import { fetchISAInfo } from '@/lib/api/my-page';
 import EtfDetailRatioChart from '../_components/ratio-chart';
-import { etfDetailMap } from '../data/ratio-data';
-import type { EtfInfo } from '../data/ratio-data';
+import type { EtfDetailMap, EtfInfo } from '../data/ratio-data';
 
 interface Props {
   session: Session;
@@ -24,13 +23,15 @@ export const MyPageContainer = ({ session }: Props) => {
   const [selectedTab, setSelectedTab] = useState<number>(0);
   const [connected, setConnected] = useState(false);
   const [selectedItem, setSelectedItem] = useState<string>('');
+  const [etfDetailMap, setEtfDetailMap] = useState<EtfDetailMap>({});
   const [selectedEtf, setSelectedEtf] = useState<EtfInfo>({
     name: '',
-    avgPrice: 0,
+    avgCost: 0,
     totalPurchase: 0,
     returnRate: 0,
     quantity: 0,
     portionOfTotal: 0,
+    currentPrice: 0,
   });
   const [account, setAccount] = useState<Account>({
     id: '',
@@ -69,7 +70,35 @@ export const MyPageContainer = ({ session }: Props) => {
         setAccount(res);
       }
     };
+
+    const fetchEtfPortfolio = async () => {
+      try {
+        const res = await fetch('/api/etf/portfolio');
+        const json = await res.json();
+
+        const etfMap: EtfDetailMap = Object.fromEntries(
+          json.data.map((etf: any) => [
+            etf.etfId,
+            {
+              name: etf.name,
+              avgCost: Number(etf.avgCost),
+              totalPurchase: Number(etf.totalPurchase),
+              returnRate: parseFloat(etf.returnRate.toFixed(4)),
+              quantity: etf.quantity,
+              portionOfTotal: parseFloat(etf.portionOfTotal.toFixed(4)),
+              currentPrice: Number(etf.currentPrice),
+            },
+          ])
+        );
+
+        setEtfDetailMap(etfMap);
+      } catch (error) {
+        console.error('ETF 포트폴리오 조회 실패:', error);
+      }
+    };
+
     fetchISA();
+    fetchEtfPortfolio();
   }, []);
 
   useEffect(() => {
@@ -78,7 +107,7 @@ export const MyPageContainer = ({ session }: Props) => {
 
   useEffect(() => {
     setSelectedEtf(etfDetailMap[selectedItem]);
-  }, [selectedItem]);
+  }, [selectedItem, etfDetailMap]);
 
   return (
     <div className='w-full pt-24 pb-10 px-7 flex flex-col gap-7'>
