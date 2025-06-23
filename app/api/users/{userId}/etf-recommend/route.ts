@@ -16,17 +16,6 @@ import { InvestType } from '@prisma/client';
 import { authOptions } from '@/lib/auth-options';
 import { prisma } from '@/lib/prisma';
 
-interface EtfRecommendationRequest {
-  limit?: number;
-  categoryFilter?: string[];
-  investType?:
-    | 'CONSERVATIVE'
-    | 'MODERATE'
-    | 'NEUTRAL'
-    | 'ACTIVE'
-    | 'AGGRESSIVE';
-}
-
 interface EtfRecommendationResponse {
   etfId: string;
   issueCode: string;
