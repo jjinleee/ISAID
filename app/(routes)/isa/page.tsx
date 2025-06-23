@@ -1,10 +1,13 @@
-import { getMonthlyReturns } from '@/app/actions/get-monthly-returns';
 import { getServerSession } from 'next-auth';
 import { getISAPortfolio } from '@/app/actions/get-isa-portfolio';
+import { getMonthlyReturns } from '@/app/actions/get-monthly-returns';
 import { getTransactions } from '@/app/actions/get-trasactions';
 import { taxSaving } from '@/app/actions/tax-saving';
-import { AssetCategory, PieChartData } from '@/types/isa';
-import { MonthlyReturnsSummary } from '@/types/isa';
+import {
+  AssetCategory,
+  MonthlyReturnsSummary,
+  PieChartData,
+} from '@/types/isa';
 import { authOptions } from '@/lib/auth-options';
 import ISAPageContainer from './_components/isa-page-container';
 
@@ -46,7 +49,7 @@ const ISAPage = async () => {
       taxData={taxData}
       transactions={transactions}
       ptData={ptData}
-      userName={session.user.name}
+      userName={session?.user.name || 'OO'}
       monthlyReturnsData={monthlyReturnsData}
     />
   );
