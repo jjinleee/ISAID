@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { PieChartData } from '@/types/isa';
 import { MonthlyReturnsSummary } from '@/types/isa';
 import Tab from '@/components/tab';
 import Calculate from './calculate';
@@ -9,10 +10,14 @@ import ProfitReport from './profit-report';
 
 const ISADetail = ({
   taxData,
-  monthlyReturnsData,
+  ptData,
+  userName,
+                     monthlyReturnsData
 }: {
   taxData: any;
   monthlyReturnsData: MonthlyReturnsSummary;
+  ptData: PieChartData[];
+  userName: string;
 }) => {
   const tabs = ['수익률', '포트폴리오', '절세계산기'];
   const [selectedTab, setSelectedTab] = useState(0);
@@ -32,10 +37,8 @@ const ISADetail = ({
       </div>
 
       <div className='flex flex-col'>
-        {selectedTab == 0 && (
-          <ProfitReport monthlyReturnsData={monthlyReturnsData} />
-        )}
-        {selectedTab == 1 && <Portfolio />}
+        {selectedTab == 0 && <ProfitReport monthlyReturnsData={monthlyReturnsData}/>}
+        {selectedTab == 1 && <Portfolio ptData={ptData} userName={userName} />}
         {selectedTab == 2 && <Calculate taxData={taxData} />}
       </div>
     </div>
