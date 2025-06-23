@@ -23,11 +23,6 @@ const ProfitReport = ({
   const [selectedReport, setSelectedReport] =
     useState<MonthlyReturnsSummary>(monthlyReturnsData);
 
-  // useEffect(() => {
-  //   console.log('selectedReport : ', selectedReport);
-  //   // setCurrentRate(selectedReport.returns[])
-  // }, [selectedReport]);
-
   const chartData = selectedReport.returns.map((entry) => {
     const [date, rate] = Object.entries(entry)[0];
     const monthLabel = `${new Date(date).getMonth() + 1}월`;
@@ -57,9 +52,15 @@ const ProfitReport = ({
   useEffect(() => {
     const rateEntry = selectedReport.returns[Number(selectedMonth) - 1];
     const value = rateEntry ? Object.values(rateEntry)[0] : 0;
-    // console.log('selectedReport : ', selectedReport);
     setCurrentRate(value);
-    // console.log('current rate', currentRate);
+    if (selectedMonth !== '1') {
+      const prevEntry = selectedReport.returns[Number(selectedMonth) - 2];
+      const prevValue = prevEntry ? Object.values(prevEntry)[0] : 0;
+      setDiff(value - prevValue);
+    } else {
+      // 1 일 경우
+      setDiff(value);
+    }
   }, [selectedMonth, selectedReport]);
 
   useEffect(() => {

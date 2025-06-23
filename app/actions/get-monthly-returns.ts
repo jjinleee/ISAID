@@ -98,9 +98,6 @@ export async function getMonthlyReturns(month: MonthKey) {
     const totalInvestedAmount = 17_000_000; // 고정 초기 투자금
 
     const evaluatedProfit = totalEvaluatedAmount - totalInvestedAmount;
-    console.log('formattedReturns : ', formattedReturns);
-    console.log('totalEvaluatedAmount : ', totalEvaluatedAmount);
-    console.log('evaluatedProfit : ', evaluatedProfit);
 
     return {
       returns: formattedReturns,
