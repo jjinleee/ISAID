@@ -35,7 +35,12 @@ export const taxSaving = async () => {
     where: { userId },
     select: { id: true, accountType: true },
   });
-  if (!isaAccount) throw new Error('ISA 계좌가 없습니다.');
+
+  if (!isaAccount) {
+    // ISA 계좌가 없으면 null 반환
+    return null;
+  }
+
   const isaAccountId = isaAccount.id;
   const taxFreeLimit =
     isaAccount.accountType === '서민형' ? 4_000_000 : 2_000_000;
