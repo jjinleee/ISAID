@@ -90,7 +90,7 @@ export async function getISAPortfolio(yearMonth: string) {
   const format = (label: string, value: number) => ({
     category: label,
     value,
-    percentage: total > 0 ? Math.round((value / total) * 100) : 0,
+    percentage: total > 0 ? Number(((value / total) * 100).toFixed(1)) : 0,
   });
 
   return [
