@@ -242,13 +242,9 @@ function getAllowedRiskGrades(investType: InvestType): number[] {
   return allowedGrades[investType] || [3, 4, 5];
 }
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { userId: string } }
-) {
+export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-
     if (!session || !session.user?.id) {
       return NextResponse.json(
         { message: '인증된 사용자만 접근 가능합니다.' },
@@ -256,11 +252,9 @@ export async function GET(
       );
     }
 
-    const userId = params.userId;
-
-    const { searchParams } = new URL(req.url);
-    const limit = parseInt(searchParams.get('limit') || '10');
-    const categoryFilter = searchParams.get('category')?.split(',') || [];
+    const userId = BigInt(session.user.id);
+    const limit = 10;
+    // const categoryFilter = searchParams.get('category')?.split(',') || [];
 
     // etf-test-service를 통해 사용자의 투자 성향 조회
     const etfTestService = new EtfTestService();
@@ -291,15 +285,15 @@ export async function GET(
           { volatility: { not: null } },
           { volatility: { not: '' } }, // 빈 문자열이 아닌 변동성만
           // 카테고리 필터 적용
-          ...(categoryFilter.length > 0
-            ? [
-                {
-                  category: {
-                    fullPath: { in: categoryFilter },
-                  },
-                },
-              ]
-            : []),
+          // ...(categoryFilter.length > 0
+          //   ? [
+          //       {
+          //         category: {
+          //           fullPath: { in: categoryFilter },
+          //         },
+          //       },
+          //     ]
+          //   : []),
         ],
       },
       include: {
