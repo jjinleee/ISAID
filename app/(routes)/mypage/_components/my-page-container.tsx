@@ -114,6 +114,11 @@ export const MyPageContainer = ({ session }: Props) => {
       });
     }
   }, [selectedItem, etfDetailList]);
+  useEffect(() => {
+    if (!selectedItem && etfDetailList[0]) {
+      setSelectedItem(etfDetailList[0].name);
+    }
+  }, [etfDetailList]);
 
   return (
     <div className='w-full pt-24 pb-10 px-7 flex flex-col gap-7'>
