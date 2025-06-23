@@ -1,6 +1,7 @@
 import { getServerSession } from 'next-auth';
 import { NextRequest, NextResponse } from 'next/server';
 import { authOptions } from '@/lib/auth-options';
+import { seedAllData } from '@/lib/data/insert-all/seedAllData';
 import { prisma } from '@/lib/prisma';
 
 // ISA 계좌 등록
@@ -49,6 +50,8 @@ export async function POST(req: NextRequest) {
         },
       },
     });
+
+    await seedAllData(newAccount.id);
 
     return NextResponse.json({
       message: 'ISA 계좌 등록 성공',
