@@ -1,5 +1,6 @@
 'use client';
 
+import { MonthlyReturnsSummary } from '@/types/isa';
 import { ArrowDownRight, ArrowUpRight, BarChart2 } from 'lucide-react';
 import {
   Bar,
@@ -10,21 +11,36 @@ import {
   YAxis,
 } from 'recharts';
 
-const currentRate = 8.2;
-const lastMonthRate = 5.4;
-const diff = +(currentRate - lastMonthRate).toFixed(1);
-const isUp = diff >= 0;
+// const currentRate = 8.2;
+// const lastMonthRate = 5.4;
+// const diff = +(currentRate - lastMonthRate).toFixed(1);
+// const isUp = diff >= 0;
 
-const chartData = [
-  { month: '1월', rate: 2.1 },
-  { month: '2월', rate: 3.4 },
-  { month: '3월', rate: 5.0 },
-  { month: '4월', rate: 2.2 },
-  { month: '5월', rate: 6.3 },
-  { month: '6월', rate: 8.2 },
-];
+const ProfitReport = ({
+  monthlyReturnsData,
+}: {
+  monthlyReturnsData: MonthlyReturnsSummary;
+}) => {
+  console.log('monthlyReturnsData : ', monthlyReturnsData);
+  const chartData = monthlyReturnsData.returns.map((entry) => {
+    const [date, rate] = Object.entries(entry)[0];
+    const monthLabel = `${new Date(date).getMonth() + 1}월`;
+    return { month: monthLabel, rate };
+  });
+  const latestEntry = monthlyReturnsData.returns.at(-1);
+  const currentRate = latestEntry ? Object.values(latestEntry)[0] : 0; // 전체 수익률
+  const currentRateIsUp = currentRate >= 0;
 
-const ProfitReport = () => {
+  const prevEntry = monthlyReturnsData.returns.at(-2);
+  const lastMonthRate = prevEntry ? Object.values(prevEntry)[0] : 0; // 전월 수익률
+
+  const diff = +(currentRate - lastMonthRate).toFixed(2); // 전월 대비 수익률 차이
+  const isUp = diff >= 0;
+
+  const evaluatedProfit = monthlyReturnsData.evaluatedProfit; // 평가 수익
+
+  const evaluatedAmount = monthlyReturnsData.evaluatedAmount; // 평가 금액
+
   return (
     <div className='rounded-xl bg-white px-4 py-5 shadow-sm mt-4'>
       {/* 헤더 */}
@@ -38,8 +54,12 @@ const ProfitReport = () => {
         <div>
           <p className='text-sm text-gray-500'>전체 수익률</p>
           <div className='flex justify-center items-center gap-1'>
-            <p className='text-hana-red font-bold text-lg'>+{currentRate}%</p>
-            {isUp ? (
+            <p
+              className={`font-bold text-lg ${currentRate >= 0 ? 'text-hana-red ' : 'text-blue'}`}
+            >
+              {currentRate >= 0 ? `+${currentRate} %` : `-${currentRate} %`}
+            </p>
+            {currentRateIsUp ? (
               <ArrowUpRight className='w-4 h-4 text-hana-red' />
             ) : (
               <ArrowDownRight className='w-4 h-4 text-gray-400' />
@@ -53,6 +73,7 @@ const ProfitReport = () => {
         <div>
           <p className='text-sm text-gray-500'>평가 수익</p>
           <p className='text-hana-green font-bold text-lg'>+690,000원</p>
+          {evaluatedProfit}
         </div>
         <div>
           <p className='text-sm text-gray-500'>평가 금액</p>
