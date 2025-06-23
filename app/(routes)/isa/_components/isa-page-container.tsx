@@ -2,11 +2,20 @@
 
 import { useEffect, useState } from 'react';
 import { useHeader } from '@/context/header-context';
+import { MonthlyReturnsSummary } from '@/types/isa';
 import Account from './account';
-import ContributionLimit from './contribution-limit';
+import ContributionLimitAndCalendar from './contribution-limit';
 import ISADetail from './isa-detail';
 
-const ISAPageContainer = () => {
+const ISAPageContainer = ({
+  taxData,
+  transactions,
+  monthlyReturnsData,
+}: {
+  taxData: any;
+  transactions: any;
+  monthlyReturnsData: MonthlyReturnsSummary;
+}) => {
   const { setHeader } = useHeader();
 
   useEffect(() => {
@@ -16,8 +25,8 @@ const ISAPageContainer = () => {
   return (
     <div className='flex-col px-5 pb-5 flex flex-1/2'>
       <Account />
-      <ContributionLimit />
-      <ISADetail />
+      <ContributionLimitAndCalendar transactions={transactions} />
+      <ISADetail taxData={taxData} monthlyReturnsData={monthlyReturnsData} />
     </div>
   );
 };
