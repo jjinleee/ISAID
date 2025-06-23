@@ -1,14 +1,10 @@
 // src/lib/seedEtfTransactions.ts
 import { prisma } from '@/lib/prisma';
 
-/**
- * 특정 ISA 계좌에 대해 초기 ETF 거래 내역(더미 데이터)을 삽입합니다.
- * @param isaAccountId - 생성된 ISA 계좌의 ID
- */
 export async function seedEtfTransactions(isaAccountId: bigint) {
   await prisma.eTFTransaction.createMany({
     data: [
-      // 2025년 1월 데이터
+      // 2025년 1월 거래
       {
         etfId: 1,
         isaAccountId,
@@ -49,7 +45,8 @@ export async function seedEtfTransactions(isaAccountId: bigint) {
         price: 12135.0,
         transactionAt: new Date('2025-01-02T11:30:00'),
       },
-      // 2025년 2월 데이터
+
+      // 2025년 2월 거래
       {
         etfId: 1,
         isaAccountId,
@@ -90,7 +87,8 @@ export async function seedEtfTransactions(isaAccountId: bigint) {
         price: 13320.0,
         transactionAt: new Date('2025-02-03T15:30:00'),
       },
-      // 2025년 3월 데이터
+
+      // 2025년 3월 거래
       {
         etfId: 1,
         isaAccountId,
@@ -123,7 +121,8 @@ export async function seedEtfTransactions(isaAccountId: bigint) {
         price: 12970.0,
         transactionAt: new Date('2025-03-03T15:30:00'),
       },
-      // 2025년 4월 데이터
+
+      // 2025년 4월 거래
       {
         etfId: 197,
         isaAccountId,
@@ -148,7 +147,8 @@ export async function seedEtfTransactions(isaAccountId: bigint) {
         price: 13320.0,
         transactionAt: new Date('2025-04-03T10:30:00'),
       },
-      // 2025년 5월 데이터
+
+      // 2025년 5월 거래
       {
         etfId: 26,
         isaAccountId,
@@ -181,7 +181,8 @@ export async function seedEtfTransactions(isaAccountId: bigint) {
         price: 12760.0,
         transactionAt: new Date('2025-05-27T10:30:00'),
       },
-      // 2025년 6월 데이터
+
+      // 2025년 6월 거래
       {
         etfId: 1,
         isaAccountId,
@@ -231,6 +232,6 @@ export async function seedEtfTransactions(isaAccountId: bigint) {
         transactionAt: new Date('2025-06-16T10:30:00'),
       },
     ],
-    skipDuplicates: true,
+    skipDuplicates: true, // 이미 존재하는 레코드는 삽입하지 않습니다
   });
 }

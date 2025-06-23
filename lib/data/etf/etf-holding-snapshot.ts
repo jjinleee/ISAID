@@ -1,100 +1,265 @@
+// src/lib/seedEtfHoldingSnapshots.ts
 import { prisma } from '@/lib/prisma';
 
 /**
- * 월말 보유 스냅샷을 삽입한다.
- * 기존 스냅샷은 삭제(DELETE) 후 월별 INSERT 를 그대로 반영.
- * @param isaAccountId 연결된 ISA 계좌 id (ex. newAccount.id)
+ * etf_holding_snapshot 테이블에 월말 스냅샷을 삽입합니다.
+ * @param isaAccountId ISA 계좌의 ID
  */
-export async function seedIsaHoldingSnapshot(isaAccountId: bigint) {
-  // 0. 기존 스냅샷 전부 제거
-  await prisma.$executeRaw`DELETE FROM etf_holding_snapshot WHERE isa_account_id = ${isaAccountId};`;
-
-  /* ------------------------------------------------------------------ */
-  /* 1) 2025-01-31 스냅샷                                              */
-  /* ------------------------------------------------------------------ */
-  await prisma.$executeRawUnsafe(`
-    INSERT INTO etf_holding_snapshot
-      (isa_account_id, etf_id, snapshot_date, evaluated_amount, profit)
-    VALUES
-      (${isaAccountId}, 1,  '2025-01-31 23:59:59', 266420.00, -14140.00),
-      (${isaAccountId}, 26, '2025-01-31 23:59:59', 883710.00,  19440.00),
-      (${isaAccountId}, 40, '2025-01-31 23:59:59', 1067040.00, 35160.00),
-      (${isaAccountId}, 318,'2025-01-31 23:59:59', 228580.00,  6490.00),
-      (${isaAccountId}, 353,'2025-01-31 23:59:59', 573300.00,  63630.00);
-  `);
-
-  /* ------------------------------------------------------------------ */
-  /* 2) 2025-02-28 스냅샷                                              */
-  /* ------------------------------------------------------------------ */
-  await prisma.$executeRawUnsafe(`
-    INSERT INTO etf_holding_snapshot
-      (isa_account_id, etf_id, snapshot_date, evaluated_amount, profit)
-    VALUES
-      (${isaAccountId}, 1,  '2025-02-28 23:59:59', 403555.00, -17780.00),
-      (${isaAccountId}, 26, '2025-02-28 23:59:59', 571370.00,  27200.00),
-      (${isaAccountId}, 40, '2025-02-28 23:59:59', 1777880.00, 63200.00),
-      (${isaAccountId}, 318,'2025-02-28 23:59:59', 149450.00,  8120.00),
-      (${isaAccountId}, 353,'2025-02-28 23:59:59', 907410.00,  48090.00);
-  `);
-
-  /* ------------------------------------------------------------------ */
-  /* 3) 2025-03-31 스냅샷                                              */
-  /* ------------------------------------------------------------------ */
-  await prisma.$executeRawUnsafe(`
-    INSERT INTO etf_holding_snapshot
-      (isa_account_id, etf_id, snapshot_date, evaluated_amount, profit)
-    VALUES
-      (${isaAccountId}, 1,  '2025-03-31 23:59:59', 557680.00,  -2770.00),
-      (${isaAccountId}, 26, '2025-03-31 23:59:59', 224070.00,      0.00),
-      (${isaAccountId}, 40, '2025-03-31 23:59:59', 1039360.00,      6.00),
-      (${isaAccountId}, 318,'2025-03-31 23:59:59', 149450.00,   8120.00),
-      (${isaAccountId}, 353,'2025-03-31 23:59:59', 1040860.00,  4131.00);
-  `);
-
-  /* ------------------------------------------------------------------ */
-  /* 4) 2025-04-30 스냅샷                                              */
-  /* ------------------------------------------------------------------ */
-  await prisma.$executeRawUnsafe(`
-    INSERT INTO etf_holding_snapshot
-      (isa_account_id, etf_id, snapshot_date, evaluated_amount, profit)
-    VALUES
-      (${isaAccountId}, 1,  '2025-04-30 23:59:59', 515620.00,  -41661.00),
-      (${isaAccountId}, 26, '2025-04-30 23:59:59', 237370.00,   13300.00),
-      (${isaAccountId}, 40, '2025-04-30 23:59:59', 1091680.00,  52326.00),
-      (${isaAccountId}, 197,'2025-04-30 23:59:59', 1095500.00,  83000.00),
-      (${isaAccountId}, 295,'2025-04-30 23:59:59', 385350.00,   -7350.00),
-      (${isaAccountId}, 318,'2025-04-30 23:59:59', 172690.00,   31360.00),
-      (${isaAccountId}, 353,'2025-04-30 23:59:59', 882720.00,  -31197.00);
-  `);
-
-  /* ------------------------------------------------------------------ */
-  /* 5) 2025-05-31 스냅샷                                              */
-  /* ------------------------------------------------------------------ */
-  await prisma.$executeRawUnsafe(`
-    INSERT INTO etf_holding_snapshot
-      (isa_account_id, etf_id, snapshot_date, evaluated_amount, profit)
-    VALUES
-      (${isaAccountId}, 1,  '2025-05-31 23:59:59', 518230.00,  -39030.00),
-      (${isaAccountId}, 26, '2025-05-31 23:59:59', 614380.00,   46001.00),
-      (${isaAccountId}, 40, '2025-05-31 23:59:59', 1162880.00, 123525.00),
-      (${isaAccountId}, 197,'2025-05-31 23:59:59', 481650.00,   76650.00),
-      (${isaAccountId}, 295,'2025-05-31 23:59:59', 251400.00,  -10400.00),
-      (${isaAccountId}, 318,'2025-05-31 23:59:59', 164010.00,   22680.00),
-      (${isaAccountId}, 353,'2025-05-31 23:59:59', 1059030.00,  17511.00);
-  `);
-
-  /* ------------------------------------------------------------------ */
-  /* 6) 2025-06-30 스냅샷                                              */
-  /* ------------------------------------------------------------------ */
-  await prisma.$executeRawUnsafe(`
-    INSERT INTO etf_holding_snapshot
-      (isa_account_id, etf_id, snapshot_date, evaluated_amount, profit)
-    VALUES
-      (${isaAccountId}, 1,  '2025-06-30 23:59:59', 612000.00,  -23632.00),
-      (${isaAccountId}, 26, '2025-06-30 23:59:59', 1800000.00, 125263.00),
-      (${isaAccountId}, 40, '2025-06-30 23:59:59', 1120000.00,  80646.00),
-      (${isaAccountId}, 197,'2025-06-30 23:59:59', 202500.00,       0.00),
-      (${isaAccountId}, 295,'2025-06-30 23:59:59', 130000.00,    -910.00),
-      (${isaAccountId}, 353,'2025-06-30 23:59:59', 1196800.00, -15494.00);
-  `);
+export async function seedEtfHoldingSnapshots(isaAccountId: bigint) {
+  await prisma.eTFHoldingSnapshot.createMany({
+    data: [
+      // 2025-01-31
+      {
+        isaAccountId,
+        etfId: 1,
+        snapshotDate: new Date('2025-01-31T23:59:59'),
+        evaluatedAmount: 266420.0,
+        profit: -14140.0,
+      },
+      {
+        isaAccountId,
+        etfId: 26,
+        snapshotDate: new Date('2025-01-31T23:59:59'),
+        evaluatedAmount: 883710.0,
+        profit: 19440.0,
+      },
+      {
+        isaAccountId,
+        etfId: 40,
+        snapshotDate: new Date('2025-01-31T23:59:59'),
+        evaluatedAmount: 1067040.0,
+        profit: 35160.0,
+      },
+      {
+        isaAccountId,
+        etfId: 318,
+        snapshotDate: new Date('2025-01-31T23:59:59'),
+        evaluatedAmount: 228580.0,
+        profit: 6490.0,
+      },
+      {
+        isaAccountId,
+        etfId: 353,
+        snapshotDate: new Date('2025-01-31T23:59:59'),
+        evaluatedAmount: 573300.0,
+        profit: 63630.0,
+      },
+      // 2025-02-28
+      {
+        isaAccountId,
+        etfId: 1,
+        snapshotDate: new Date('2025-02-28T23:59:59'),
+        evaluatedAmount: 403555.0,
+        profit: -17780.0,
+      },
+      {
+        isaAccountId,
+        etfId: 26,
+        snapshotDate: new Date('2025-02-28T23:59:59'),
+        evaluatedAmount: 571370.0,
+        profit: 27200.0,
+      },
+      {
+        isaAccountId,
+        etfId: 40,
+        snapshotDate: new Date('2025-02-28T23:59:59'),
+        evaluatedAmount: 1777880.0,
+        profit: 63200.0,
+      },
+      {
+        isaAccountId,
+        etfId: 318,
+        snapshotDate: new Date('2025-02-28T23:59:59'),
+        evaluatedAmount: 149450.0,
+        profit: 8120.0,
+      },
+      {
+        isaAccountId,
+        etfId: 353,
+        snapshotDate: new Date('2025-02-28T23:59:59'),
+        evaluatedAmount: 907410.0,
+        profit: 48090.0,
+      },
+      // 2025-03-31
+      {
+        isaAccountId,
+        etfId: 1,
+        snapshotDate: new Date('2025-03-31T23:59:59'),
+        evaluatedAmount: 557680.0,
+        profit: -2770.0,
+      },
+      {
+        isaAccountId,
+        etfId: 26,
+        snapshotDate: new Date('2025-03-31T23:59:59'),
+        evaluatedAmount: 224070.0,
+        profit: 0.0,
+      },
+      {
+        isaAccountId,
+        etfId: 40,
+        snapshotDate: new Date('2025-03-31T23:59:59'),
+        evaluatedAmount: 1039360.0,
+        profit: 6.0,
+      },
+      {
+        isaAccountId,
+        etfId: 318,
+        snapshotDate: new Date('2025-03-31T23:59:59'),
+        evaluatedAmount: 149450.0,
+        profit: 8120.0,
+      },
+      {
+        isaAccountId,
+        etfId: 353,
+        snapshotDate: new Date('2025-03-31T23:59:59'),
+        evaluatedAmount: 1040860.0,
+        profit: 4131.0,
+      },
+      // 2025-04-30
+      {
+        isaAccountId,
+        etfId: 1,
+        snapshotDate: new Date('2025-04-30T23:59:59'),
+        evaluatedAmount: 515620.0,
+        profit: -41661.0,
+      },
+      {
+        isaAccountId,
+        etfId: 26,
+        snapshotDate: new Date('2025-04-30T23:59:59'),
+        evaluatedAmount: 237370.0,
+        profit: 13300.0,
+      },
+      {
+        isaAccountId,
+        etfId: 40,
+        snapshotDate: new Date('2025-04-30T23:59:59'),
+        evaluatedAmount: 1091680.0,
+        profit: 52326.0,
+      },
+      {
+        isaAccountId,
+        etfId: 197,
+        snapshotDate: new Date('2025-04-30T23:59:59'),
+        evaluatedAmount: 1095500.0,
+        profit: 83000.0,
+      },
+      {
+        isaAccountId,
+        etfId: 295,
+        snapshotDate: new Date('2025-04-30T23:59:59'),
+        evaluatedAmount: 385350.0,
+        profit: -7350.0,
+      },
+      {
+        isaAccountId,
+        etfId: 318,
+        snapshotDate: new Date('2025-04-30T23:59:59'),
+        evaluatedAmount: 172690.0,
+        profit: 31360.0,
+      },
+      {
+        isaAccountId,
+        etfId: 353,
+        snapshotDate: new Date('2025-04-30T23:59:59'),
+        evaluatedAmount: 882720.0,
+        profit: -31197.0,
+      },
+      // 2025-05-30
+      {
+        isaAccountId,
+        etfId: 1,
+        snapshotDate: new Date('2025-05-30T23:59:59'),
+        evaluatedAmount: 518230.0,
+        profit: -39030.0,
+      },
+      {
+        isaAccountId,
+        etfId: 26,
+        snapshotDate: new Date('2025-05-30T23:59:59'),
+        evaluatedAmount: 614380.0,
+        profit: 46001.0,
+      },
+      {
+        isaAccountId,
+        etfId: 40,
+        snapshotDate: new Date('2025-05-30T23:59:59'),
+        evaluatedAmount: 1162880.0,
+        profit: 123525.0,
+      },
+      {
+        isaAccountId,
+        etfId: 197,
+        snapshotDate: new Date('2025-05-30T23:59:59'),
+        evaluatedAmount: 481650.0,
+        profit: 76650.0,
+      },
+      {
+        isaAccountId,
+        etfId: 295,
+        snapshotDate: new Date('2025-05-30T23:59:59'),
+        evaluatedAmount: 251400.0,
+        profit: -10400.0,
+      },
+      {
+        isaAccountId,
+        etfId: 318,
+        snapshotDate: new Date('2025-05-30T23:59:59'),
+        evaluatedAmount: 164010.0,
+        profit: 22680.0,
+      },
+      {
+        isaAccountId,
+        etfId: 353,
+        snapshotDate: new Date('2025-05-30T23:59:59'),
+        evaluatedAmount: 1059030.0,
+        profit: 17511.0,
+      },
+      // 2025-06-30
+      {
+        isaAccountId,
+        etfId: 1,
+        snapshotDate: new Date('2025-06-30T23:59:59'),
+        evaluatedAmount: 612000.0,
+        profit: -23632.0,
+      },
+      {
+        isaAccountId,
+        etfId: 26,
+        snapshotDate: new Date('2025-06-30T23:59:59'),
+        evaluatedAmount: 1800000.0,
+        profit: 125263.0,
+      },
+      {
+        isaAccountId,
+        etfId: 40,
+        snapshotDate: new Date('2025-06-30T23:59:59'),
+        evaluatedAmount: 1120000.0,
+        profit: 80646.0,
+      },
+      {
+        isaAccountId,
+        etfId: 197,
+        snapshotDate: new Date('2025-06-30T23:59:59'),
+        evaluatedAmount: 202500.0,
+        profit: 0.0,
+      },
+      {
+        isaAccountId,
+        etfId: 295,
+        snapshotDate: new Date('2025-06-30T23:59:59'),
+        evaluatedAmount: 130000.0,
+        profit: -910.0,
+      },
+      {
+        isaAccountId,
+        etfId: 353,
+        snapshotDate: new Date('2025-06-30T23:59:59'),
+        evaluatedAmount: 1196800.0,
+        profit: -15494.0,
+      },
+    ],
+    skipDuplicates: true,
+  });
 }

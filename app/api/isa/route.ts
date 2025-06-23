@@ -1,6 +1,11 @@
 import { getServerSession } from 'next-auth';
 import { NextRequest, NextResponse } from 'next/server';
 import { authOptions } from '@/lib/auth-options';
+import { seeEtfHolding } from '@/lib/data/etf/etf-holding';
+import { seedEtfHoldingUpdate } from '@/lib/data/etf/etf-holding-from-transactions';
+import { seedEtfHoldingSnapshot } from '@/lib/data/etf/etf-holding-snapshot';
+import { seedEtfTransactions } from '@/lib/data/etf/etf-transactions';
+import { seedCashSnapshots } from '@/lib/data/etf/general-cash-snapshot';
 import { prisma } from '@/lib/prisma';
 
 // ISA 계좌 등록
