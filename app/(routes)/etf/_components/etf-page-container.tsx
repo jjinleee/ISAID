@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useHeader } from '@/context/header-context';
 import ArrowIcon from '@/public/images/arrow-icon';
@@ -15,10 +15,13 @@ import {
 import StarBoyFinger from '@/public/images/star-boy-finger.svg';
 import { SlideCardProps } from '@/types/components';
 import { SliderWrapper } from '../_components/slider-wrapper';
+import RecommendModal from './recommend-modal';
 
 const ETFPageContainer = () => {
   const { setHeader } = useHeader();
   const router = useRouter();
+  const [selectedETFId, setSelectedETFId] = useState(26);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     setHeader('ETF 맞춤 추천', '당신의 투자 성향에 맞는 테마');
@@ -72,6 +75,10 @@ const ETFPageContainer = () => {
     { name: 'GUN', rate: 5.23 },
   ];
 
+  const clickSelectedETF = () => {
+    router.push(`/etf/detail/${selectedETFId}`);
+  };
+
   return (
     <div className='flex flex-col px-6 pb-10'>
       <div className='flex flex-col gap-5'>
@@ -98,6 +105,9 @@ const ETFPageContainer = () => {
         </div>
         <h1 className='text-xl font-semibold'>ETF, 테마부터 시작해볼까요?</h1>
         <SliderWrapper cards={cards} />
+        <div className='border' onClick={() => setShowModal(true)}>
+          모달 보기
+        </div>
         <div className='flex items-center justify-between'>
           <h1 className='font-bold text-xl'>내가 담은 ETF</h1>
           <div className='flex gap-2 justify-center items-center text-sm cursor-pointer'>
@@ -130,6 +140,12 @@ const ETFPageContainer = () => {
           })}
         </div>
       </div>
+      {showModal && (
+        <RecommendModal
+          onClose={() => setShowModal(false)}
+          btnClick={() => clickSelectedETF()}
+        />
+      )}
     </div>
   );
 };
