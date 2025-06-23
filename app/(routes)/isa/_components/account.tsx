@@ -20,7 +20,6 @@ const Account = () => {
   useEffect(() => {
     const fetchISA = async () => {
       const res = await fetchISAInfo();
-      console.log('res fetch', res.data);
 
       if ('error' in res) {
         if (res.error === 'NOT_FOUND') {
@@ -31,8 +30,6 @@ const Account = () => {
         }
       } else {
         setConnected(true);
-        console.log('isa account : ', res);
-
         setAccount(res);
       }
     };

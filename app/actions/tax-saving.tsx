@@ -83,7 +83,6 @@ export const taxSaving = async () => {
   );
   const totalEtfEvaluation = totalEtfCost * PRICE_MULTIPLIER;
   const etfProfit = totalEtfEvaluation - totalEtfCost;
-  console.log(etfProfit);
 
   /* 5. 지금까지 받은 ETF 배당(추정) */
   const etfDividend = totalEtfEvaluation * DIVIDEND_YIELD * (monthsPassed / 12);

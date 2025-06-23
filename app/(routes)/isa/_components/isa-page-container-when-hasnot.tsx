@@ -49,7 +49,7 @@ export default function ISAPageContainerWhenHasnot() {
 
   const handleVerifyPin = async (pin: string) => {
     const res = await verifyPin(pin);
-    console.log('res : ', res);
+
     if (!res.success) {
       toast.error('비밀번호가 올바르지 않습니다.');
       return false;
