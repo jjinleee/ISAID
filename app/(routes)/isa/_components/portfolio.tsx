@@ -1,11 +1,16 @@
 'use client';
 
-import { useEffect } from 'react';
 import { PieChartData } from '@/types/isa';
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
 import InvestmentStyle from './investment-style';
 
-const Portfolio = ({ ptData }: { ptData: PieChartData[] }) => {
+const Portfolio = ({
+  ptData,
+  userName,
+}: {
+  ptData: PieChartData[];
+  userName: string;
+}) => {
   const COLORS = [
     '#5eead4',
     '#2dd4bf',
@@ -14,9 +19,10 @@ const Portfolio = ({ ptData }: { ptData: PieChartData[] }) => {
     '#a7f3d0',
     '#009178',
   ].splice(0, ptData.length);
+
   return (
     <div className='rounded-xl bg-white px-5 sm:px-10 py-6 shadow-sm mt-4'>
-      <h2 className='text-lg font-semibold'>OO님의 투자 포트폴리오</h2>
+      <h2 className='text-lg font-semibold'>{userName}님의 투자 포트폴리오</h2>
       <p className='text-sm text-gray-500 mt-1 mb-4'>
         자산 구성, 한눈에 확인해 보세요!
       </p>

@@ -1,9 +1,11 @@
 import { getMonthlyReturns } from '@/app/actions/get-monthly-returns';
+import { getServerSession } from 'next-auth';
 import { getISAPortfolio } from '@/app/actions/get-isa-portfolio';
 import { getTransactions } from '@/app/actions/get-trasactions';
 import { taxSaving } from '@/app/actions/tax-saving';
 import { AssetCategory, PieChartData } from '@/types/isa';
 import { MonthlyReturnsSummary } from '@/types/isa';
+import { authOptions } from '@/lib/auth-options';
 import ISAPageContainer from './_components/isa-page-container';
 
 const ISAPage = async () => {
@@ -13,6 +15,7 @@ const ISAPage = async () => {
   );
 
   const rawData: AssetCategory[] = await getISAPortfolio('2025-06-30');
+  const session = await getServerSession(authOptions);
 
   const totalPercentage = rawData.reduce(
     (sum, item) => sum + item.percentage,
@@ -37,14 +40,13 @@ const ISAPage = async () => {
   })();
 
   const transactions = await getTransactions();
-  // console.log(transactions);
-  console.log('monthlyReturnsData : ', monthlyReturnsData);
 
   return (
     <ISAPageContainer
       taxData={taxData}
       transactions={transactions}
       ptData={ptData}
+      userName={session.user.name}
       monthlyReturnsData={monthlyReturnsData}
     />
   );
