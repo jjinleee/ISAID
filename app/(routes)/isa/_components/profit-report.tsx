@@ -1,10 +1,13 @@
 'use client';
 
+import { useEffect, useRef, useState } from 'react';
+import { getMonthlyReturns } from '@/app/actions/get-monthly-returns';
 import { MonthlyReturnsSummary } from '@/types/isa';
 import { ArrowDownRight, ArrowUpRight, BarChart2 } from 'lucide-react';
 import {
   Bar,
   BarChart,
+  Cell,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -12,34 +15,55 @@ import {
 } from 'recharts';
 import { formatComma } from '@/lib/utils';
 
-// const currentRate = 8.2;
-// const lastMonthRate = 5.4;
-// const diff = +(currentRate - lastMonthRate).toFixed(1);
-// const isUp = diff >= 0;
-
 const ProfitReport = ({
   monthlyReturnsData,
 }: {
   monthlyReturnsData: MonthlyReturnsSummary;
 }) => {
-  const chartData = monthlyReturnsData.returns.map((entry) => {
+  const [selectedReport, setSelectedReport] =
+    useState<MonthlyReturnsSummary>(monthlyReturnsData);
+
+  // useEffect(() => {
+  //   console.log('selectedReport : ', selectedReport);
+  //   // setCurrentRate(selectedReport.returns[])
+  // }, [selectedReport]);
+
+  const chartData = selectedReport.returns.map((entry) => {
     const [date, rate] = Object.entries(entry)[0];
     const monthLabel = `${new Date(date).getMonth() + 1}월`;
     return { month: monthLabel, rate };
   });
-  const latestEntry = monthlyReturnsData.returns.at(-1);
-  const currentRate = latestEntry ? Object.values(latestEntry)[0] : 0; // 전체 수익률
+
+  const latestEntry = selectedReport.returns.at(-1);
+  const [currentRate, setCurrentRate] = useState(
+    latestEntry ? Object.values(latestEntry)[0] : 0
+  ); // 전체 수익률
+  const [selectedMonth, setSelectedMonth] = useState('5');
   const currentRateIsUp = currentRate >= 0;
 
-  const prevEntry = monthlyReturnsData.returns.at(-2);
+  const prevEntry = selectedReport.returns.at(-2);
   const lastMonthRate = prevEntry ? Object.values(prevEntry)[0] : 0; // 전월 수익률
 
   const diff = +(currentRate - lastMonthRate).toFixed(2); // 전월 대비 수익률 차이
   const isUp = diff >= 0;
 
-  const evaluatedProfit = monthlyReturnsData.evaluatedProfit; // 평가 수익
+  const evaluatedProfit = selectedReport.evaluatedProfit; // 평가 수익
 
-  const evaluatedAmount = monthlyReturnsData.evaluatedAmount; // 평가 금액
+  const evaluatedAmount = selectedReport.evaluatedAmount; // 평가 금액
+
+  const xAxisRef = useRef<any>(null);
+
+  useEffect(() => {
+    const rateEntry = selectedReport.returns[Number(selectedMonth) - 1];
+    const value = rateEntry ? Object.values(rateEntry)[0] : 0;
+
+    setCurrentRate(value);
+    console.log('current rate', currentRate);
+  }, [selectedMonth, selectedReport]);
+
+  useEffect(() => {
+    setSelectedReport(monthlyReturnsData);
+  }, [monthlyReturnsData]);
 
   return (
     <div className='rounded-xl bg-white px-4 py-5 shadow-sm mt-4'>
@@ -91,12 +115,13 @@ const ProfitReport = ({
       {/* 그래프 */}
       <div className='rounded-lg bg-gray-50 p-4'>
         <ResponsiveContainer width='100%' height={160}>
-          <BarChart data={chartData}>
+          <BarChart data={chartData} barCategoryGap={10}>
             <XAxis
               dataKey='month'
               stroke='#94a3b8'
               fontSize={12}
               tickLine={false}
+              ref={xAxisRef}
             />
             <YAxis hide />
             <Tooltip
@@ -106,15 +131,43 @@ const ProfitReport = ({
             />
             <Bar
               dataKey='rate'
-              // fill={`#10b981 ${}`}
-
               barSize={24}
               radius={[6, 6, 0, 0]}
               isAnimationActive
-              onClick={(value) => {
-                console.log('value : ', value.rate);
-              }}
-            />
+              cursor='pointer'
+            >
+              {chartData.map((entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={entry.rate > 0 ? '#10b981' : '#dc2626'}
+                />
+              ))}
+            </Bar>
+            {chartData.map((entry, index) => (
+              <rect
+                key={`click-area-${index}`}
+                x={index * (100 / chartData.length) + '%'}
+                width={`${100 / chartData.length}%`}
+                y={0}
+                height={160}
+                fill='transparent'
+                style={{ cursor: 'pointer' }}
+                onClick={async () => {
+                  const monthNumber = entry.month.replace('월', '') as
+                    | '1'
+                    | '2'
+                    | '3'
+                    | '4'
+                    | '5'
+                    | '6';
+                  const updatedReport = await getMonthlyReturns(
+                    monthNumber as '1' | '2' | '3' | '4' | '5' | '6'
+                  );
+                  setSelectedMonth(monthNumber);
+                  setSelectedReport(updatedReport);
+                }}
+              />
+            ))}
           </BarChart>
         </ResponsiveContainer>
         <p className='text-xs text-center text-gray-400 mt-2'>

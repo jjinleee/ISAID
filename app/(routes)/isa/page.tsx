@@ -21,7 +21,7 @@ const ISAPage = async () => {
   }
   const taxData = await taxSaving();
   const monthlyReturnsData: MonthlyReturnsSummary =
-    await getMonthlyReturns('2025-06-30');
+    await getMonthlyReturns('6');
 
   const rawData: AssetCategory[] = await getISAPortfolio('2025-06-30');
   const session = await getServerSession(authOptions);
@@ -49,6 +49,8 @@ const ISAPage = async () => {
   })();
 
   const transactions = await getTransactions();
+  // console.log(transactions);
+  console.log('monthlyReturnsData : ', monthlyReturnsData);
 
   return (
     <ISAPageContainer
