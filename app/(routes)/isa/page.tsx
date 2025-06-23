@@ -49,8 +49,6 @@ const ISAPage = async () => {
   })();
 
   const transactions = await getTransactions();
-  // console.log(transactions);
-  console.log('monthlyReturnsData : ', monthlyReturnsData);
 
   return (
     <ISAPageContainer
