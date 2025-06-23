@@ -12,7 +12,6 @@ import ProgressBar from '@/components/progress-bar';
 import Tab from '@/components/tab';
 import { fetchISAInfo } from '@/lib/api/my-page';
 import EtfDetailRatioChart from '../_components/ratio-chart';
-import { etfDetailMap } from '../data/ratio-data';
 import type { EtfInfo } from '../data/ratio-data';
 
 interface Props {
@@ -24,13 +23,15 @@ export const MyPageContainer = ({ session }: Props) => {
   const [selectedTab, setSelectedTab] = useState<number>(0);
   const [connected, setConnected] = useState(false);
   const [selectedItem, setSelectedItem] = useState<string>('');
+  const [etfDetailList, setEtfDetailList] = useState<EtfInfo[]>([]);
   const [selectedEtf, setSelectedEtf] = useState<EtfInfo>({
     name: '',
-    avgPrice: 0,
+    avgCost: 0,
     totalPurchase: 0,
     returnRate: 0,
     quantity: 0,
     portionOfTotal: 0,
+    currentPrice: 0,
   });
   const [account, setAccount] = useState<Account>({
     id: '',
@@ -42,13 +43,11 @@ export const MyPageContainer = ({ session }: Props) => {
     accountType: '',
   });
 
-  const chartData: ChartData[] = Object.entries(etfDetailMap).map(
-    ([etfId, etf]) => ({
-      id: etfId,
-      name: etf.name,
-      value: Number((etf.portionOfTotal * 100).toFixed(2)),
-    })
-  );
+  const chartData: ChartData[] = etfDetailList.map((etf) => ({
+    id: etf.name,
+    name: etf.name,
+    value: Number((etf.portionOfTotal * 100).toFixed(2)),
+  }));
 
   const tabs = ['보유 ETF', '연결 계좌'];
 
@@ -69,16 +68,57 @@ export const MyPageContainer = ({ session }: Props) => {
         setAccount(res);
       }
     };
+
+    const fetchEtfPortfolio = async () => {
+      try {
+        const res = await fetch('/api/etf/portfolio');
+        const json = await res.json();
+
+        const sorted = json.data.sort(
+          (a: any, b: any) => Number(b.totalPurchase) - Number(a.totalPurchase)
+        );
+        const sortedEtfArray = sorted.map((etf: any) => ({
+          id: etf.etfId,
+          name: etf.name,
+          avgCost: Number(etf.avgCost),
+          totalPurchase: Number(etf.totalPurchase),
+          returnRate: parseFloat(etf.returnRate.toFixed(4)),
+          quantity: etf.quantity,
+          portionOfTotal: parseFloat(etf.portionOfTotal.toFixed(4)),
+          currentPrice: Number(etf.currentPrice),
+        }));
+
+        setEtfDetailList(sortedEtfArray);
+      } catch (error) {
+        console.error('ETF 포트폴리오 조회 실패:', error);
+      }
+    };
+
     fetchISA();
+    fetchEtfPortfolio();
   }, []);
 
   useEffect(() => {
-    console.log('account : ', account);
-  }, [account]);
-
+    const foundEtf = etfDetailList.find((etf) => etf.name === selectedItem);
+    if (foundEtf) {
+      setSelectedEtf(foundEtf);
+    } else {
+      setSelectedEtf({
+        name: '',
+        avgCost: 0,
+        totalPurchase: 0,
+        returnRate: 0,
+        quantity: 0,
+        portionOfTotal: 0,
+        currentPrice: 0,
+      });
+    }
+  }, [selectedItem, etfDetailList]);
   useEffect(() => {
-    setSelectedEtf(etfDetailMap[selectedItem]);
-  }, [selectedItem]);
+    if (!selectedItem && etfDetailList[0]) {
+      setSelectedItem(etfDetailList[0].name);
+    }
+  }, [etfDetailList]);
 
   return (
     <div className='w-full pt-24 pb-10 px-7 flex flex-col gap-7'>

@@ -67,25 +67,15 @@ export async function GET(req: NextRequest) {
     const etfMbtiService = new EtfTestService();
     const profile = await etfMbtiService.getUserInvestmentProfile(userId);
 
-    if (!profile.investType && profile.preferredCategories.length === 0) {
-      return NextResponse.json(
-        { message: '투자 프로필이 없습니다.' },
-        { status: 404 }
-      );
-    }
+    const serializedProfile = {
+      investType: profile.investType,
+      preferredCategories: profile.preferredCategories.map((category) => ({
+        id: category.id.toString(),
+        fullPath: category.fullPath,
+      })),
+    };
 
-    // 3. BigInt 변환 Number(category.id) or category.id.toString()
-    // const serializedProfile = {
-    //   investType: profile.investType,
-    //   preferredCategories: profile.preferredCategories.map((category) => ({
-    //     id: Number(category.id),
-    //     fullPath: category.fullPath,
-    //   })),
-    // };
-
-    // return NextResponse.json(serializedProfile);
-
-    return NextResponse.json(profile);
+    return NextResponse.json(serializedProfile);
   } catch (error) {
     console.error('MBTI GET API 오류:', error);
     return NextResponse.json({ message: '서버 오류' }, { status: 500 });
