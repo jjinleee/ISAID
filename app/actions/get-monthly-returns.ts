@@ -34,11 +34,12 @@ export async function getMonthlyReturns(baseDate: string) {
     });
 
     //디버깅용 로그 %로 표시
-    // returns.forEach((r) => {
-    //   console.log(
-    //     `${r.baseDate.toISOString().slice(0, 10)}: ${(Number(r.entireProfit) * 100).toFixed(2)}%`
-    //   );
-    // });
+    returns.forEach((r) => {
+      console.log(
+        `${r.baseDate.toISOString().slice(0, 10)}: ${(Number(r.entireProfit) * 100).toFixed(2)}%`
+      );
+    });
+
     const formattedReturns = returns.map((r) => ({
       [r.baseDate.toISOString().slice(0, 10)]: Number(
         (Number(r.entireProfit) * 100).toFixed(2)
@@ -77,7 +78,7 @@ export async function getMonthlyReturns(baseDate: string) {
     const totalEvaluatedAmount =
       Number(etfEvaluated._sum.evaluatedAmount ?? 0) +
       Number(generalEvaluated._sum.evaluatedAmount ?? 0);
-    // console.log('totalEvaluatedAmount : ', totalEvaluatedAmount);
+    console.log('totalEvaluatedAmount : ', totalEvaluatedAmount);
 
     const totalInvestedAmount = 17_000_000; // 고정 초기 투자금
 
@@ -93,10 +94,12 @@ export async function getMonthlyReturns(baseDate: string) {
       evaluatedAmount: totalEvaluatedAmount,
       evaluatedProfit: evaluatedProfit,
     };
-  } catch (error) {
-    console.error('[getMonthlyReturns] Error:', error);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error('[getMonthlyReturns] Error:', error.message);
+    } else {
+      console.error('[getMonthlyReturns] Unknown error:', error);
+    }
     throw new Error('Failed to fetch monthly returns');
   }
 }
-
-// 위 코드에서 returns 를 형식에 맞춰 출력하는 부분 보이지
