@@ -8,10 +8,17 @@ import {
   MonthlyReturnsSummary,
   PieChartData,
 } from '@/types/isa';
+import checkIsaAccount from '@/utils/check-isa-account';
 import { authOptions } from '@/lib/auth-options';
 import ISAPageContainer from './_components/isa-page-container';
+import ISAPageContainerWhenHasnot from './_components/isa-page-container-when-hasnot';
 
 const ISAPage = async () => {
+  const hasIsa = await checkIsaAccount();
+  if (!hasIsa) {
+    // 계좌가 없으면 아무것도 렌더링하지 않음
+    return <ISAPageContainerWhenHasnot />;
+  }
   const taxData = await taxSaving();
   const monthlyReturnsData: MonthlyReturnsSummary = await getMonthlyReturns(
     new Date().toISOString().slice(0, 10)

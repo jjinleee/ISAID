@@ -56,6 +56,7 @@ export const getTransactions = async (): Promise<CalendarData> => {
     at: Date;
     label: string;
   };
+
   const normalized: TxCommon[] = [
     ...generalTxs.map((g) => ({
       id: g.id.toString(),
