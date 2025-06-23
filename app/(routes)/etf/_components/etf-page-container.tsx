@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useHeader } from '@/context/header-context';
 import ArrowIcon from '@/public/images/arrow-icon';
@@ -15,13 +15,31 @@ import {
 import StarBoyFinger from '@/public/images/star-boy-finger.svg';
 import { SlideCardProps } from '@/types/components';
 import { SliderWrapper } from '../_components/slider-wrapper';
+import { idToCategoryUrl } from './data/etf-category-url-map';
 
 const ETFPageContainer = () => {
   const { setHeader } = useHeader();
   const router = useRouter();
+  const [preferredCategories, setPreferredCategories] = useState<
+    { id: string; fullPath: string }[]
+  >([]);
 
   useEffect(() => {
     setHeader('ETF 맞춤 추천', '당신의 투자 성향에 맞는 테마');
+
+    // 투자 성향 및 선호 카테고리 정보 호출
+    const fetchEtfTestInfo = async () => {
+      try {
+        const res = await fetch('/api/etf/mbti', { method: 'GET' });
+        if (!res.ok) return;
+        const data = await res.json();
+        setPreferredCategories(data.preferredCategories);
+      } catch (error) {
+        console.error('MBTI 정보 조회 실패:', error);
+      }
+    };
+
+    fetchEtfTestInfo();
   }, []);
   const cards: SlideCardProps[] = [
     {
@@ -72,9 +90,19 @@ const ETFPageContainer = () => {
     { name: 'GUN', rate: 5.23 },
   ];
 
+  const handleClick = (id: number) => {
+    const path = idToCategoryUrl[id];
+    if (!path) {
+      console.warn(`id ${id}에 대한 경로가 정의되지 않았습니다.`);
+      return;
+    }
+    router.push(`/etf/category/${path}`);
+  };
+
   return (
     <div className='flex flex-col px-6 pb-10'>
       <div className='flex flex-col gap-5'>
+        {/* 테스트 카드 */}
         <div
           className='flex px-5 py-8 text-white bg-hana-green cursor-pointer
         gap-5 rounded-2xl relative'
@@ -96,6 +124,30 @@ const ETFPageContainer = () => {
             />
           </div>
         </div>
+        {/* 추천 카테고리 */}
+        {preferredCategories.length > 0 && (
+          <div className='flex flex-col gap-2'>
+            <h2 className='text-xl font-semibold'>선호 카테고리</h2>
+            <div className='flex flex-col gap-3'>
+              {preferredCategories.map((sub) => (
+                <div
+                  key={sub.id}
+                  className='flex justify-between items-center p-4 rounded-2xl bg-white shadow hover:bg-hana-light-green transition-colors duration-200 cursor-pointer group'
+                  onClick={() => handleClick(Number(sub.id))}
+                >
+                  <span className='text-base font-semibold text-gray-700 group-hover:text-hana-green'>
+                    {sub.fullPath}
+                  </span>
+                  <ArrowIcon
+                    direction='right'
+                    className='w-5 h-5 text-gray-400 group-hover:text-hana-green transition-transform duration-200 group-hover:translate-x-1'
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        {/* 테마 슬라이더 */}
         <h1 className='text-xl font-semibold'>ETF, 테마부터 시작해볼까요?</h1>
         <SliderWrapper cards={cards} />
         <div className='flex items-center justify-between'>
