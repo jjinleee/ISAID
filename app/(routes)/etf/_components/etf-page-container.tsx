@@ -75,8 +75,6 @@ const ETFPageContainer = () => {
   return (
     <div className='flex flex-col px-6 pb-10'>
       <div className='flex flex-col gap-5'>
-        <h1 className='text-xl font-semibold'>ETF, 테마부터 시작해볼까요?</h1>
-        <SliderWrapper cards={cards} />
         <div
           className='flex px-5 py-8 text-white bg-hana-green cursor-pointer
         gap-5 rounded-2xl relative'
@@ -98,6 +96,8 @@ const ETFPageContainer = () => {
             />
           </div>
         </div>
+        <h1 className='text-xl font-semibold'>ETF, 테마부터 시작해볼까요?</h1>
+        <SliderWrapper cards={cards} />
         <div className='flex items-center justify-between'>
           <h1 className='font-bold text-xl'>내가 담은 ETF</h1>
           <div className='flex gap-2 justify-center items-center text-sm cursor-pointer'>
