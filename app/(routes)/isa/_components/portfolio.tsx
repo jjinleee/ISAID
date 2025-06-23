@@ -1,19 +1,19 @@
 'use client';
 
+import { useEffect } from 'react';
+import { PieChartData } from '@/types/isa';
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
 import InvestmentStyle from './investment-style';
 
-const data = [
-  { name: '국내 주식', value: 35 },
-  { name: '해외 주식', value: 25 },
-  { name: '채권', value: 20 },
-  { name: 'ETF/리츠', value: 15 },
-  { name: '현금', value: 5 },
-];
-
-const COLORS = ['#5eead4', '#2dd4bf', '#14b8a6', '#0f766e', '#a7f3d0'];
-
-const Portfolio = () => {
+const Portfolio = ({ ptData }: { ptData: PieChartData[] }) => {
+  const COLORS = [
+    '#5eead4',
+    '#2dd4bf',
+    '#14b8a6',
+    '#0f766e',
+    '#a7f3d0',
+    '#009178',
+  ].splice(0, ptData.length);
   return (
     <div className='rounded-xl bg-white px-5 sm:px-10 py-6 shadow-sm mt-4'>
       <h2 className='text-lg font-semibold'>OO님의 투자 포트폴리오</h2>
@@ -25,7 +25,7 @@ const Portfolio = () => {
         <ResponsiveContainer width={200} height={200}>
           <PieChart>
             <Pie
-              data={data}
+              data={ptData}
               dataKey='value'
               nameKey='name'
               cx='50%'
@@ -36,7 +36,7 @@ const Portfolio = () => {
               startAngle={90}
               endAngle={450}
             >
-              {data.map((entry, index) => (
+              {ptData.map((entry, index) => (
                 <Cell
                   key={`cell-${index}`}
                   fill={COLORS[index % COLORS.length]}
@@ -57,7 +57,7 @@ const Portfolio = () => {
         </ResponsiveContainer>
 
         <ul className='space-y-2 ml-6 text-sm w-40'>
-          {data.map((item, index) => (
+          {ptData.map((item, index) => (
             <li key={index} className='flex justify-between items-center'>
               <div className='flex items-center gap-2'>
                 <span
