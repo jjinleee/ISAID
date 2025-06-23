@@ -20,9 +20,8 @@ const ISAPage = async () => {
     return <ISAPageContainerWhenHasnot />;
   }
   const taxData = await taxSaving();
-  const monthlyReturnsData: MonthlyReturnsSummary = await getMonthlyReturns(
-    new Date().toISOString().slice(0, 10)
-  );
+  const monthlyReturnsData: MonthlyReturnsSummary =
+    await getMonthlyReturns('6');
 
   const rawData: AssetCategory[] = await getISAPortfolio('2025-06-30');
   const session = await getServerSession(authOptions);

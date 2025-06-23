@@ -3,6 +3,6 @@ import { NextResponse } from 'next/server';
 import { getMonthlyReturns } from '@/app/actions/get-monthly-returns';
 
 export async function GET() {
-  await getMonthlyReturns('2025-06-30');
+  await getMonthlyReturns('6');
   return NextResponse.json({ ok: true });
 }
