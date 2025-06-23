@@ -64,13 +64,14 @@ function getRepresentativeVolatility(riskGrade: number): number {
 }
 
 // 샤프비율 계산 함수 (하나증권 기준 적용)
-function calculateSharpeRatio(return1y: number, volatility: number): number {
+function calculateSharpeRatio(
+  return1y: number,
+  volatility: number,
+  riskGrade: number
+): number {
   if (!volatility || volatility === 0) return 0;
 
   const riskFreeRate = 0.03; // 3% 무위험 수익률
-
-  // 위험등급 분류
-  const riskGrade = classifyRiskGrade(volatility);
 
   // 위험등급별 대표 변동성 수치 사용
   const representativeVolatility = getRepresentativeVolatility(riskGrade);
@@ -138,9 +139,7 @@ function normalize(value: number, min: number, max: number): number {
 }
 
 // 위험등급별 정규화된 변동성 계산
-function normalizeVolatilityByRiskGrade(volatility: number): number {
-  const riskGrade = classifyRiskGrade(volatility);
-
+function normalizeVolatilityByRiskGrade(riskGrade: number): number {
   // 위험등급별 정규화 (1등급=0.0, 5등급=1.0)
   // 안전한 ETF일수록 높은 점수
   return (6 - riskGrade) / 5;
@@ -150,44 +149,56 @@ function normalizeVolatilityByRiskGrade(volatility: number): number {
 function generateReasons(
   etf: any,
   metrics: any,
-  investType: InvestType
+  investType: InvestType,
+  riskGrade: number
 ): string[] {
   const reasons: string[] = [];
 
   // 샤프비율 기반 이유
   if (metrics.sharpeRatio > 1.0) {
-    reasons.push('높은 샤프비율로 위험 대비 수익률이 우수합니다');
+    reasons.push(
+      '샤프비율이 1.0을 초과하여, 동일한 위험 수준에서 더 높은 수익을 기대할 수 있는 상품입니다. 위험 대비 성과가 우수하여 안정성과 수익성을 함께 고려하는 투자자에게 적합합니다.'
+    );
   }
 
   // 총보수 기반 이유
   if (metrics.totalFee < 0.3) {
-    reasons.push('낮은 총보수로 비용 효율성이 좋습니다');
+    reasons.push(
+      '총보수가 0.3% 미만으로 낮아, 장기 투자 시 비용 부담을 줄이고 실질 수익률을 높일 수 있습니다. 수수료에 민감한 투자자에게 유리한 선택입니다.'
+    );
   }
 
   // 거래대금 기반 이유
   if (metrics.tradingVolume > 1000000000) {
     // 10억원 이상
-    reasons.push('높은 거래대금으로 유동성이 우수합니다');
+    reasons.push(
+      '일일 평균 거래대금이 10억 원 이상으로, 시장 유동성이 뛰어나 매수·매도가 원활합니다. 단기 매매 전략을 고려하는 투자자에게 적합합니다.'
+    );
   }
 
   // 순자산총액 기반 이유
   if (metrics.netAssetValue > 100000000000) {
     // 1000억원 이상
-    reasons.push('대규모 순자산으로 안정성이 높습니다');
+    reasons.push(
+      '순자산총액이 1,000억 원 이상으로, 규모가 크고 운용 안정성이 높습니다. 대형 ETF로서 투자자 신뢰도가 높고, 자금 유입에 따른 안정적인 운용이 가능합니다.'
+    );
   }
 
   // 추적오차 기반 이유
   if (metrics.trackingError < 0.5) {
-    reasons.push('낮은 추적오차로 지수 추종 성능이 우수합니다');
+    reasons.push(
+      '추적오차가 0.5% 미만으로, 기초지수를 정밀하게 따라가고 있습니다. 지수 수익률에 근접한 성과를 원하는 투자자에게 적합한 상품입니다.'
+    );
   }
 
   // 괴리율 기반 이유
   if (Math.abs(metrics.divergenceRate) < 0.5) {
-    reasons.push('낮은 괴리율로 NAV 대비 가격이 안정적입니다');
+    reasons.push(
+      '괴리율이 ±0.5% 이내로 낮아, 시장가격이 순자산가치(NAV)와 거의 일치합니다. 가격 왜곡 가능성이 낮아 합리적인 가격에 매수·매도할 수 있습니다.'
+    );
   }
 
   // 위험등급 기반 이유 (하나증권 기준)
-  const riskGrade = classifyRiskGrade(metrics.volatility);
   const riskGradeLabels = {
     1: '초고위험',
     2: '고위험',
@@ -198,17 +209,21 @@ function generateReasons(
 
   if (riskGrade >= 4) {
     reasons.push(
-      `${riskGradeLabels[riskGrade as keyof typeof riskGradeLabels]} 등급으로 안정성이 높습니다`
+      `${riskGradeLabels[riskGrade as keyof typeof riskGradeLabels]} 등급(리스크 등급 ${riskGrade})으로, 가격 변동성이 낮고 안정적인 운용이 기대됩니다.`
     );
   }
 
   // 투자 성향별 맞춤 이유
   if (investType === 'CONSERVATIVE' && riskGrade >= 4) {
-    reasons.push('낮은 위험등급으로 안정적 투자에 적합합니다');
+    reasons.push(
+      '고객님의 보수적인 투자 성향에 부합하는 낮은 위험등급 상품으로, 원금 손실 가능성을 최소화하면서 안정적인 수익을 추구할 수 있습니다.'
+    );
   }
 
   if (investType === 'AGGRESSIVE' && metrics.sharpeRatio > 0.8) {
-    reasons.push('높은 위험 대비 수익률로 공격적 투자에 적합합니다');
+    reasons.push(
+      '고객님의 공격적인 투자 성향에 맞게, 높은 샤프비율을 보이는 상품으로 위험을 감수하더라도 수익을 극대화하고자 하는 전략에 적합합니다.'
+    );
   }
 
   return reasons;
@@ -263,19 +278,29 @@ export async function GET(
 
     const investType = userInvestType;
 
+    // ETF 데이터 조회 - 필수 지표가 모두 있는 ETF만 선택
     const etfs = await prisma.etf.findMany({
       where: {
-        return1y: { not: null },
-        etfTotalFee: { not: null },
-        netAssetTotalAmount: { not: null },
-        traceErrRate: { not: null },
-        divergenceRate: { not: null },
-        volatility: { not: null },
-        ...(categoryFilter.length > 0 && {
-          category: {
-            fullPath: { in: categoryFilter },
-          },
-        }),
+        // 필수 지표가 모두 있는 ETF만 선택
+        AND: [
+          { return1y: { not: null } },
+          { etfTotalFee: { not: null } },
+          { netAssetTotalAmount: { not: null } },
+          { traceErrRate: { not: null } },
+          { divergenceRate: { not: null } },
+          { volatility: { not: null } },
+          { volatility: { not: '' } }, // 빈 문자열이 아닌 변동성만
+          // 카테고리 필터 적용
+          ...(categoryFilter.length > 0
+            ? [
+                {
+                  category: {
+                    fullPath: { in: categoryFilter },
+                  },
+                },
+              ]
+            : []),
+        ],
       },
       include: {
         category: {
@@ -287,14 +312,26 @@ export async function GET(
             baseDate: {
               gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
             },
+            accTotalValue: { gt: 0 }, // 거래대금이 있는 데이터만
           },
           select: {
             accTotalValue: true,
           },
+          orderBy: {
+            baseDate: 'desc',
+          },
+          take: 30, // 최근 30일 데이터만
         },
       },
-      take: 100,
+      orderBy: {
+        netAssetTotalAmount: 'desc', // 순자산총액 기준 내림차순
+      },
+      take: 200, // 더 많은 ETF를 가져와서 필터링 후 선택
     });
+
+    console.log(
+      `[ETF 데이터 조회] 총 ${etfs.length}개의 ETF 데이터를 조회했습니다.`
+    );
 
     if (etfs.length === 0) {
       return NextResponse.json(
@@ -303,41 +340,96 @@ export async function GET(
       );
     }
 
-    // 지표별 최대/최소값 계산
+    // 거래대금이 있는 ETF만 필터링
+    const etfsWithTradingData = etfs.filter((etf) => etf.tradings.length > 0);
+    console.log(
+      `[ETF 거래데이터 필터링] 거래대금 데이터가 있는 ETF: ${etfsWithTradingData.length}개`
+    );
+
+    if (etfsWithTradingData.length === 0) {
+      return NextResponse.json(
+        { message: '거래 데이터가 있는 ETF가 없습니다.' },
+        { status: 404 }
+      );
+    }
+
+    // ETF 데이터를 미리 변환하여 중복 계산 방지
+    const processedEtfs = etfsWithTradingData.map((etf) => {
+      const return1y = Number(etf.return1y) || 0;
+      const etfTotalFee = Number(etf.etfTotalFee) || 0;
+      const netAssetTotalAmount = Number(etf.netAssetTotalAmount) || 0;
+      const traceErrRate = Number(etf.traceErrRate) || 0;
+      const divergenceRate = Number(etf.divergenceRate) || 0;
+      const volatility = Number(etf.volatility) || 0;
+      const riskGrade = classifyRiskGrade(volatility);
+
+      // 평균 거래대금 계산
+      const avgTradingVolume =
+        etf.tradings.length > 0
+          ? etf.tradings.reduce(
+              (sum: number, t) => sum + Number(t.accTotalValue) || 0,
+              0
+            ) / etf.tradings.length
+          : 0;
+
+      return {
+        ...etf,
+        processedData: {
+          return1y,
+          etfTotalFee,
+          netAssetTotalAmount,
+          traceErrRate,
+          divergenceRate,
+          volatility,
+          riskGrade,
+          avgTradingVolume,
+        },
+      };
+    });
+
+    // 지표별 최대/최소값 계산 (거래대금이 있는 ETF만 대상)
     const metrics = {
       return1y: {
-        min: Math.min(...etfs.map((e) => Number(e.return1y) || 0)),
-        max: Math.max(...etfs.map((e) => Number(e.return1y) || 0)),
+        min: Math.min(...processedEtfs.map((e) => e.processedData.return1y)),
+        max: Math.max(...processedEtfs.map((e) => e.processedData.return1y)),
       },
       etfTotalFee: {
-        min: Math.min(...etfs.map((e) => Number(e.etfTotalFee) || 0)),
-        max: Math.max(...etfs.map((e) => Number(e.etfTotalFee) || 0)),
+        min: Math.min(...processedEtfs.map((e) => e.processedData.etfTotalFee)),
+        max: Math.max(...processedEtfs.map((e) => e.processedData.etfTotalFee)),
       },
       netAssetTotalAmount: {
-        min: Math.min(...etfs.map((e) => Number(e.netAssetTotalAmount) || 0)),
-        max: Math.max(...etfs.map((e) => Number(e.netAssetTotalAmount) || 0)),
+        min: Math.min(
+          ...processedEtfs.map((e) => e.processedData.netAssetTotalAmount)
+        ),
+        max: Math.max(
+          ...processedEtfs.map((e) => e.processedData.netAssetTotalAmount)
+        ),
       },
       traceErrRate: {
-        min: Math.min(...etfs.map((e) => Number(e.traceErrRate) || 0)),
-        max: Math.max(...etfs.map((e) => Number(e.traceErrRate) || 0)),
+        min: Math.min(
+          ...processedEtfs.map((e) => e.processedData.traceErrRate)
+        ),
+        max: Math.max(
+          ...processedEtfs.map((e) => e.processedData.traceErrRate)
+        ),
       },
       divergenceRate: {
         min: Math.min(
-          ...etfs.map((e) => Math.abs(Number(e.divergenceRate) || 0))
+          ...processedEtfs.map((e) => Math.abs(e.processedData.divergenceRate))
         ),
         max: Math.max(
-          ...etfs.map((e) => Math.abs(Number(e.divergenceRate) || 0))
+          ...processedEtfs.map((e) => Math.abs(e.processedData.divergenceRate))
         ),
       },
       volatility: {
-        min: Math.min(...etfs.map((e) => Number(e.volatility) || 0)),
-        max: Math.max(...etfs.map((e) => Number(e.volatility) || 0)),
+        min: Math.min(...processedEtfs.map((e) => e.processedData.volatility)),
+        max: Math.max(...processedEtfs.map((e) => e.processedData.volatility)),
       },
     };
 
     // 거래대금 최대/최소값 계산
-    const allTradingValues = etfs
-      .flatMap((etf) => etf.tradings.map((t) => Number(t.accTotalValue) || 0))
+    const allTradingValues = processedEtfs
+      .map((etf) => etf.processedData.avgTradingVolume)
       .filter((v) => v > 0);
 
     const tradingVolume = {
@@ -346,36 +438,40 @@ export async function GET(
     };
 
     const weights = getRiskBasedWeights(investType);
+    const allowedRiskGrades = getAllowedRiskGrades(investType);
 
     // 각 ETF에 대한 종합 점수 계산
-    const scoredEtfs: EtfRecommendationResponse[] = etfs
+    const scoredEtfs: EtfRecommendationResponse[] = processedEtfs
       .map((etf) => {
-        const volatility = Number(etf.volatility) || 0;
-        const riskGrade = classifyRiskGrade(volatility);
+        const { processedData } = etf;
+        const {
+          return1y,
+          etfTotalFee,
+          netAssetTotalAmount,
+          traceErrRate,
+          divergenceRate,
+          volatility,
+          riskGrade,
+          avgTradingVolume,
+        } = processedData;
 
         // 투자 성향에 맞지 않는 위험등급은 제외
-        const allowedRiskGrades = getAllowedRiskGrades(investType);
         if (!allowedRiskGrades.includes(riskGrade)) {
+          console.log(
+            `[ETF 추천 필터링] ${etf.issueName} (${etf.issueCode}) - 위험등급 ${riskGrade}는 ${investType} 투자성향에 허용되지 않음. 허용등급: ${allowedRiskGrades.join(', ')}`
+          );
           return null; // 필터링을 위해 null 반환
         }
 
         // 샤프비율 계산 (하나증권 기준 적용)
         const sharpeRatio = calculateSharpeRatio(
-          Number(etf.return1y) || 0,
-          volatility
+          return1y,
+          volatility,
+          riskGrade
         );
 
-        // 평균 거래대금 계산
-        const avgTradingVolume =
-          etf.tradings.length > 0
-            ? etf.tradings.reduce(
-                (sum, t) => sum + Number(t.accTotalValue) || 0,
-                0
-              ) / etf.tradings.length
-            : 0;
-
         // 위험등급별 정규화된 변동성
-        const normalizedVolatility = normalizeVolatilityByRiskGrade(volatility);
+        const normalizedVolatility = normalizeVolatilityByRiskGrade(riskGrade);
 
         // 각 지표 정규화 (0-1 범위)
         const normalizedMetrics = {
@@ -383,7 +479,7 @@ export async function GET(
           totalFee:
             1 -
             normalize(
-              Number(etf.etfTotalFee) || 0,
+              etfTotalFee,
               metrics.etfTotalFee.min,
               metrics.etfTotalFee.max
             ), // 수수료는 낮을수록 좋음
@@ -393,21 +489,21 @@ export async function GET(
             tradingVolume.max
           ),
           netAssetValue: normalize(
-            Number(etf.netAssetTotalAmount) || 0,
+            netAssetTotalAmount,
             metrics.netAssetTotalAmount.min,
             metrics.netAssetTotalAmount.max
           ),
           trackingError:
             1 -
             normalize(
-              Number(etf.traceErrRate) || 0,
+              traceErrRate,
               metrics.traceErrRate.min,
               metrics.traceErrRate.max
             ), // 추적오차는 낮을수록 좋음
           divergenceRate:
             1 -
             normalize(
-              Math.abs(Number(etf.divergenceRate) || 0),
+              Math.abs(divergenceRate),
               metrics.divergenceRate.min,
               metrics.divergenceRate.max
             ), // 괴리율은 낮을수록 좋음
@@ -424,6 +520,10 @@ export async function GET(
           normalizedMetrics.divergenceRate * weights.divergenceRate +
           normalizedMetrics.volatility * weights.volatility;
 
+        console.log(
+          `[ETF 추천 점수] ${etf.issueName} (${etf.issueCode}) - 위험등급: ${riskGrade}, 점수: ${Math.round(score * 100) / 100}, 샤프비율: ${Math.round(sharpeRatio * 100) / 100}`
+        );
+
         return {
           etfId: etf.id.toString(),
           issueCode: etf.issueCode || '',
@@ -433,11 +533,11 @@ export async function GET(
           riskGrade: riskGrade, // 하나증권 위험등급 추가
           metrics: {
             sharpeRatio: Math.round(sharpeRatio * 100) / 100,
-            totalFee: Number(etf.etfTotalFee) || 0,
+            totalFee: etfTotalFee,
             tradingVolume: avgTradingVolume,
-            netAssetValue: Number(etf.netAssetTotalAmount) || 0,
-            trackingError: Number(etf.traceErrRate) || 0,
-            divergenceRate: Number(etf.divergenceRate) || 0,
+            netAssetValue: netAssetTotalAmount,
+            trackingError: traceErrRate,
+            divergenceRate: divergenceRate,
             volatility: volatility,
             normalizedVolatility: normalizedVolatility,
           },
@@ -445,14 +545,15 @@ export async function GET(
             etf,
             {
               sharpeRatio,
-              totalFee: Number(etf.etfTotalFee) || 0,
+              totalFee: etfTotalFee,
               tradingVolume: avgTradingVolume,
-              netAssetValue: Number(etf.netAssetTotalAmount) || 0,
-              trackingError: Number(etf.traceErrRate) || 0,
-              divergenceRate: Number(etf.divergenceRate) || 0,
+              netAssetValue: netAssetTotalAmount,
+              trackingError: traceErrRate,
+              divergenceRate: divergenceRate,
               volatility: volatility,
             },
-            investType
+            investType,
+            riskGrade
           ),
         };
       })
@@ -463,15 +564,33 @@ export async function GET(
       .sort((a, b) => b.score - a.score)
       .slice(0, limit);
 
+    console.log(
+      `[ETF 추천 결과] 사용자 투자성향: ${investType}, 분석된 ETF 수: ${processedEtfs.length}, 필터링 후 ETF 수: ${scoredEtfs.length}, 최종 추천 수: ${recommendations.length}`
+    );
+    console.log(
+      `[ETF 추천 상위 3개] ${recommendations
+        .slice(0, 3)
+        .map(
+          (r) => `${r.issueName} (위험등급: ${r.riskGrade}, 점수: ${r.score})`
+        )
+        .join(', ')}`
+    );
+
     return NextResponse.json({
       message: 'ETF 추천 성공',
       data: {
         recommendations,
         userProfile: {
           investType,
-          totalEtfsAnalyzed: etfs.length,
+          totalEtfsAnalyzed: processedEtfs.length,
+          filteredEtfsCount: scoredEtfs.length,
         },
         weights,
+        debug: {
+          allowedRiskGrades,
+          totalEtfsBeforeFilter: processedEtfs.length,
+          totalEtfsAfterFilter: scoredEtfs.length,
+        },
       },
     });
   } catch (error) {
