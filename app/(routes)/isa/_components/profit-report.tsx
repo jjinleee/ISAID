@@ -38,13 +38,14 @@ const ProfitReport = ({
   const [currentRate, setCurrentRate] = useState(
     latestEntry ? Object.values(latestEntry)[0] : 0
   ); // 전체 수익률
-  const [selectedMonth, setSelectedMonth] = useState('5');
+  const [selectedMonth, setSelectedMonth] = useState('6');
   const currentRateIsUp = currentRate >= 0;
 
   const prevEntry = selectedReport.returns.at(-2);
   const lastMonthRate = prevEntry ? Object.values(prevEntry)[0] : 0; // 전월 수익률
 
-  const diff = +(currentRate - lastMonthRate).toFixed(2); // 전월 대비 수익률 차이
+  // const diff = +(currentRate - lastMonthRate).toFixed(2); // 전월 대비 수익률 차이
+  const [diff, setDiff] = useState(+(currentRate - lastMonthRate).toFixed(2));
   const isUp = diff >= 0;
 
   const evaluatedProfit = selectedReport.evaluatedProfit; // 평가 수익
@@ -56,9 +57,9 @@ const ProfitReport = ({
   useEffect(() => {
     const rateEntry = selectedReport.returns[Number(selectedMonth) - 1];
     const value = rateEntry ? Object.values(rateEntry)[0] : 0;
-
+    // console.log('selectedReport : ', selectedReport);
     setCurrentRate(value);
-    console.log('current rate', currentRate);
+    // console.log('current rate', currentRate);
   }, [selectedMonth, selectedReport]);
 
   useEffect(() => {
@@ -81,7 +82,7 @@ const ProfitReport = ({
             <p
               className={`font-bold text-lg ${currentRate >= 0 ? 'text-hana-red ' : 'text-blue'}`}
             >
-              {currentRate >= 0 ? `+${currentRate} %` : `-${currentRate} %`}
+              {currentRate >= 0 ? `+${currentRate} %` : `${currentRate} %`}
             </p>
             {currentRateIsUp ? (
               <ArrowUpRight className='w-4 h-4 text-hana-red' />
@@ -101,7 +102,7 @@ const ProfitReport = ({
           >
             {evaluatedProfit >= 0
               ? `+${formatComma(evaluatedProfit)} 원`
-              : `-${formatComma(evaluatedProfit)} 원`}
+              : `${formatComma(evaluatedProfit)} 원`}
           </p>
         </div>
         <div>
