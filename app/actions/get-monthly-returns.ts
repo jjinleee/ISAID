@@ -4,7 +4,30 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth-options';
 import { prisma } from '@/lib/prisma';
 
-export async function getMonthlyReturns(baseDate: string) {
+const MonthDate = {
+  '1': {
+    value: '2025-01-31',
+  },
+  '2': {
+    value: '2025-02-28',
+  },
+  '3': {
+    value: '2025-03-31',
+  },
+  '4': {
+    value: '2025-04-30',
+  },
+  '5': {
+    value: '2025-05-30',
+  },
+  '6': {
+    value: '2025-06-30',
+  },
+} as const;
+
+type MonthKey = keyof typeof MonthDate;
+
+export async function getMonthlyReturns(month: MonthKey) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) throw new Error('로그인이 필요합니다.');
@@ -33,19 +56,12 @@ export async function getMonthlyReturns(baseDate: string) {
       },
     });
 
-    //디버깅용 로그 %로 표시
-    returns.forEach((r) => {
-      console.log(
-        `${r.baseDate.toISOString().slice(0, 10)}: ${(Number(r.entireProfit) * 100).toFixed(2)}%`
-      );
-    });
-
     const formattedReturns = returns.map((r) => ({
       [r.baseDate.toISOString().slice(0, 10)]: Number(
         (Number(r.entireProfit) * 100).toFixed(2)
       ),
     }));
-
+    const baseDate = MonthDate[month].value;
     const snapshotDate = new Date(`${baseDate}T23:59:59.000Z`);
     if (isNaN(snapshotDate.getTime())) {
       throw new Error(`Invalid baseDate: ${baseDate}`);
@@ -78,16 +94,10 @@ export async function getMonthlyReturns(baseDate: string) {
     const totalEvaluatedAmount =
       Number(etfEvaluated._sum.evaluatedAmount ?? 0) +
       Number(generalEvaluated._sum.evaluatedAmount ?? 0);
-    console.log('totalEvaluatedAmount : ', totalEvaluatedAmount);
 
     const totalInvestedAmount = 17_000_000; // 고정 초기 투자금
 
     const evaluatedProfit = totalEvaluatedAmount - totalInvestedAmount;
-
-    // console.log(
-    //   `평가 금액 (${baseDate}): ${totalEvaluatedAmount.toLocaleString()}원`
-    // );
-    // console.log(`평가 수익: ${evaluatedProfit.toLocaleString()}원`);
 
     return {
       returns: formattedReturns,
