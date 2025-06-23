@@ -2,9 +2,10 @@
 
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
-import QuizBannerCharater from '@/public/images/quiz-banner-character.svg';
+import QuizBannerCharacter from '@/public/images/quiz-banner-character.svg';
 import QUizBannerGift from '@/public/images/quiz-banner-gift.svg';
 import { isSameDay } from 'date-fns';
+import { getTodayKSTDate } from '@/lib/utils';
 
 interface Props {
   onComplete: (date: Date) => void;
@@ -19,12 +20,13 @@ export default function QuizBanner({
 }: Props) {
   const router = useRouter();
 
-  const today = new Date();
+  const today = getTodayKSTDate();
   const alreadyCompleted = completedDates.some((d) => isSameDay(d, today));
 
   const handleClick = () => {
     if (alreadyCompleted) {
-      toast.error('이미 오늘 퀴즈를 푸셨어요!');
+      toast.success('문제를 복기합니다');
+      router.push('/quiz?review=true');
       return;
     }
 
@@ -35,7 +37,7 @@ export default function QuizBanner({
     <div className='bg-primary rounded-xl px-4 pb-3 text-white flex items-center gap-3 cursor-pointer'>
       {/* 캐릭터 */}
       <div className='flex-shrink-0'>
-        <QuizBannerCharater />
+        <QuizBannerCharacter />
       </div>
 
       {/* 가운데 텍스트 */}
