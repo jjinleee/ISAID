@@ -1,6 +1,7 @@
 interface EtfCardProps {
   issueName: string;
   riskGrade: number;
+  flucRate: number;
   onClick: () => void;
 }
 
@@ -8,6 +9,7 @@ export default function EtfRecommendCard({
   issueName,
   riskGrade,
   onClick,
+  flucRate,
 }: EtfCardProps) {
   return (
     <div
@@ -20,8 +22,12 @@ export default function EtfRecommendCard({
         </div>
         <div className={getRiskColor(riskGrade)}>리스크 {riskGrade}</div>
       </div>
-      <div>
-        <p className='text-xs text-gray-500 mb-1'>추천 점수</p>
+      <div className='text-end'>
+        <p
+          className={`text-sm font-semibold mb-1 ${flucRate >= 0 ? 'text-hana-red' : 'text-blue'}`}
+        >
+          {flucRate >= 0 ? `+${flucRate}` : flucRate} %
+        </p>
       </div>
     </div>
   );

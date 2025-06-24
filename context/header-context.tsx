@@ -13,7 +13,7 @@ const HeaderContext = createContext<HeaderContextProps | null>(null);
 
 export const HeaderProvider = ({ children }: { children: React.ReactNode }) => {
   const [title, setTitle] = useState('default');
-  const [subtitle, setSubtitle] = useState<string | undefined>();
+  const [subtitle, setSubtitle] = useState<string | undefined>('default');
   const [onBack, setOnBack] = useState<(() => void) | undefined>(undefined);
 
   const setHeader = (

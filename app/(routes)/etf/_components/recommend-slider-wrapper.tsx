@@ -2,7 +2,7 @@ import { Pagination } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/pagination';
-import { EtfCardProps } from '@/app/(routes)/etf/data/recommend-etf-data';
+import { EtfCardProps } from '@/types/etf';
 import EtfRecommendCard from './etf-recommend-card';
 
 interface Props {
@@ -11,7 +11,6 @@ interface Props {
 }
 
 export const RecommendSliderWrapper = ({ slides, clickSlide }: Props) => {
-  const gun = [1, 2, 3, 4, 5];
   const handleClick = (idx: number) => {
     clickSlide(idx);
   };
@@ -35,6 +34,7 @@ export const RecommendSliderWrapper = ({ slides, clickSlide }: Props) => {
           <EtfRecommendCard
             riskGrade={item.riskGrade}
             issueName={`${item.issueName}`}
+            flucRate={item.flucRate}
             onClick={() => handleClick(idx)}
           />
         </SwiperSlide>

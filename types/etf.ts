@@ -61,3 +61,17 @@ export interface RatioInfo {
   compstIssueName: string;
   compstRatio: string | null;
 }
+
+export interface EtfCardProps {
+  etfId: string;
+  flucRate: number;
+  issueName: string;
+  riskGrade: number;
+  reasons: ReasonProps[];
+  onClick?: () => void;
+}
+
+export interface ReasonProps {
+  title: string;
+  description: string;
+}

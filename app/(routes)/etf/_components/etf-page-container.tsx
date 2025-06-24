@@ -1,25 +1,23 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { Session } from 'next-auth';
 import { useRouter } from 'next/navigation';
 import { RecommendSliderWrapper } from '@/app/(routes)/etf/_components/recommend-slider-wrapper';
 import { useHeader } from '@/context/header-context';
 import ArrowIcon from '@/public/images/arrow-icon';
-import {
-  SlideImg1,
-  SlideImg2,
-  SlideImg3,
-  SlideImg4,
-  SlideImg5,
-} from '@/public/images/etf/etf-slide';
 import StarBoyFinger from '@/public/images/star-boy-finger.svg';
-import { SlideCardProps } from '@/types/components';
+import { EtfCardProps } from '@/types/etf';
+import { fetchRecommend } from '@/lib/api/etf';
 import { SliderWrapper } from '../_components/slider-wrapper';
-import { etfCardDummyData, EtfCardProps } from '../data/recommend-etf-data';
+import { cards } from './data/etf-category-data';
 import { idToCategoryUrl } from './data/etf-category-url-map';
 import RecommendModal from './recommend-modal';
 
-const ETFPageContainer = () => {
+interface Props {
+  session: Session | null;
+}
+const ETFPageContainer = ({ session }: Props) => {
   const { setHeader } = useHeader();
   const router = useRouter();
   const [selectedETFId, setSelectedETFId] = useState(26);
@@ -45,51 +43,19 @@ const ETFPageContainer = () => {
         console.error('MBTI 정보 조회 실패:', error);
       }
     };
+    const fetchRecommendEtf = async () => {
+      try {
+        const res = await fetchRecommend();
+        setRecommendList(res.data.recommendations);
+      } catch (error) {
+        console.error('추천 조회 실패', error);
+      }
+    };
+
+    fetchRecommendEtf();
 
     fetchEtfTestInfo();
   }, []);
-  const cards: SlideCardProps[] = [
-    {
-      id: 1,
-      title: '시장 대표 ETF',
-      subtitle: '대표 지수에 투자하고 싶다면',
-      description: '가장 기본이 되는 지수 ETF 로 시장 흐름을 따라가요',
-      category: 'market-core',
-      children: <SlideImg1 />,
-    },
-    {
-      id: 2,
-      title: '업종별로 골라보는 ETF',
-      subtitle: '관심있는 산업에 바로 투자',
-      description: '건설부터 IT까지, 다양한 산업별 테마를 모았어요',
-      category: 'industry',
-      children: <SlideImg2 />,
-    },
-    {
-      id: 3,
-      title: '전략형 ETF',
-      subtitle: '성장? 배당? 당신의 전략은?',
-      description: '가치, 성장, 배당... 투자 성향에 따라 전략을 골라보세요.',
-      category: 'strategy',
-      children: <SlideImg3 />,
-    },
-    {
-      id: 4,
-      title: '규모 기반 ETF',
-      subtitle: '대형주? 중형주? 내가 고르는 사이즈',
-      description: '안정적인 대형주부터 잠재력 있는 중형주까지.',
-      category: 'market-cap',
-      children: <SlideImg4 />,
-    },
-    {
-      id: 5,
-      title: '혼합 자산 ETF',
-      subtitle: '주식도 채권도 놓치기 싫다면',
-      description: '리스크는 낮추고 수익은 챙기는 균형형 포트폴리오',
-      category: 'mixed-assets',
-      children: <SlideImg5 />,
-    },
-  ];
 
   const handleClick = (id: number) => {
     const path = idToCategoryUrl[id];
@@ -101,17 +67,13 @@ const ETFPageContainer = () => {
   };
 
   const clickSelectedETF = () => {
-    router.push(`/etf/detail/${selectedETFId}`);
+    router.push(`/etf/detail/${recommendList[selectedETFId].etfId}`);
   };
 
   const clickRecommendETF = (idx: number) => {
     setSelectedETFId(idx);
     setShowModal(true);
   };
-
-  useEffect(() => {
-    setRecommendList(etfCardDummyData);
-  }, []);
 
   return (
     <div className='flex flex-col px-6 pb-10'>
@@ -142,8 +104,24 @@ const ETFPageContainer = () => {
             />
           </div>
         </div>
+        {/* 추천 종목 */}
+        {preferredCategories.length > 0 && recommendList.length > 0 ? (
+          <div className='flex flex-col gap-5'>
+            <h1 className='text-xl font-semibold'>
+              {session?.user.name}님을 위한 추천 종목
+            </h1>
+            <RecommendSliderWrapper
+              slides={recommendList}
+              clickSlide={clickRecommendETF}
+            />
+          </div>
+        ) : (
+          <div className='w-full h-[188px] rounded-2xl bg-gray-100 animate-pulse flex items-center justify-center'>
+            <div className='w-3/4 h-6 bg-gray-300 rounded mb-2'></div>
+          </div>
+        )}
         {/* 추천 카테고리 */}
-        {preferredCategories.length > 0 && (
+        {preferredCategories.length > 0 && recommendList.length > 0 ? (
           <div className='flex flex-col gap-5'>
             <h2 className='text-xl font-semibold'>선호 카테고리</h2>
             <div className='flex flex-col gap-3'>
@@ -164,14 +142,16 @@ const ETFPageContainer = () => {
               ))}
             </div>
           </div>
+        ) : (
+          <div className='w-full h-[228px] rounded-2xl bg-gray-100 animate-pulse flex items-center justify-center'>
+            <div className='w-3/4 h-6 bg-gray-300 rounded mb-2'></div>
+          </div>
         )}
         {/* 테마 슬라이더 */}
-        <h1 className='text-xl font-semibold'>ETF, 테마부터 시작해볼까요?</h1>
-        <SliderWrapper cards={cards} />
-        <RecommendSliderWrapper
-          slides={recommendList}
-          clickSlide={clickRecommendETF}
-        />
+        <div className='flex flex-col gap-5'>
+          <h1 className='text-xl font-semibold'>ETF, 테마부터 시작해볼까요?</h1>
+          <SliderWrapper cards={cards} />
+        </div>
       </div>
       {showModal && (
         <RecommendModal

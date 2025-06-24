@@ -51,3 +51,11 @@ export const fetchEtfRatio = async (etfId: string) => {
   const res = await fetch(`/api/etf/${etfId}/pdf`);
   return res.json();
 };
+
+export const fetchRecommend = async () => {
+  const res = await fetch(`/api/etf/recommend`);
+  if (!res.ok) {
+    throw new Error('추천 ETF 데이터를 불러오는 데 실패했습니다.');
+  }
+  return res.json();
+};
