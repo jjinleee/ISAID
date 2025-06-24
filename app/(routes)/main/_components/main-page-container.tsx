@@ -9,20 +9,17 @@ import ChallengeCard from './challenge-card';
 import QuizBanner from './quiz-banner';
 import WeeklyCalendar from './weekly-calendar';
 
-const MainPageContainer = () => {
-  const [completedDates, setCompletedDates] = useState<Date[]>([]);
+export default function MainPageContainer() {
+  const [completedDates, setCompletedDates] = useState<Date[] | null>(null);
 
-  // DB에서 출석 데이터 가져오기
   useEffect(() => {
     const fetchCompletedDates = async () => {
       try {
         const res = await fetch('/api/quiz/calendar');
         const data = await res.json();
-
         const normalized = data.solvedDates.map((d: string) =>
           getKSTDateFromISOString(d)
         );
-
         setCompletedDates(normalized);
       } catch (error) {
         console.error('출석 데이터 로딩 실패:', error);
@@ -32,17 +29,14 @@ const MainPageContainer = () => {
     fetchCompletedDates();
   }, []);
 
-  // streak 계산
   const calculateStreakLabel = (dates: Date[]): string => {
     const sorted = dates
       .map((d) => new Date(d.getFullYear(), d.getMonth(), d.getDate()))
       .sort((a, b) => a.getTime() - b.getTime());
 
     if (sorted.length === 0) return '퀴즈를 풀고 출석해보세요!';
-
     const today = getTodayKSTDate();
     const last = sorted[sorted.length - 1];
-
     if (!isSameDay(last, today)) return '퀴즈를 풀고 출석해보세요!';
 
     let count = 1;
@@ -58,9 +52,13 @@ const MainPageContainer = () => {
   };
 
   const streakLabel = useMemo(
-    () => calculateStreakLabel(completedDates),
+    () => (completedDates ? calculateStreakLabel(completedDates) : ''),
     [completedDates]
   );
+
+  if (!completedDates) {
+    return <div className='p-4 text-center text-gray-500'>로딩중...</div>;
+  }
 
   return (
     <div className='px-4 py-5 space-y-6'>
@@ -71,6 +69,4 @@ const MainPageContainer = () => {
       <BeginnerGuideCard />
     </div>
   );
-};
-
-export default MainPageContainer;
+}

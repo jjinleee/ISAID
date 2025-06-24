@@ -105,7 +105,6 @@ export const verifyPin = async (pin: string) => {
     },
     body: JSON.stringify(data),
   });
-  console.log('verifyPin res : ', res);
   if (!res.ok) {
     const errorData = await res.json();
     throw new Error(errorData.message || '탈퇴 요청 실패');

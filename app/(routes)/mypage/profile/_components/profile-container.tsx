@@ -89,6 +89,15 @@ export const ProfileContainer = () => {
       </div>
       <div className='flex flex-col gap-2'>
         <Button
+          text={'로그아웃'}
+          thin={false}
+          active={true}
+          onClick={async () => {
+            const { signOut } = await import('next-auth/react');
+            signOut({ callbackUrl: '/' });
+          }}
+        />
+        <Button
           text={'탈퇴하기'}
           thin={false}
           active={false}

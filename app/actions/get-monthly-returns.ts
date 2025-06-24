@@ -68,15 +68,22 @@ export async function getMonthlyReturns(month: MonthKey) {
     }
 
     // 평가금액 계산= etf+general+ 현금
-    const etfEvaluated = await prisma.eTFHoldingSnapshot.aggregate({
+    const etfSnapshots = await prisma.eTFHoldingSnapshot.findMany({
       where: {
         isaAccountId,
         snapshotDate,
       },
-      _sum: {
+      select: {
+        etfId: true,
         evaluatedAmount: true,
       },
     });
+    console.log('ETF Snapshots:', etfSnapshots);
+
+    const etfEvaluatedAmount = etfSnapshots.reduce((sum, snap) => {
+      return sum + Number(snap.evaluatedAmount ?? 0);
+    }, 0);
+    console.log('ETF Evaluated Amount Total:', etfEvaluatedAmount);
 
     const generalEvaluated = await prisma.generalHoldingSnapshot.aggregate({
       where: {
@@ -90,9 +97,13 @@ export async function getMonthlyReturns(month: MonthKey) {
         evaluatedAmount: true,
       },
     });
+    console.log(
+      'General Holding Evaluated Amount:',
+      generalEvaluated._sum.evaluatedAmount
+    );
 
     const totalEvaluatedAmount =
-      Number(etfEvaluated._sum.evaluatedAmount ?? 0) +
+      Number(etfEvaluatedAmount ?? 0) +
       Number(generalEvaluated._sum.evaluatedAmount ?? 0);
 
     const totalInvestedAmount = 17_000_000; // 고정 초기 투자금
