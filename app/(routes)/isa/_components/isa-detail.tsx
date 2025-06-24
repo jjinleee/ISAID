@@ -1,8 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { PieChartData } from '@/types/isa';
-import { MonthlyReturnsSummary } from '@/types/isa';
+import { MonthlyReturnsSummary, PieChartData } from '@/types/isa';
 import Tab from '@/components/tab';
 import Calculate from './calculate';
 import Portfolio from './portfolio';
@@ -12,7 +11,7 @@ const ISADetail = ({
   taxData,
   ptData,
   userName,
-                     monthlyReturnsData
+  monthlyReturnsData,
 }: {
   taxData: any;
   monthlyReturnsData: MonthlyReturnsSummary;
@@ -37,9 +36,13 @@ const ISADetail = ({
       </div>
 
       <div className='flex flex-col'>
-        {selectedTab == 0 && <ProfitReport monthlyReturnsData={monthlyReturnsData}/>}
+        {selectedTab == 0 && (
+          <ProfitReport monthlyReturnsData={monthlyReturnsData} />
+        )}
         {selectedTab == 1 && <Portfolio ptData={ptData} userName={userName} />}
-        {selectedTab == 2 && <Calculate taxData={taxData} />}
+        {selectedTab == 2 && (
+          <Calculate taxData={taxData} userName={userName} />
+        )}
       </div>
     </div>
   );
