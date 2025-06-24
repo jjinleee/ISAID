@@ -22,24 +22,38 @@ const ProfitReport = ({
   monthlyReturnsData: MonthlyReturnsSummary;
 }) => {
   console.log('monthlyReturnsData : ', monthlyReturnsData);
+
   const chartData = monthlyReturnsData.returns.map((entry) => {
     const [date, rate] = Object.entries(entry)[0];
     const monthLabel = `${new Date(date).getMonth() + 1}월`;
     return { month: monthLabel, rate };
   });
+
   const latestEntry = monthlyReturnsData.returns.at(-1);
-  const currentRate = latestEntry ? Object.values(latestEntry)[0] : 0; // 전체 수익률
+  const currentRate = latestEntry ? Object.values(latestEntry)[0] : 0;
   const currentRateIsUp = currentRate >= 0;
 
   const prevEntry = monthlyReturnsData.returns.at(-2);
-  const lastMonthRate = prevEntry ? Object.values(prevEntry)[0] : 0; // 전월 수익률
+  const lastMonthRate = prevEntry ? Object.values(prevEntry)[0] : 0;
 
-  const diff = +(currentRate - lastMonthRate).toFixed(2); // 전월 대비 수익률 차이
+  const diff = +(currentRate - lastMonthRate).toFixed(2);
   const isUp = diff >= 0;
 
-  const evaluatedProfit = monthlyReturnsData.evaluatedProfit; // 평가 수익
+  const evaluatedProfit = monthlyReturnsData.evaluatedProfit;
+  const evaluatedAmount = monthlyReturnsData.evaluatedAmount;
 
-  const evaluatedAmount = monthlyReturnsData.evaluatedAmount; // 평가 금액
+  // 월별 평가금액 변화 계산
+  const monthlyAmounts = monthlyReturnsData.monthlyEvaluatedAmounts;
+  const latestAmountEntry = monthlyAmounts.at(-1);
+  const prevAmountEntry = monthlyAmounts.at(-2);
+
+  const currentAmount = latestAmountEntry
+    ? Object.values(latestAmountEntry)[0]
+    : 0;
+  const prevAmount = prevAmountEntry ? Object.values(prevAmountEntry)[0] : 0;
+  const amountChange = currentAmount - prevAmount;
+  const amountChangePercent =
+    prevAmount > 0 ? ((amountChange / prevAmount) * 100).toFixed(2) : '0.00';
 
   return (
     <div className='rounded-xl bg-white px-4 py-5 shadow-sm mt-4'>
@@ -57,7 +71,7 @@ const ProfitReport = ({
             <p
               className={`font-bold text-lg ${currentRate >= 0 ? 'text-hana-red ' : 'text-blue'}`}
             >
-              {currentRate >= 0 ? `+${currentRate} %` : `-${currentRate} %`}
+              {currentRate >= 0 ? `+${currentRate}%` : `${currentRate}%`}
             </p>
             {currentRateIsUp ? (
               <ArrowUpRight className='w-4 h-4 text-hana-red' />
@@ -72,12 +86,27 @@ const ProfitReport = ({
         </div>
         <div>
           <p className='text-sm text-gray-500'>평가 수익</p>
-          <p className='text-hana-green font-bold text-lg'>+690,000원</p>
-          {evaluatedProfit}
+          <div className='flex justify-center items-center gap-1'>
+            <p
+              className={`font-bold text-lg ${evaluatedProfit >= 0 ? 'text-hana-green' : 'text-red-500'}`}
+            >
+              {evaluatedProfit >= 0 ? '+' : ''}
+              {evaluatedProfit.toLocaleString()}원
+            </p>
+          </div>
+          <p className='text-xs text-gray-400'>
+            전월 대비 {amountChange >= 0 ? '+' : ''}
+            {amountChange.toLocaleString()}원
+          </p>
         </div>
         <div>
           <p className='text-sm text-gray-500'>평가 금액</p>
-          <p className='text-blue-500 font-bold text-lg'>9,190,000원</p>
+          <p className='text-blue-500 font-bold text-lg'>
+            {evaluatedAmount.toLocaleString()}원
+          </p>
+          <p className='text-xs text-gray-400'>
+            총 금액 {evaluatedAmount.toLocaleString()}원
+          </p>
         </div>
       </div>
 
@@ -127,6 +156,13 @@ const ProfitReport = ({
             <ArrowDownRight className='inline w-4 h-4 text-hana-red relative bottom-0.5' />
           </>
         )}
+        <br />
+        평가금액은{' '}
+        <span className='font-semibold'>
+          {evaluatedAmount.toLocaleString()}원
+        </span>
+        으로 <span className='font-semibold'>{amountChangePercent}%</span>{' '}
+        {amountChange >= 0 ? '증가' : '감소'}했어요.
       </div>
     </div>
   );
