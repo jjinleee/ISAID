@@ -28,6 +28,10 @@ const ETFPageContainer = ({ session }: Props) => {
     { id: string; fullPath: string }[]
   >([]);
 
+  const [isPreferredCategoriesLoaded, setIsPreferredCategoriesLoaded] =
+    useState(false);
+  const [isRecommendListLoaded, setIsRecommendListLoaded] = useState(false);
+
   useEffect(() => {
     setHeader('ETF 맞춤 추천', '당신의 투자 성향에 맞는 테마');
 
@@ -39,16 +43,20 @@ const ETFPageContainer = ({ session }: Props) => {
         const data = await res.json();
         setInvestType(data.investType);
         setPreferredCategories(data.preferredCategories);
+        setIsPreferredCategoriesLoaded(true);
       } catch (error) {
         console.error('MBTI 정보 조회 실패:', error);
+        setIsPreferredCategoriesLoaded(true);
       }
     };
     const fetchRecommendEtf = async () => {
       try {
         const res = await fetchRecommend();
         setRecommendList(res.data.recommendations);
+        setIsRecommendListLoaded(true);
       } catch (error) {
         console.error('추천 조회 실패', error);
+        setIsRecommendListLoaded(true);
       }
     };
 
@@ -105,7 +113,10 @@ const ETFPageContainer = ({ session }: Props) => {
           </div>
         </div>
         {/* 추천 종목 */}
-        {preferredCategories.length > 0 && recommendList.length > 0 ? (
+        {isPreferredCategoriesLoaded &&
+        isRecommendListLoaded &&
+        preferredCategories.length > 0 &&
+        recommendList.length > 0 ? (
           <div className='flex flex-col gap-5'>
             <h1 className='text-xl font-semibold'>
               {session?.user.name}님을 위한 추천 종목
@@ -115,13 +126,16 @@ const ETFPageContainer = ({ session }: Props) => {
               clickSlide={clickRecommendETF}
             />
           </div>
-        ) : (
+        ) : !isPreferredCategoriesLoaded || !isRecommendListLoaded ? (
           <div className='w-full h-[188px] rounded-2xl bg-gray-100 animate-pulse flex items-center justify-center'>
             <div className='w-3/4 h-6 bg-gray-300 rounded mb-2'></div>
           </div>
-        )}
+        ) : null}
         {/* 추천 카테고리 */}
-        {preferredCategories.length > 0 && recommendList.length > 0 ? (
+        {isPreferredCategoriesLoaded &&
+        isRecommendListLoaded &&
+        preferredCategories.length > 0 &&
+        recommendList.length > 0 ? (
           <div className='flex flex-col gap-5'>
             <h2 className='text-xl font-semibold'>선호 카테고리</h2>
             <div className='flex flex-col gap-3'>
@@ -142,11 +156,11 @@ const ETFPageContainer = ({ session }: Props) => {
               ))}
             </div>
           </div>
-        ) : (
+        ) : !isPreferredCategoriesLoaded || !isRecommendListLoaded ? (
           <div className='w-full h-[228px] rounded-2xl bg-gray-100 animate-pulse flex items-center justify-center'>
             <div className='w-3/4 h-6 bg-gray-300 rounded mb-2'></div>
           </div>
-        )}
+        ) : null}
         {/* 테마 슬라이더 */}
         <div className='flex flex-col gap-5'>
           <h1 className='text-xl font-semibold'>ETF, 테마부터 시작해볼까요?</h1>
