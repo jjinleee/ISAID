@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CalendarIcon } from '@/public/images/isa/calendar-icon';
 import { addDays, format, isSameDay, subDays } from 'date-fns';
 import { AnimatePresence, motion } from 'framer-motion';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface WeeklyCalendarProps {
   completedDates: Date[];
@@ -15,6 +16,11 @@ export default function WeeklyCalendar({
   const today = new Date();
   const [baseDate, setBaseDate] = useState(today);
   const [direction, setDirection] = useState<'next' | 'prev'>('next');
+  const [hasMounted, setHasMounted] = useState(false);
+
+  useEffect(() => {
+    setHasMounted(true); // 첫 렌더링 후에 true
+  }, []);
 
   const getStartOfWeek = (base: Date) => {
     const day = base.getDay(); // 일:0 ~ 토:6
@@ -48,9 +54,14 @@ export default function WeeklyCalendar({
           </div>
           <p className='text-xs text-gray-400 pl-7'>이번 주 퀴즈 출석 현황</p>
         </div>
+
         <div className='flex items-center gap-2 text-gray-500'>
-          <button onClick={() => handleWeekChange('prev')}>{'<'}</button>
-          <button onClick={() => handleWeekChange('next')}>{'>'}</button>
+          <button onClick={() => handleWeekChange('prev')}>
+            <ChevronLeft className='w-5 h-5' />
+          </button>
+          <button onClick={() => handleWeekChange('next')}>
+            <ChevronRight className='w-5 h-5' />
+          </button>
         </div>
       </div>
 
@@ -66,7 +77,9 @@ export default function WeeklyCalendar({
         <AnimatePresence mode='wait'>
           <motion.div
             key={weekStart.toISOString()}
-            initial={{ x: direction === 'next' ? 100 : -100 }}
+            initial={
+              hasMounted ? { x: direction === 'next' ? 100 : -100 } : false
+            }
             animate={{ x: 0 }}
             transition={{ duration: 0.3 }}
             className='absolute top-0 left-0 w-full grid grid-cols-7 text-center text-sm'

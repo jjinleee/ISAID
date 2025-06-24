@@ -2,8 +2,8 @@
 
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
-import QuizBannerCharacter from '@/public/images/quiz-banner-character.svg';
-import QUizBannerGift from '@/public/images/quiz-banner-gift.svg';
+import QuizBannerCharacter from '@/public/images/quiz/quiz-banner-character.svg';
+import QUizBannerGift from '@/public/images/quiz/quiz-banner-gift.svg';
 import { isSameDay } from 'date-fns';
 import { getTodayKSTDate } from '@/lib/utils';
 
