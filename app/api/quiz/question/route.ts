@@ -59,6 +59,12 @@ export async function GET() {
       selections: true,
     },
   });
+  const correct = await prisma.selection.findFirst({
+    where: {
+      questionId: question?.id,
+      answerFlag: true,
+    },
+  });
 
   if (!question) {
     return NextResponse.json({ message: 'No question found' }, { status: 404 });
@@ -83,6 +89,7 @@ export async function GET() {
         content: s.content,
       })),
     },
+    correctAnswerId: correct?.id.toString() ?? null,
     alreadySolved: !!existingCalendar,
   });
 }

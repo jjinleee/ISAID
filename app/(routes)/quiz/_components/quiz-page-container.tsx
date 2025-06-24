@@ -1,69 +1,107 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useHeader } from '@/context/header-context';
-import { getTodayKSTString } from '@/lib/utils';
-import { questions } from '../data/questions';
 import QUIZContent from './quiz-content';
 import ResultPage from './result-page';
 
+type Selection = {
+  id: string;
+  questionId: string;
+  content: string;
+};
+
+type Question = {
+  id: string;
+  content: string;
+  description: string;
+  selections: Selection[];
+};
+
 export default function QUIZPageContainer() {
   const { setHeader } = useHeader();
-  const [answers, setAnswers] = useState<Record<number, string>>({});
-  const [initialLoaded, setInitialLoaded] = useState(false);
-  const [showResult, setShowResult] = useState(false);
-  const [isReviewMode, setIsReviewMode] = useState(false);
-  const todayStr = getTodayKSTString();
+  const searchParams = useSearchParams();
+
+  const [question, setQuestion] = useState<Question | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [correctAnswerId, setCorrectAnswerId] = useState<string | null>(null);
+  const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
+  const [loading, setLoading] = useState(true);
+  const isReview = searchParams?.get('review') === 'true';
 
   useEffect(() => {
-    const key = 'quizAnswersByDate';
-    const stored = localStorage.getItem(key);
+    const fetchData = async () => {
+      try {
+        const res = await fetch('/api/quiz/question');
+        if (!res.ok) throw new Error('퀴즈 데이터 불러오기 실패');
 
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      if (parsed[todayStr]) {
-        setAnswers(parsed[todayStr]);
-        setShowResult(true);
-        setIsReviewMode(true);
+        const data = await res.json();
+        setQuestion(data.question);
+
+        // 복기 모드일 경우
+        if (isReview && data.correctAnswerId) {
+          setSelectedId(data.correctAnswerId);
+          setCorrectAnswerId(data.correctAnswerId);
+          setIsCorrect(true);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
       }
-    }
+    };
 
-    setInitialLoaded(true);
-  }, [todayStr]);
+    fetchData();
+  }, [isReview, searchParams]);
 
   useEffect(() => {
-    if (!initialLoaded) return;
-    setHeader('오늘의 금융 퀴즈', showResult ? '퀴즈 결과' : '1 / 1');
-  }, [setHeader, showResult, initialLoaded]);
+    setHeader('오늘의 금융 퀴즈', selectedId ? '퀴즈 결과' : '1 / 1');
+  }, [setHeader, selectedId]);
 
-  const handleSelect = (value: string) => {
-    const newAnswers = { 0: value };
-    setAnswers(newAnswers);
-    setShowResult(true);
+  const handleSelect = async (choiceId: string) => {
+    if (!question) return;
+    setSelectedId(choiceId);
 
-    const key = 'quizAnswersByDate';
-    const stored = localStorage.getItem(key);
-    const parsed = stored ? JSON.parse(stored) : {};
-    parsed[todayStr] = newAnswers;
-    localStorage.setItem(key, JSON.stringify(parsed));
+    try {
+      const res = await fetch('/api/quiz/question/submit', {
+        method: 'POST',
+        body: JSON.stringify({
+          questionId: question.id,
+          selectedId: choiceId,
+        }),
+      });
+
+      if (!res.ok) throw new Error('정답 제출 실패');
+
+      const data = await res.json();
+      setIsCorrect(data.isCorrect);
+      setCorrectAnswerId(data.correctAnswerId);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  if (!initialLoaded) return null;
+  if (loading || !question) {
+    return <div className='p-5'>문제를 불러오는 중입니다...</div>;
+  }
 
-  if (showResult) {
+  if (selectedId && correctAnswerId !== null) {
     return (
       <ResultPage
-        questions={questions}
-        answers={answers}
-        isReviewMode={isReviewMode}
+        question={question}
+        selectedId={selectedId}
+        correctAnswerId={correctAnswerId}
+        isCorrect={!!isCorrect}
+        isReviewMode={isReview}
       />
     );
   }
 
   return (
     <QUIZContent
-      question={questions[0]}
-      selectedAnswer={answers[0] ?? null}
+      question={question}
+      selectedAnswer={selectedId}
       onSelect={handleSelect}
     />
   );
