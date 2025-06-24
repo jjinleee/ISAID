@@ -1,8 +1,8 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import QuizTrophy from '@/public/images/quiz-trophy.svg';
-import StarProQuiz from '@/public/images/Star_Pro_Quiz.svg';
+import QuizTrophy from '@/public/images/quiz/quiz-trophy.svg';
+import StarProQuiz from '@/public/images/quiz/Star_Pro_Quiz.svg';
 import QuestionOption from '@/components/question-option';
 
 interface Selection {
