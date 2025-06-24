@@ -20,6 +20,7 @@ import { idToCategoryUrl } from './data/etf-category-url-map';
 const ETFPageContainer = () => {
   const { setHeader } = useHeader();
   const router = useRouter();
+  const [investType, setInvestType] = useState<string | null>(null);
   const [preferredCategories, setPreferredCategories] = useState<
     { id: string; fullPath: string }[]
   >([]);
@@ -33,6 +34,7 @@ const ETFPageContainer = () => {
         const res = await fetch('/api/etf/mbti', { method: 'GET' });
         if (!res.ok) return;
         const data = await res.json();
+        setInvestType(data.investType);
         setPreferredCategories(data.preferredCategories);
       } catch (error) {
         console.error('MBTI 정보 조회 실패:', error);
@@ -86,7 +88,6 @@ const ETFPageContainer = () => {
 
   const etfItems = [
     { name: 'SCHD', rate: -8.23 },
-
     { name: 'GUN', rate: 5.23 },
   ];
 
@@ -112,11 +113,15 @@ const ETFPageContainer = () => {
           <div className='flex flex-col justify-center gap-2'>
             <h1 className='font-bold text-xl'>ETF, 뭐부터 시작하지?</h1>
             <span>
-              몇 가지 질문에 답하면, 당신에게 어울리는 테마를 추천해드릴게요
+              {investType
+                ? '테스트를 다시 진행하고 성향을 새롭게 확인해보세요'
+                : '몇 가지 질문에 답하면, 당신에게 어울리는 테마를 추천해드릴게요'}
             </span>
           </div>
           <div className='flex gap-1 justify-center items-center absolute top-3 right-3'>
-            <span>테스트 하러 가기 </span>
+            <span>
+              {investType ? '테스트 다시 하기 ' : '테스트 하러 가기 '}
+            </span>
             <ArrowIcon
               direction='right'
               className='text-white'
@@ -126,13 +131,13 @@ const ETFPageContainer = () => {
         </div>
         {/* 추천 카테고리 */}
         {preferredCategories.length > 0 && (
-          <div className='flex flex-col gap-2'>
+          <div className='flex flex-col gap-5'>
             <h2 className='text-xl font-semibold'>선호 카테고리</h2>
             <div className='flex flex-col gap-3'>
               {preferredCategories.map((sub) => (
                 <div
                   key={sub.id}
-                  className='flex justify-between items-center p-4 rounded-2xl bg-white shadow hover:bg-hana-light-green transition-colors duration-200 cursor-pointer group'
+                  className='flex justify-between items-center p-3.5 rounded-2xl bg-white shadow hover:bg-hana-light-green transition-colors duration-200 cursor-pointer group'
                   onClick={() => handleClick(Number(sub.id))}
                 >
                   <span className='text-base font-semibold text-gray-700 group-hover:text-hana-green'>
