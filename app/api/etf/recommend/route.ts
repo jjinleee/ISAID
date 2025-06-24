@@ -368,7 +368,7 @@ export async function GET(req: NextRequest) {
       orderBy: {
         netAssetTotalAmount: 'desc', // 순자산총액 기준 내림차순
       },
-      take: 200, // 더 많은 ETF를 가져와서 필터링 후 선택
+      take: 400, // 더 많은 ETF를 가져와서 필터링 후 선택
     });
 
     console.log(
@@ -617,8 +617,8 @@ export async function GET(req: NextRequest) {
       `[ETF 추천 결과] 사용자 투자성향: ${investType}, 분석된 ETF 수: ${processedEtfs.length}, 필터링 후 ETF 수: ${scoredEtfs.length}, 최종 추천 수: ${recommendations.length}`
     );
     console.log(
-      `[ETF 추천 상위 3개] ${recommendations
-        .slice(0, 3)
+      `[ETF 추천 상위 10개] ${recommendations
+        .slice(0, 10)
         .map(
           (r) => `${r.issueName} (위험등급: ${r.riskGrade}, 점수: ${r.score})`
         )
