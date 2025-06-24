@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { RecommendSliderWrapper } from '@/app/(routes)/etf/_components/recommend-slider-wrapper';
 import { useHeader } from '@/context/header-context';
 import ArrowIcon from '@/public/images/arrow-icon';
-import { ETFArrow } from '@/public/images/etf/etf-rate';
 import {
   SlideImg1,
   SlideImg2,
@@ -92,11 +91,6 @@ const ETFPageContainer = () => {
     },
   ];
 
-  const etfItems = [
-    { name: 'SCHD', rate: -8.23 },
-    { name: 'GUN', rate: 5.23 },
-  ];
-
   const handleClick = (id: number) => {
     const path = idToCategoryUrl[id];
     if (!path) {
@@ -178,37 +172,6 @@ const ETFPageContainer = () => {
           slides={recommendList}
           clickSlide={clickRecommendETF}
         />
-        <div className='flex items-center justify-between'>
-          <h1 className='font-bold text-xl'>내가 담은 ETF</h1>
-          <div className='flex gap-2 justify-center items-center text-sm cursor-pointer'>
-            <span className='font-semibold'>전체보기</span>
-            <ArrowIcon direction='right' className='w-5 h-5' />
-          </div>
-        </div>
-        <div className='flex flex-col gap-1'>
-          {etfItems.map((item, index) => {
-            return (
-              <div
-                key={item.name}
-                className='flex justify-between px-3 py-4 font-semibold shadow-md rounded-xl cursor-pointer'
-              >
-                <span>{item.name}</span>
-                <div className='flex gap-1 items-center'>
-                  {item.rate > 0 ? (
-                    <ETFArrow direction='up' />
-                  ) : (
-                    <ETFArrow direction='down' />
-                  )}
-                  <span
-                    className={`${item.rate > 0 ? 'text-hana-red' : 'text-[#155DFC]'}`}
-                  >
-                    {item.rate}%
-                  </span>
-                </div>
-              </div>
-            );
-          })}
-        </div>
       </div>
       {showModal && (
         <RecommendModal
