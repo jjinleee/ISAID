@@ -1,3 +1,4 @@
+// app/actions/getChallenges.ts
 'use server';
 
 import { getServerSession } from 'next-auth';
@@ -17,75 +18,56 @@ export type ChallengeInfo = {
 };
 
 export async function getChallenges(): Promise<ChallengeInfo[]> {
-  // 1) 세션에서 userId 가져오기
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) throw new Error('Not authenticated');
   const userId = BigInt(session.user.id);
-
   const today = dayjs().startOf('day');
 
-  // 2) 모든 챌린지와 해당 유저의 claim 이력 조회
   const rows = await prisma.challenge.findMany({
-    select: {
-      id: true,
-      title: true,
-      challengeDescription: true,
-      quantity: true,
-      challengeType: true,
-      targetval: true, // progress count or goal
+    include: {
       etf: { select: { issueName: true } },
       userChallengeClaims: {
         where: { userId },
         select: { claimDate: true },
       },
+      userChallengeProgresses: {
+        where: { userId },
+        select: { progressVal: true },
+      },
     },
   });
 
-  // 3) 상태 계산
   return rows.map((c) => {
-    const claims = c.userChallengeClaims;
-    const hasAnyClaim = claims.length > 0;
-    const target = c.targetval ?? 0;
+    const hasClaim = c.userChallengeClaims.length > 0;
+    const progress = c.userChallengeProgresses[0]?.progressVal ?? 0;
 
     let status: ChallengeStatus;
-
     switch (c.challengeType) {
       case 'ONCE':
-        // 단발형: 한 번만 수행
-        if (hasAnyClaim) {
-          status = 'CLAIMED';
-        } else if (target >= 1) {
-          status = 'ACHIEVABLE';
-        } else {
-          status = 'INCOMPLETE';
-        }
+        status = hasClaim
+          ? 'CLAIMED'
+          : progress >= 1
+            ? 'ACHIEVABLE'
+            : 'INCOMPLETE';
         break;
-
       case 'STREAK':
-        // 연속형: 매일 퀴즈 등으로 누적된 연속일 수가 7 이상일 때
-        if (hasAnyClaim) {
-          status = 'CLAIMED';
-        } else if (target >= 7) {
-          status = 'ACHIEVABLE';
-        } else {
-          status = 'INCOMPLETE';
-        }
+        status = hasClaim
+          ? 'CLAIMED'
+          : progress >= 7
+            ? 'ACHIEVABLE'
+            : 'INCOMPLETE';
         break;
-
-      case 'DAILY':
-        // 데일리형: 오늘만 체크
-        const claimedToday = claims.some((rc) =>
-          today.isSame(dayjs(rc.claimDate), 'day')
+      case 'DAILY': {
+        const claimedToday = c.userChallengeClaims.some((cl) =>
+          today.isSame(dayjs(cl.claimDate), 'day')
         );
-        if (claimedToday) {
-          status = 'CLAIMED';
-        } else if (target > 0) {
-          status = 'ACHIEVABLE';
-        } else {
-          status = 'INCOMPLETE';
-        }
+        status = claimedToday
+          ? 'CLAIMED'
+          : progress > 0
+            ? 'ACHIEVABLE'
+            : 'INCOMPLETE';
         break;
-
+      }
       default:
         status = 'INCOMPLETE';
     }
