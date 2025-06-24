@@ -164,9 +164,9 @@ export const MyPageContainer2 = ({ session }: Props) => {
     <div className='w-full pt-24 pb-10 px-7 flex flex-col gap-7'>
       <div className='border border-gray-2 rounded-2xl w-full flex flex-col justify-center relative pb-14 px-9 pt-9'>
         <div className='flex flex-col gap-4'>
-          <div className='flex gap-2'>
+          <div className='flex gap-3'>
             <div
-              className='border-2 border-primary rounded-full p-2 w-16 h-16 overflow-hidden flex items-center justify-center
+              className='border-2 border-primary rounded-full p-2 w-20 h-20 overflow-hidden flex items-center justify-center
             bg-white
             '
             >
@@ -176,7 +176,7 @@ export const MyPageContainer2 = ({ session }: Props) => {
               />
             </div>
             <div className='flex flex-col gap-2 justify-center'>
-              <span className='text-md font-semibold'>
+              <span className='text-xl font-semibold'>
                 {session.user.name} 님
               </span>
               <div className='py-1 px-2 text-center bg-primary-2 text-primary rounded-2xl'>
