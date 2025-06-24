@@ -3,12 +3,12 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ArrowLeft from '@/public/images/arrow-left.svg';
+import AddressSearch from '@/components/address-modal';
 import { CustomInput } from '@/components/input';
 import SecurePinModal from '@/components/secure-pin-modal';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { formatPhoneNumber, formatTelNo, validateField } from '@/lib/utils';
-import AddressSearch from './address-modal';
 
 export interface FormData {
   name: string;
@@ -247,7 +247,7 @@ export default function RegisterForm() {
   };
 
   return (
-    <div className='min-h-screen bg-white pb-24'>
+    <div className='bg-white'>
       <div
         className='
         fixed top-0 left-0 right-0
