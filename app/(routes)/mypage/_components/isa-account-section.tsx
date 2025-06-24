@@ -30,6 +30,7 @@ export const IsaAccountSection = ({ connected, userName, account }: Props) => {
     await navigator.clipboard.writeText(
       `${account.bankCode} ${account.accountNum.replace(/-/g, '')}`
     );
+    toast.success('계좌번호가 복사되었어요!');
   };
 
   const deleteClick = () => {
