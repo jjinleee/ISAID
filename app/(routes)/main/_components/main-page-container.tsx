@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import { useHeader } from '@/context/header-context';
 import { isSameDay } from 'date-fns';
 import { getKSTDateFromISOString, getTodayKSTDate } from '@/lib/utils';
 import AccountSummaryCard from './account-summary-card';
@@ -25,10 +26,16 @@ type ISAAccount = {
   accountType: string;
 };
 
-export default function MainPageContainer() {
+interface Props {
+  userName?: string;
+}
+
+export default function MainPageContainer({ userName }: Props) {
   const [completedDates, setCompletedDates] = useState<Date[]>([]);
   const [accountInfo, setAccountInfo] = useState<ISAAccount | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const { setHeader } = useHeader();
 
   useEffect(() => {
     const fetchAllData = async () => {
@@ -52,6 +59,8 @@ export default function MainPageContainer() {
             paymentAmount: isaData.paymentAmount,
             accountType: isaData.accountType,
           });
+
+          setHeader(`안녕하세요, ${userName} 님`, '오늘도 현명한 투자하세요');
         } else {
           setAccountInfo(null); // 계좌 없음
         }
