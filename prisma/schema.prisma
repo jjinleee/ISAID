@@ -8,39 +8,40 @@ datasource db {
 }
 
 model User {
-  id                  BigInt               @id @default(autoincrement())
-  name                String               @db.VarChar(20)
-  engName             String?              @map("eng_name") @db.VarChar(20)
-  email               String               @unique @db.VarChar(30)
-  password            String               @db.VarChar(100)
-  pinCode             String?              @map("pin_code") @db.VarChar(10)
-  rrn                 String               @unique @db.VarChar(20)
-  phone               String               @db.VarChar(20)
-  address             String               @db.VarChar(100)
-  telno               String?              @db.VarChar(20)
-  createdAt           DateTime             @default(now()) @map("created_at")
-  updatedAt           DateTime?            @updatedAt @map("updated_at")
-  rewardAgreed        Boolean              @default(false) @map("reward_agreed")
-  investmentProfile   InvestmentProfile?
-  isaAccount          ISAAccount?
-  quizCalendars       QuizCalendar[]
-  userChallengeClaims UserChallengeClaim[]
-  userEtfCategories   UserEtfCategory[]
+  id                      BigInt                  @id @default(autoincrement())
+  name                    String                  @db.VarChar(20)
+  engName                 String?                 @map("eng_name") @db.VarChar(20)
+  email                   String                  @unique @db.VarChar(30)
+  password                String                  @db.VarChar(100)
+  pinCode                 String?                 @map("pin_code") @db.VarChar(10)
+  rrn                     String                  @unique @db.VarChar(20)
+  phone                   String                  @db.VarChar(20)
+  address                 String                  @db.VarChar(100)
+  telno                   String?                 @db.VarChar(20)
+  createdAt               DateTime                @default(now()) @map("created_at")
+  updatedAt               DateTime?               @updatedAt @map("updated_at")
+  rewardAgreed            Boolean                 @default(false) @map("reward_agreed")
+  investmentProfile       InvestmentProfile?
+  isaAccount              ISAAccount?
+  quizCalendars           QuizCalendar[]
+  userChallengeClaims     UserChallengeClaim[]
+  userEtfCategories       UserEtfCategory[]
+  userChallengeProgresses UserChallengeProgress[]
 
   @@map("user")
 }
 
 model Challenge {
-  id                   BigInt               @id @default(autoincrement())
-  etfId                BigInt               @map("etf_id")
-  code                 String               @unique @db.VarChar(20)
-  title                String               @db.VarChar(50)
-  challengeDescription String               @map("challenge_description")
-  challengeType        ChallengeType        @map("challenge_type")
-  quantity             Decimal              @db.Decimal(20, 6)
-  targetval            Int?
-  etf                  Etf                  @relation(fields: [etfId], references: [id], onDelete: Cascade)
-  userChallengeClaims  UserChallengeClaim[]
+  id                      BigInt                  @id @default(autoincrement())
+  etfId                   BigInt                  @map("etf_id")
+  code                    String                  @unique @db.VarChar(50)
+  title                   String                  @db.VarChar(50)
+  challengeDescription    String                  @map("challenge_description")
+  challengeType           ChallengeType           @map("challenge_type")
+  quantity                Decimal                 @db.Decimal(20, 6)
+  etf                     Etf                     @relation(fields: [etfId], references: [id], onDelete: Cascade)
+  userChallengeClaims     UserChallengeClaim[]
+  userChallengeProgresses UserChallengeProgress[]
 
   @@index([etfId], map: "challenge_etf_id_fkey")
   @@map("challenge")
@@ -58,6 +59,21 @@ model UserChallengeClaim {
   @@unique([userId, challengeId, claimDate])
   @@index([challengeId], map: "user_challenge_claim_challenge_id_fkey")
   @@map("user_challenge_claim")
+}
+
+model UserChallengeProgress {
+  id          BigInt    @id @default(autoincrement())
+  userId      BigInt    @map("user_id")
+  challengeId BigInt    @map("challenge_id")
+  progressVal Int       @default(0) @map("progress_val") // 누적된 값 (ex. 연속 출석 일수)
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime? @updatedAt @map("updated_at")
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  challenge Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, challengeId])
+  @@map("user_challenge_progress")
 }
 
 model EtfCategory {
