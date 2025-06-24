@@ -23,6 +23,7 @@ interface EtfRecommendationResponse {
   category: string;
   score: number;
   riskGrade: number; // 하나증권 위험등급 추가
+  flucRate: number; // 변동률 추가
   metrics: {
     sharpeRatio: number;
     totalFee: number;
@@ -33,7 +34,10 @@ interface EtfRecommendationResponse {
     volatility: number;
     normalizedVolatility: number; // 정규화된 변동성 추가
   };
-  reasons: string[];
+  reasons: {
+    title: string;
+    description: string;
+  }[];
 }
 
 // 하나증권 위험등급 분류 함수 (5단계)
@@ -151,51 +155,63 @@ function generateReasons(
   metrics: any,
   investType: InvestType,
   riskGrade: number
-): string[] {
-  const reasons: string[] = [];
+): { title: string; description: string }[] {
+  const reasons: { title: string; description: string }[] = [];
 
   // 샤프비율 기반 이유
   if (metrics.sharpeRatio > 1.0) {
-    reasons.push(
-      '샤프비율이 1.0을 초과하여, 동일한 위험 수준에서 더 높은 수익을 기대할 수 있는 상품입니다. 위험 대비 성과가 우수하여 안정성과 수익성을 함께 고려하는 투자자에게 적합합니다.'
-    );
+    reasons.push({
+      title: '우수한 샤프비율',
+      description:
+        '샤프비율이 1.0을 초과하여, 동일한 위험 수준에서 더 높은 수익을 기대할 수 있는 상품입니다. 위험 대비 성과가 우수하여 안정성과 수익성을 함께 고려하는 투자자에게 적합합니다.',
+    });
   }
 
   // 총보수 기반 이유
   if (metrics.totalFee < 0.3) {
-    reasons.push(
-      '총보수가 0.3% 미만으로 낮아, 장기 투자 시 비용 부담을 줄이고 실질 수익률을 높일 수 있습니다. 수수료에 민감한 투자자에게 유리한 선택입니다.'
-    );
+    reasons.push({
+      title: '낮은 총보수',
+      description:
+        '총보수가 0.3% 미만으로 낮아, 장기 투자 시 비용 부담을 줄이고 실질 수익률을 높일 수 있습니다. 수수료에 민감한 투자자에게 유리한 선택입니다.',
+    });
   }
 
   // 거래대금 기반 이유
   if (metrics.tradingVolume > 1000000000) {
     // 10억원 이상
-    reasons.push(
-      '일일 평균 거래대금이 10억 원 이상으로, 시장 유동성이 뛰어나 매수·매도가 원활합니다. 단기 매매 전략을 고려하는 투자자에게 적합합니다.'
-    );
+    reasons.push({
+      title: '높은 거래대금',
+      description:
+        '일일 평균 거래대금이 10억 원 이상으로, 시장 유동성이 뛰어나 매수·매도가 원활합니다. 단기 매매 전략을 고려하는 투자자에게 적합합니다.',
+    });
   }
 
   // 순자산총액 기반 이유
   if (metrics.netAssetValue > 100000000000) {
     // 1000억원 이상
-    reasons.push(
-      '순자산총액이 1,000억 원 이상으로, 규모가 크고 운용 안정성이 높습니다. 대형 ETF로서 투자자 신뢰도가 높고, 자금 유입에 따른 안정적인 운용이 가능합니다.'
-    );
+    reasons.push({
+      title: '대형 ETF',
+      description:
+        '순자산총액이 1,000억 원 이상으로, 규모가 크고 운용 안정성이 높습니다. 대형 ETF로서 투자자 신뢰도가 높고, 자금 유입에 따른 안정적인 운용이 가능합니다.',
+    });
   }
 
   // 추적오차 기반 이유
   if (metrics.trackingError < 0.5) {
-    reasons.push(
-      '추적오차가 0.5% 미만으로, 기초지수를 정밀하게 따라가고 있습니다. 지수 수익률에 근접한 성과를 원하는 투자자에게 적합한 상품입니다.'
-    );
+    reasons.push({
+      title: '정밀한 추적',
+      description:
+        '추적오차가 0.5% 미만으로, 기초지수를 정밀하게 따라가고 있습니다. 지수 수익률에 근접한 성과를 원하는 투자자에게 적합한 상품입니다.',
+    });
   }
 
   // 괴리율 기반 이유
   if (Math.abs(metrics.divergenceRate) < 0.5) {
-    reasons.push(
-      '괴리율이 ±0.5% 이내로 낮아, 시장가격이 순자산가치(NAV)와 거의 일치합니다. 가격 왜곡 가능성이 낮아 합리적인 가격에 매수·매도할 수 있습니다.'
-    );
+    reasons.push({
+      title: '낮은 괴리율',
+      description:
+        '괴리율이 ±0.5% 이내로 낮아, 시장가격이 순자산가치(NAV)와 거의 일치합니다. 가격 왜곡 가능성이 낮아 합리적인 가격에 매수·매도할 수 있습니다.',
+    });
   }
 
   // 위험등급 기반 이유 (하나증권 기준)
@@ -208,22 +224,27 @@ function generateReasons(
   };
 
   if (riskGrade >= 4) {
-    reasons.push(
-      `${riskGradeLabels[riskGrade as keyof typeof riskGradeLabels]} 등급(리스크 등급 ${riskGrade})으로, 가격 변동성이 낮고 안정적인 운용이 기대됩니다.`
-    );
+    reasons.push({
+      title: `${riskGradeLabels[riskGrade as keyof typeof riskGradeLabels]} 등급`,
+      description: `${riskGradeLabels[riskGrade as keyof typeof riskGradeLabels]} 등급(리스크 등급 ${riskGrade})으로, 가격 변동성이 낮고 안정적인 운용이 기대됩니다.`,
+    });
   }
 
   // 투자 성향별 맞춤 이유
   if (investType === 'CONSERVATIVE' && riskGrade >= 4) {
-    reasons.push(
-      '고객님의 보수적인 투자 성향에 부합하는 낮은 위험등급 상품으로, 원금 손실 가능성을 최소화하면서 안정적인 수익을 추구할 수 있습니다.'
-    );
+    reasons.push({
+      title: '보수적 투자 성향 부합',
+      description:
+        '고객님의 보수적인 투자 성향에 부합하는 낮은 위험등급 상품으로, 원금 손실 가능성을 최소화하면서 안정적인 수익을 추구할 수 있습니다.',
+    });
   }
 
   if (investType === 'AGGRESSIVE' && metrics.sharpeRatio > 0.8) {
-    reasons.push(
-      '고객님의 공격적인 투자 성향에 맞게, 높은 샤프비율을 보이는 상품으로 위험을 감수하더라도 수익을 극대화하고자 하는 전략에 적합합니다.'
-    );
+    reasons.push({
+      title: '공격적 투자 성향 부합',
+      description:
+        '고객님의 공격적인 투자 성향에 맞게, 높은 샤프비율을 보이는 상품으로 위험을 감수하더라도 수익을 극대화하고자 하는 전략에 적합합니다.',
+    });
   }
 
   return reasons;
@@ -241,6 +262,32 @@ function getAllowedRiskGrades(investType: InvestType): number[] {
 
   return allowedGrades[investType] || [3, 4, 5];
 }
+
+/**
+ * 3년간의 ETF 일별 거래 데이터 가져오기 (fluc_rate 포함)
+ */
+const getEtfDailyTrading3y = async (etfId: number) => {
+  const from = new Date();
+  from.setFullYear(from.getFullYear() - 3); // 3년 전
+
+  // fluc_rate와 함께 조회
+  const rows = await prisma.etfDailyTrading.findMany({
+    where: { etfId, baseDate: { gte: from } }, // etfId와 날짜 조건
+    orderBy: { baseDate: 'asc' }, // 날짜 기준 정렬
+    select: {
+      baseDate: true,
+      tddClosePrice: true,
+      flucRate: true, // 추가된 필드
+    },
+  });
+
+  // 데이터를 변환하여 반환
+  return rows.map((r) => ({
+    date: r.baseDate.toISOString().slice(0, 10), // 날짜 형식 변환
+    closePrice: Number(r.tddClosePrice), // 종가
+    flucRate: Number(r.flucRate), // 변동률
+  }));
+};
 
 export async function GET(req: NextRequest) {
   try {
@@ -310,6 +357,7 @@ export async function GET(req: NextRequest) {
           },
           select: {
             accTotalValue: true,
+            flucRate: true, // 변동률 추가
           },
           orderBy: {
             baseDate: 'desc',
@@ -366,6 +414,10 @@ export async function GET(req: NextRequest) {
             ) / etf.tradings.length
           : 0;
 
+      // 최신 변동률 계산 (가장 최근 거래 데이터의 flucRate)
+      const latestFlucRate =
+        etf.tradings.length > 0 ? Number(etf.tradings[0].flucRate) || 0 : 0;
+
       return {
         ...etf,
         processedData: {
@@ -377,6 +429,7 @@ export async function GET(req: NextRequest) {
           volatility,
           riskGrade,
           avgTradingVolume,
+          flucRate: latestFlucRate,
         },
       };
     });
@@ -435,7 +488,7 @@ export async function GET(req: NextRequest) {
     const allowedRiskGrades = getAllowedRiskGrades(investType);
 
     // 각 ETF에 대한 종합 점수 계산
-    const scoredEtfs: EtfRecommendationResponse[] = processedEtfs
+    const scoredEtfs = processedEtfs
       .map((etf) => {
         const { processedData } = etf;
         const {
@@ -447,6 +500,7 @@ export async function GET(req: NextRequest) {
           volatility,
           riskGrade,
           avgTradingVolume,
+          flucRate,
         } = processedData;
 
         // 투자 성향에 맞지 않는 위험등급은 제외
@@ -525,6 +579,7 @@ export async function GET(req: NextRequest) {
           category: etf.category.fullPath,
           score: Math.round(score * 100) / 100,
           riskGrade: riskGrade, // 하나증권 위험등급 추가
+          flucRate: flucRate, // 변동률 추가
           metrics: {
             sharpeRatio: Math.round(sharpeRatio * 100) / 100,
             totalFee: etfTotalFee,
