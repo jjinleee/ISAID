@@ -9,11 +9,10 @@ export default function BodyWrapper({
 }) {
   const pathname = usePathname();
   const isRoot = pathname === '/';
+  const paddingClass = isRoot ? '' : 'pt-18 pb-20';
 
   return (
-    <div
-      className={`scrollbar-hide antialiased ${isRoot ? '' : 'pt-14 pb-20 '}`}
-    >
+    <div className={`scrollbar-hide antialiased ${paddingClass}`}>
       {children}
     </div>
   );
