@@ -11,6 +11,7 @@ import StarBoyGirl from '@/public/images/my-page/star-boy-girl.svg';
 import StarBoy from '@/public/images/star-boy';
 import { ChartData, type Account } from '@/types/my-page';
 import { convertToKorLabel } from '@/utils/my-page';
+import { TrendingUp } from 'lucide-react';
 import ProgressBar from '@/components/progress-bar';
 import Tab from '@/components/tab';
 import { fetchISAInfo } from '@/lib/api/my-page';
@@ -21,7 +22,7 @@ interface Props {
   session: Session;
 }
 
-export const MyPageContainer = ({ session }: Props) => {
+export const MyPageContainer2 = ({ session }: Props) => {
   const router = useRouter();
   const [selectedTab, setSelectedTab] = useState<number>(0);
   const [connected, setConnected] = useState(false);
@@ -30,6 +31,8 @@ export const MyPageContainer = ({ session }: Props) => {
   const [noEtfData, setNoEtfData] = useState(false);
   const [investLabel, setInvestLabel] = useState('');
   const [loadingLabel, setLoadingLabel] = useState<boolean>(true);
+  const [traits, setTraits] = useState<string[]>([]);
+  const [hashTags, setHashTags] = useState<string[]>([]);
 
   const [selectedEtf, setSelectedEtf] = useState<EtfInfo>({
     name: '',
@@ -121,6 +124,8 @@ export const MyPageContainer = ({ session }: Props) => {
           riskTypeTraitsMap[
             convertToKorLabel(data.investType) as keyof typeof riskTypeTraitsMap
           ];
+        setTraits(gun.traits);
+        setHashTags(gun.hashtags);
         console.log(gun);
       } catch (error) {
         console.log('error', error);
@@ -157,12 +162,12 @@ export const MyPageContainer = ({ session }: Props) => {
 
   return (
     <div className='w-full pt-24 pb-10 px-7 flex flex-col gap-7'>
-      <div className='border border-gray-2 rounded-2xl w-full flex items-center justify-center relative pt-20 px-9 pb-14'>
-        <div className='w-full flex flex-col gap-4 items-center'>
-          <div className='flex flex-col gap-2 items-center text-xl font-semibold '>
+      <div className='border border-gray-2 rounded-2xl w-full flex flex-col justify-center relative pb-14 px-9 pt-9'>
+        <div className='flex flex-col gap-4'>
+          <div className='flex gap-2'>
             <div
-              className='border-2 border-primary rounded-full p-2 w-32 h-32 overflow-hidden flex items-center justify-center
-            absolute top-[-22%] left-50% z-20 bg-white
+              className='border-2 border-primary rounded-full p-2 w-16 h-16 overflow-hidden flex items-center justify-center
+            bg-white
             '
             >
               <StarBoy
@@ -170,7 +175,55 @@ export const MyPageContainer = ({ session }: Props) => {
                 className='w-full h-full object-cover'
               />
             </div>
-            <span>{session.user.name} 님</span>
+            <div className='flex flex-col gap-2 justify-center'>
+              <span className='text-md font-semibold'>
+                {session.user.name} 님
+              </span>
+              <div className='py-1 px-2 text-center bg-primary-2 text-primary rounded-2xl'>
+                {!loadingLabel ? (
+                  <h1 className='font-semibold text-hana-green'>
+                    {investLabel || '투자성향 테스트를 진행해주세요.'}
+                  </h1>
+                ) : (
+                  <h1 className='font-semibold text-transparent'>안보이지롱</h1>
+                )}
+              </div>
+            </div>
+          </div>
+          <div className='flex flex-col gap-2'>
+            <div className='font-semibold flex gap-2 text-sm items-center'>
+              <TrendingUp className='text-primary' /> 나의 투자 성향
+            </div>
+            <div className='flex flex-col gap-1 pl-3 text-sm text-gray list-none'>
+              {traits.map((t, idx) => (
+                <div key={idx} className='flex items-start gap-2'>
+                  <div className='w-1 h-1 rounded-full bg-primary flex-shrink-0 mt-2' />
+                  {t}
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className='flex flex-wrap items-center gap-2'>
+            {hashTags.map((h, idx) => (
+              <div
+                key={idx}
+                className='text-xs bg-primary-2 border border-primary text-hana-green py-1 px-3 rounded-xl'
+              >
+                {h}
+              </div>
+            ))}
+            {/*<div className='text-xs bg-primary-2 border border-primary text-hana-green py-1 px-3 rounded-xl'>*/}
+            {/*  #안정과수익사이*/}
+            {/*</div>*/}
+            {/*<div className='text-xs bg-primary-2 border border-primary text-hana-green py-1 px-3 rounded-xl'>*/}
+            {/*  #현실적인선택*/}
+            {/*</div>*/}
+            {/*<div className='text-xs bg-primary-2 border border-primary text-hana-green py-1 px-3 rounded-xl'>*/}
+            {/*  #무리하지않기*/}
+            {/*</div>*/}
+            {/*<div className='text-xs bg-primary-2 border border-primary text-hana-green py-1 px-3 rounded-xl'>*/}
+            {/*  #균형있는투자*/}
+            {/*</div>*/}
           </div>
           {/*<div className='w-full flex flex-col text-sm text-gray'>*/}
           {/*  <ProgressBar current={3} total={10} />*/}
@@ -183,13 +236,6 @@ export const MyPageContainer = ({ session }: Props) => {
           {/*    <span>📈 초보 투자 이론가</span>*/}
           {/*  </div>*/}
           {/*</div>*/}
-          {!loadingLabel ? (
-            <h1 className='font-semibold'>
-              {investLabel || '투자성향 테스트를 진행해주세요.'}
-            </h1>
-          ) : (
-            <h1 className='font-semibold text-transparent'>안보이지롱</h1>
-          )}
 
           <div
             className='flex justify-end items-center absolute bottom-4 right-3 cursor-pointer'
@@ -225,7 +271,7 @@ export const MyPageContainer = ({ session }: Props) => {
           {noEtfData ? (
             <>
               <h1 className='text-xl font-semibold'>ETF 계좌</h1>
-              <div className='border border-gray-2 rounded-2xl w-full flex flex-col gap-5 px-5 pt-4 pb-9 items-center'>
+              <div className='border-gray-2 rounded-2xl w-full flex flex-col gap-5 px-5 pt-4 pb-9 items-center'>
                 <h1 className='font-semibold self-start'>
                   {session.user.name}님의 보유 ETF 항목이 없습니다.
                 </h1>
@@ -255,4 +301,4 @@ export const MyPageContainer = ({ session }: Props) => {
     </div>
   );
 };
-export default MyPageContainer;
+export default MyPageContainer2;
