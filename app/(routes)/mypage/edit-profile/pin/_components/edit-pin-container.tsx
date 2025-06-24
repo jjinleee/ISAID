@@ -34,9 +34,6 @@ export const EditPinContainer = () => {
     oldPin: '',
     newPin: '',
   });
-  useEffect(() => {
-    console.log('pinData : ', pinData);
-  }, [pinData]);
 
   useEffect(() => {
     setHeader('내 정보 수정하기', '전화번호 수정');

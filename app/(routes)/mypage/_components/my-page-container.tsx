@@ -6,13 +6,13 @@ import { useRouter } from 'next/navigation';
 import ETFInfoSection from '@/app/(routes)/mypage/_components/etf-info-section';
 import IsaAccountSection from '@/app/(routes)/mypage/_components/isa-account-section';
 import ArrowIcon from '@/public/images/arrow-icon';
+import StarBoyGirl from '@/public/images/my-page/star-boy-girl.svg';
 import StarBoy from '@/public/images/star-boy';
 import { ChartData, type Account } from '@/types/my-page';
 import ProgressBar from '@/components/progress-bar';
 import Tab from '@/components/tab';
 import { fetchISAInfo } from '@/lib/api/my-page';
 import EtfDetailRatioChart from '../_components/ratio-chart';
-import { etfDetailMap } from '../data/ratio-data';
 import type { EtfInfo } from '../data/ratio-data';
 
 interface Props {
@@ -24,13 +24,16 @@ export const MyPageContainer = ({ session }: Props) => {
   const [selectedTab, setSelectedTab] = useState<number>(0);
   const [connected, setConnected] = useState(false);
   const [selectedItem, setSelectedItem] = useState<string>('');
+  const [etfDetailList, setEtfDetailList] = useState<EtfInfo[]>([]);
+  const [noEtfData, setNoEtfData] = useState(false);
   const [selectedEtf, setSelectedEtf] = useState<EtfInfo>({
     name: '',
-    avgPrice: 0,
+    avgCost: 0,
     totalPurchase: 0,
     returnRate: 0,
     quantity: 0,
     portionOfTotal: 0,
+    currentPrice: 0,
   });
   const [account, setAccount] = useState<Account>({
     id: '',
@@ -42,13 +45,11 @@ export const MyPageContainer = ({ session }: Props) => {
     accountType: '',
   });
 
-  const chartData: ChartData[] = Object.entries(etfDetailMap).map(
-    ([etfId, etf]) => ({
-      id: etfId,
-      name: etf.name,
-      value: Number((etf.portionOfTotal * 100).toFixed(2)),
-    })
-  );
+  const chartData: ChartData[] = etfDetailList.map((etf) => ({
+    id: etf.name,
+    name: etf.name,
+    value: Number((etf.portionOfTotal * 100).toFixed(2)),
+  }));
 
   const tabs = ['보유 ETF', '연결 계좌'];
 
@@ -66,19 +67,72 @@ export const MyPageContainer = ({ session }: Props) => {
       } else {
         setConnected(true);
         console.log('res : ', res);
+
         setAccount(res);
       }
     };
+
+    const fetchEtfPortfolio = async () => {
+      try {
+        const res = await fetch('/api/etf/portfolio');
+
+        if (res.status === 404) {
+          setNoEtfData(true); // ISA 계좌가 없을 때
+          return;
+        }
+
+        const json = await res.json();
+
+        if (!json.data || json.data.length === 0) {
+          setNoEtfData(true); // 보유 ETF 없을 때
+          return;
+        }
+
+        const sorted = json.data.sort(
+          (a: any, b: any) => Number(b.totalPurchase) - Number(a.totalPurchase)
+        );
+        const sortedEtfArray = sorted.map((etf: any) => ({
+          id: etf.etfId,
+          name: etf.name,
+          avgCost: Number(etf.avgCost),
+          totalPurchase: Number(etf.totalPurchase),
+          returnRate: parseFloat(etf.returnRate.toFixed(4)),
+          quantity: etf.quantity,
+          portionOfTotal: parseFloat(etf.portionOfTotal.toFixed(4)),
+          currentPrice: Number(etf.currentPrice),
+        }));
+
+        setEtfDetailList(sortedEtfArray);
+      } catch (error) {
+        console.error('ETF 포트폴리오 조회 실패:', error);
+      }
+    };
+
     fetchISA();
+    fetchEtfPortfolio();
   }, []);
 
   useEffect(() => {
-    console.log('account : ', account);
-  }, [account]);
-
+    const foundEtf = etfDetailList.find((etf) => etf.name === selectedItem);
+    if (foundEtf) {
+      setSelectedEtf(foundEtf);
+    } else {
+      setSelectedEtf({
+        name: '',
+        avgCost: 0,
+        totalPurchase: 0,
+        returnRate: 0,
+        quantity: 0,
+        portionOfTotal: 0,
+        currentPrice: 0,
+      });
+    }
+  }, [selectedItem, etfDetailList]);
   useEffect(() => {
-    setSelectedEtf(etfDetailMap[selectedItem]);
-  }, [selectedItem]);
+    if (!selectedItem && etfDetailList[0]) {
+      setSelectedItem(etfDetailList[0].name);
+    }
+  }, [etfDetailList]);
 
   return (
     <div className='w-full pt-24 pb-10 px-7 flex flex-col gap-7'>
@@ -140,9 +194,26 @@ export const MyPageContainer = ({ session }: Props) => {
       </div>
       {selectedTab === 0 && (
         <div className='w-full flex flex-col gap-5'>
-          <EtfDetailRatioChart data={chartData} onClickItem={setSelectedItem} />
-          {selectedItem && selectedEtf && (
-            <ETFInfoSection selectedEtf={selectedEtf} />
+          {noEtfData ? (
+            <>
+              <h1 className='text-xl font-semibold'>ETF 계좌</h1>
+              <div className='border border-gray-2 rounded-2xl w-full flex flex-col gap-5 px-5 pt-4 pb-9 items-center'>
+                <h1 className='font-semibold self-start'>
+                  {session.user.name}님의 보유 ETF 항목이 없습니다.
+                </h1>
+                <StarBoyGirl />
+              </div>
+            </>
+          ) : (
+            <>
+              <EtfDetailRatioChart
+                data={chartData}
+                onClickItem={setSelectedItem}
+              />
+              {selectedItem && selectedEtf && (
+                <ETFInfoSection selectedEtf={selectedEtf} />
+              )}
+            </>
           )}
         </div>
       )}

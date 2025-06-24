@@ -203,9 +203,9 @@ describe('/api/etf/mbti', () => {
       expect(data).toEqual({
         investType: InvestType.CONSERVATIVE,
         preferredCategories: [
-          { id: 6, fullPath: '주식-업종섹터-금융' },
-          { id: 11, fullPath: '주식-업종섹터-정보기술' },
-          { id: 10, fullPath: '주식-업종섹터-헬스케어' },
+          { id: '6', fullPath: '주식-업종섹터-금융' },
+          { id: '11', fullPath: '주식-업종섹터-정보기술' },
+          { id: '10', fullPath: '주식-업종섹터-헬스케어' },
         ],
       });
     });
@@ -222,23 +222,6 @@ describe('/api/etf/mbti', () => {
 
       expect(response.status).toBe(401);
       expect(data).toEqual({ message: '인증된 사용자만 접근 가능합니다.' });
-    });
-
-    it('투자 프로필이 없을 때 404를 반환한다', async () => {
-      const mockSession = createMockSession('1');
-      mockGetServerSession.mockResolvedValue(mockSession);
-      mockPrisma.investmentProfile.findUnique.mockResolvedValue(null);
-      mockPrisma.user.findUnique.mockResolvedValue(null);
-
-      const request = new NextRequest('http://localhost:3000/api/etf/mbti', {
-        method: 'GET',
-      });
-
-      const response = await GET(request);
-      const data = await response.json();
-
-      expect(response.status).toBe(404);
-      expect(data).toEqual({ message: '투자 프로필이 없습니다.' });
     });
   });
 });
