@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import Image from 'next/image';
 import { AccountIcon } from '@/public/images/isa/account-icon';
 import type { Account } from '@/types/my-page';
@@ -38,6 +39,13 @@ const Account = () => {
     fetchISA();
   }, []);
 
+  const handleCopy = async () => {
+    await navigator.clipboard.writeText(
+      `${account.bankCode} ${account.accountNum.replace(/-/g, '')}`
+    );
+    toast.success('계좌번호가 복사되었어요!');
+  };
+
   const companyMap = {
     하나증권: 'hanaIcon.svg',
     미래에셋증권: 'miraeIcon.png',
@@ -67,7 +75,10 @@ const Account = () => {
           </p>
           <div className='flex gap-2 items-center'>
             <p className='text-gray-4'>{account?.accountNum}</p>
-            <p className='text-gray-400 underline text-xs cursor-pointer'>
+            <p
+              className='text-gray-400 underline text-xs cursor-pointer'
+              onClick={() => handleCopy()}
+            >
               복사
             </p>
           </div>
