@@ -31,6 +31,7 @@ const companyMap = {
   신한투자증권: 'sinhanIcon.png',
   KB증권: 'kbIcon.jpeg',
 };
+
 export default function AccountSummaryCard({ account }: Props) {
   if (!account) {
     return (
@@ -47,6 +48,7 @@ export default function AccountSummaryCard({ account }: Props) {
     );
     toast.success('계좌번호가 복사되었어요!');
   };
+
   return (
     <div className='bg-white rounded-2xl p-4 shadow-sm border border-gray-3'>
       <div className='flex justify-between items-start'>

@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import { iconList } from '../data/challenge-list';
 
 interface MissionItemProps {
   title: string;
@@ -8,6 +9,15 @@ interface MissionItemProps {
   reward: string;
   status: 'completed' | 'available' | 'pending';
   icon: string;
+}
+
+interface ChallengeProps {
+  id: string;
+  issueName: string;
+  title: string;
+  challengeDescription: string;
+  quantity: number;
+  status: string;
 }
 
 export function MissionItem({
@@ -35,20 +45,23 @@ export function MissionItem({
     <div className='flex items-center gap-4 border border-gray-3 rounded-xl p-4 bg-white shadow-sm'>
       <Image src={icon} alt={title} width={36} height={36} />
       <div className='flex-1'>
-        <div className='text-xs font-bold'>{title}</div>
-        <div className='text-[8px] text-gray-500'>{description}</div>
+        <div className='text-sm font-bold'>{title}</div>
+        <div className='text-xs text-gray-500'>{description}</div>
 
         {rewardMatch ? (
           <div className='text-[11px] mt-1'>
-            <span className='text-primary font-medium'>{rewardMatch[1]}</span>
-            <span className='text-black'>{rewardMatch[2]}</span>
+            <span className='text-primary font-medium text-xs'>
+              {rewardMatch[1]}
+            </span>
+            <span className='text-black'>{rewardMatch[2]}</span>{' '}
+            <span>지급!</span>
           </div>
         ) : (
-          <div className='text-[11px] text-primary mt-1'>{reward}</div>
+          <div className='text-xs text-primary mt-1'>{reward}</div>
         )}
       </div>
       <button
-        className={`min-w-[64px] text-xs px-2 py-1 rounded-md h-fit text-center ${statusStyle[status]}`}
+        className={`min-w-[64px] text-sm font-semibold px-2 py-1 rounded-md h-fit text-center ${statusStyle[status]}`}
         disabled={status !== 'available'}
       >
         {statusLabel[status]}
