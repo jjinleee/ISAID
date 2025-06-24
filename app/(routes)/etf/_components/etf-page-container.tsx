@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { RecommendSliderWrapper } from '@/app/(routes)/etf/_components/recommend-slider-wrapper';
 import { useHeader } from '@/context/header-context';
 import ArrowIcon from '@/public/images/arrow-icon';
 import { ETFArrow } from '@/public/images/etf/etf-rate';
@@ -15,12 +16,14 @@ import {
 import StarBoyFinger from '@/public/images/star-boy-finger.svg';
 import { SlideCardProps } from '@/types/components';
 import { SliderWrapper } from '../_components/slider-wrapper';
+import { etfCardDummyData, EtfCardProps } from '../data/recommend-etf-data';
 import RecommendModal from './recommend-modal';
 
 const ETFPageContainer = () => {
   const { setHeader } = useHeader();
   const router = useRouter();
   const [selectedETFId, setSelectedETFId] = useState(26);
+  const [recommendList, setRecommendList] = useState<EtfCardProps[]>([]);
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
@@ -79,6 +82,15 @@ const ETFPageContainer = () => {
     router.push(`/etf/detail/${selectedETFId}`);
   };
 
+  const clickRecommendETF = (idx: number) => {
+    setSelectedETFId(idx);
+    setShowModal(true);
+  };
+
+  useEffect(() => {
+    setRecommendList(etfCardDummyData);
+  }, []);
+
   return (
     <div className='flex flex-col px-6 pb-10'>
       <div className='flex flex-col gap-5'>
@@ -105,9 +117,10 @@ const ETFPageContainer = () => {
         </div>
         <h1 className='text-xl font-semibold'>ETF, 테마부터 시작해볼까요?</h1>
         <SliderWrapper cards={cards} />
-        <div className='border' onClick={() => setShowModal(true)}>
-          모달 보기
-        </div>
+        <RecommendSliderWrapper
+          slides={recommendList}
+          clickSlide={clickRecommendETF}
+        />
         <div className='flex items-center justify-between'>
           <h1 className='font-bold text-xl'>내가 담은 ETF</h1>
           <div className='flex gap-2 justify-center items-center text-sm cursor-pointer'>
@@ -144,6 +157,8 @@ const ETFPageContainer = () => {
         <RecommendModal
           onClose={() => setShowModal(false)}
           btnClick={() => clickSelectedETF()}
+          reasons={recommendList[selectedETFId].reasons}
+          issueName={recommendList[selectedETFId].issueName}
         />
       )}
     </div>

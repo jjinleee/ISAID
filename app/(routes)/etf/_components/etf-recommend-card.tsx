@@ -1,25 +1,12 @@
 interface EtfCardProps {
   issueName: string;
-  category: string;
   riskGrade: number;
-  score: number;
-  metrics: {
-    totalFee: number;
-    tradingVolume: number;
-    netAssetValue: number;
-    divergenceRate: number;
-    trackingError: number;
-  };
-  reason: string;
-  onClick?: () => void;
+  onClick: () => void;
 }
 
 export default function EtfRecommendCard({
   issueName,
-  category,
   riskGrade,
-  score,
-  metrics,
   onClick,
 }: EtfCardProps) {
   return (
@@ -27,32 +14,22 @@ export default function EtfRecommendCard({
       className='rounded-2xl shadow-md p-4 bg-white w-[240px] space-y-3 cursor-pointer hover:shadow-lg transition'
       onClick={onClick}
     >
-      <div className='flex justify-between items-start'>
-        <div className='text-base font-semibold text-gray-900 leading-snug'>
+      <div className='flex justify-between items-start flex-nowrap gap-2'>
+        <div className='text-base font-semibold text-gray-900 leading-snug max-w-[160px] truncate'>
           {issueName}
         </div>
         <div className={getRiskColor(riskGrade)}>리스크 {riskGrade}</div>
       </div>
-      {/*<Badge className='bg-emerald-100 text-emerald-800 text-xs w-fit'>*/}
-      {/*  {category}*/}
-      {/*</Badge>*/}
-
       <div>
         <p className='text-xs text-gray-500 mb-1'>추천 점수</p>
-      </div>
-
-      <div className='grid grid-cols-2 gap-3 text-xs text-gray-700'>
-        <div>
-          <p className='text-gray-400'>추적오차</p>
-          <p>{metrics.trackingError}%</p>
-        </div>
       </div>
     </div>
   );
 }
 
 function getRiskColor(riskGrade: number) {
-  const commonStyle = 'rounded-2xl px-4 py-1 text-xs font-medium';
+  const commonStyle =
+    'rounded-2xl px-4 py-1 text-xs font-medium text-center min-w-[80px]';
   switch (riskGrade) {
     case 1:
       return `bg-green-100 text-green-800 ${commonStyle}`;
