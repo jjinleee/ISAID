@@ -8,7 +8,7 @@ import { prisma } from '@/lib/prisma';
 export type ChallengeStatus = 'CLAIMED' | 'ACHIEVABLE' | 'INCOMPLETE';
 
 export type ChallengeInfo = {
-  id: bigint;
+  id: string;
   issueName: string;
   title: string;
   challengeDescription: string;
@@ -91,7 +91,7 @@ export async function getChallenges(): Promise<ChallengeInfo[]> {
     }
 
     return {
-      id: Number(c.id),
+      id: string(c.id),
       issueName: c.etf.issueName ?? '',
       title: c.title,
       challengeDescription: c.challengeDescription,
