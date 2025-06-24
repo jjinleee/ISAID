@@ -22,7 +22,6 @@ export const TestStartContainer = ({ btnClick }: StartProps) => {
         thin={false}
         active={true}
         onClick={btnClick}
-        className='!bg-gray'
       />
     </>
   );
