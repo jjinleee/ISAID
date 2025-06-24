@@ -91,7 +91,7 @@ export async function getChallenges(): Promise<ChallengeInfo[]> {
     }
 
     return {
-      id: string(c.id),
+      id: c.id.toString(),
       issueName: c.etf.issueName ?? '',
       title: c.title,
       challengeDescription: c.challengeDescription,

@@ -3,10 +3,23 @@
 import { useEffect } from 'react';
 import { useHeader } from '@/context/header-context';
 import ChallengeMainCharaters from '@/public/images/challenge/challenge-main.svg';
-import { challengeList } from '../data/challenge-list';
+import { challengeList, iconList } from '../data/challenge-list';
 import { MissionItem } from './mission-item';
 
-export default function ChallengePageContainer() {
+interface ChallengeProps {
+  id: string;
+  issueName: string;
+  title: string;
+  challengeDescription: string;
+  quantity: number;
+  status: string;
+}
+
+export default function ChallengePageContainer({
+  challenges,
+}: {
+  challenges: ChallengeProps[];
+}) {
   const { setHeader } = useHeader();
 
   useEffect(() => {
@@ -28,10 +41,38 @@ export default function ChallengePageContainer() {
       </div>
 
       {/* 미션 리스트 */}
-      <div className='space-y-4'>
+      {/* <div className='space-y-4'>
         {challengeList.map((item) => (
           <MissionItem key={item.id} {...item} />
         ))}
+      </div> */}
+
+      {/* 미션 리스트 */}
+      <div className='space-y-4'>
+        {challenges?.map((item: any) => {
+          // iconList에서 id 매핑
+          const iconEntry = iconList.find((i) => i.id === item.id);
+          const iconSrc = iconEntry
+            ? iconEntry.icon
+            : '/images/challenge/icon-quiz-checkin.svg';
+
+          return (
+            <MissionItem
+              key={item.id}
+              title={item.title}
+              description={item.challengeDescription}
+              reward={`${item.issueName} ${item.quantity}주`}
+              status={
+                item.status === 'CLAIMED'
+                  ? 'completed'
+                  : item.status === 'ACHIEVABLE'
+                    ? 'available'
+                    : 'pending'
+              }
+              icon={iconSrc}
+            />
+          );
+        })}
       </div>
     </div>
   );

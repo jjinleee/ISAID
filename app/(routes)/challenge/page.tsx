@@ -6,7 +6,7 @@ const ChallengePage = async () => {
   console.log(challenges);
   return (
     <div className='px-4 py-5 space-y-6'>
-      <ChallengePageContainer />
+      <ChallengePageContainer challenges={challenges} />
     </div>
   );
 };

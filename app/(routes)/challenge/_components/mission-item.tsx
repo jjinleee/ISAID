@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import { iconList } from '../data/challenge-list';
 
 interface MissionItemProps {
   title: string;
@@ -8,6 +9,15 @@ interface MissionItemProps {
   reward: string;
   status: 'completed' | 'available' | 'pending';
   icon: string;
+}
+
+interface ChallengeProps {
+  id: string;
+  issueName: string;
+  title: string;
+  challengeDescription: string;
+  quantity: number;
+  status: string;
 }
 
 export function MissionItem({
@@ -41,7 +51,8 @@ export function MissionItem({
         {rewardMatch ? (
           <div className='text-[11px] mt-1'>
             <span className='text-primary font-medium'>{rewardMatch[1]}</span>
-            <span className='text-black'>{rewardMatch[2]}</span>
+            <span className='text-black'>{rewardMatch[2]}</span>{' '}
+            <span>지급!</span>
           </div>
         ) : (
           <div className='text-[11px] text-primary mt-1'>{reward}</div>
