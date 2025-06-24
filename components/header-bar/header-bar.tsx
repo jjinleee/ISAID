@@ -56,7 +56,9 @@ const HeaderBar = ({ title, subtitle, onMenuClick }: HeaderBarProps) => {
 
           <div className='flex-1'>
             <h1 className='text-base font-semibold'>{title}</h1>
-            {subtitle && <p className='text-sm text-gray-500'>{subtitle}</p>}
+            {subtitle && (
+              <p className='text-sm text-gray-500 mt-1'>{subtitle}</p>
+            )}
           </div>
         </div>
 

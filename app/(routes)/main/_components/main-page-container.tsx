@@ -9,24 +9,60 @@ import ChallengeCard from './challenge-card';
 import QuizBanner from './quiz-banner';
 import WeeklyCalendar from './weekly-calendar';
 
+type ISAAccount = {
+  bankCode:
+    | '하나증권'
+    | '미래에셋증권'
+    | '삼성증권'
+    | 'NH투자증권'
+    | '한국투자증권'
+    | '키움증권'
+    | '신한투자증권'
+    | 'KB증권';
+  accountNum: string;
+  currentBalance: string;
+  paymentAmount: string;
+  accountType: string;
+};
+
 export default function MainPageContainer() {
-  const [completedDates, setCompletedDates] = useState<Date[] | null>(null);
+  const [completedDates, setCompletedDates] = useState<Date[]>([]);
+  const [accountInfo, setAccountInfo] = useState<ISAAccount | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchCompletedDates = async () => {
+    const fetchAllData = async () => {
       try {
-        const res = await fetch('/api/quiz/calendar');
-        const data = await res.json();
-        const normalized = data.solvedDates.map((d: string) =>
+        // 출석 데이터
+        const calendarRes = await fetch('/api/quiz/calendar');
+        const calendarData = await calendarRes.json();
+        const normalized = calendarData.solvedDates.map((d: string) =>
           getKSTDateFromISOString(d)
         );
         setCompletedDates(normalized);
+
+        // ISA 계좌 정보
+        const isaRes = await fetch('/api/isa');
+        if (isaRes.ok) {
+          const isaData = await isaRes.json();
+          setAccountInfo({
+            bankCode: isaData.bankCode,
+            accountNum: isaData.accountNum,
+            currentBalance: isaData.currentBalance,
+            paymentAmount: isaData.paymentAmount,
+            accountType: isaData.accountType,
+          });
+        } else {
+          setAccountInfo(null); // 계좌 없음
+        }
       } catch (error) {
-        console.error('출석 데이터 로딩 실패:', error);
+        console.error('메인페이지 데이터 로딩 실패:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchCompletedDates();
+    fetchAllData();
   }, []);
 
   const calculateStreakLabel = (dates: Date[]): string => {
@@ -52,11 +88,11 @@ export default function MainPageContainer() {
   };
 
   const streakLabel = useMemo(
-    () => (completedDates ? calculateStreakLabel(completedDates) : ''),
+    () => calculateStreakLabel(completedDates),
     [completedDates]
   );
 
-  if (!completedDates) {
+  if (loading) {
     return <div className='p-4 text-center text-gray-500'>로딩중...</div>;
   }
 
@@ -65,7 +101,7 @@ export default function MainPageContainer() {
       <ChallengeCard />
       <QuizBanner streakLabel={streakLabel} completedDates={completedDates} />
       <WeeklyCalendar completedDates={completedDates} />
-      <AccountSummaryCard />
+      {accountInfo && <AccountSummaryCard account={accountInfo} />}
       <BeginnerGuideCard />
     </div>
   );
