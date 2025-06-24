@@ -71,11 +71,17 @@ export default function ResultPage({
           })}
         </div>
         <div className='w-full h-px bg-gray-300 px-4 my-4' />
-        <div className='flex gap-1 px-4 text-md font-bold'>
-          <div>
-            <StarProQuiz />
-          </div>
-          <div className='px-2 pt-10 '>{question.description}</div>
+        <div className='relative w-full max-w-md p-4 bg-white rounded-2xl border-3 border-primary overflow-visible mx-auto'>
+          <div className='text-gray-800 text-md '>{question.description}</div>
+
+          {/* 꼬리 외곽 */}
+          <div className='absolute w-0 h-0 border-x-[18px] border-t-[18px] border-b-0 border-x-transparent border-primary bottom-[-18px] left-1/2 -translate-x-1/2 z-0' />
+
+          {/* 꼬리 내부 */}
+          <div className='absolute w-0 h-0 border-x-[15px] border-t-[15px] border-b-0 border-x-transparent border-white bottom-[-14px] left-1/2 -translate-x-1/2 z-10' />
+        </div>
+        <div className='w-fit mx-auto'>
+          <StarProQuiz />
         </div>
       </div>
 
