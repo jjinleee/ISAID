@@ -94,6 +94,15 @@ export const ProfileContainer = () => {
           active={false}
           onClick={() => setShowLeaveModal(true)}
         />
+        <Button
+          text={'로그아웃'}
+          thin={false}
+          active={true}
+          onClick={async () => {
+            const { signOut } = await import('next-auth/react');
+            signOut({ callbackUrl: '/' });
+          }}
+        />
       </div>
       {showLeaveModal && (
         <ModalWrapper headerOnly={false}>
