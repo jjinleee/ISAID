@@ -5,10 +5,12 @@ import { Session } from 'next-auth';
 import { useRouter } from 'next/navigation';
 import ETFInfoSection from '@/app/(routes)/mypage/_components/etf-info-section';
 import IsaAccountSection from '@/app/(routes)/mypage/_components/isa-account-section';
+import { riskTypeTraitsMap } from '@/app/(routes)/mypage/data/mbti-test';
 import ArrowIcon from '@/public/images/arrow-icon';
 import StarBoyGirl from '@/public/images/my-page/star-boy-girl.svg';
 import StarBoy from '@/public/images/star-boy';
 import { ChartData, type Account } from '@/types/my-page';
+import { convertToKorLabel } from '@/utils/my-page';
 import ProgressBar from '@/components/progress-bar';
 import Tab from '@/components/tab';
 import { fetchISAInfo } from '@/lib/api/my-page';
@@ -26,6 +28,9 @@ export const MyPageContainer = ({ session }: Props) => {
   const [selectedItem, setSelectedItem] = useState<string>('');
   const [etfDetailList, setEtfDetailList] = useState<EtfInfo[]>([]);
   const [noEtfData, setNoEtfData] = useState(false);
+  const [investLabel, setInvestLabel] = useState('');
+  const [loadingLabel, setLoadingLabel] = useState<boolean>(true);
+
   const [selectedEtf, setSelectedEtf] = useState<EtfInfo>({
     name: '',
     avgCost: 0,
@@ -66,8 +71,6 @@ export const MyPageContainer = ({ session }: Props) => {
         }
       } else {
         setConnected(true);
-        console.log('res : ', res);
-
         setAccount(res);
       }
     };
@@ -82,6 +85,7 @@ export const MyPageContainer = ({ session }: Props) => {
         }
 
         const json = await res.json();
+        console.log('json : ', json);
 
         if (!json.data || json.data.length === 0) {
           setNoEtfData(true); // 보유 ETF 없을 때
@@ -107,9 +111,26 @@ export const MyPageContainer = ({ session }: Props) => {
         console.error('ETF 포트폴리오 조회 실패:', error);
       }
     };
+    const fetchRecommendEtf = async () => {
+      try {
+        const res = await fetch('/api/etf/mbti', { method: 'GET' });
+        const data = await res.json();
+        setInvestLabel(convertToKorLabel(data.investType));
+        setLoadingLabel(false);
+        const gun =
+          riskTypeTraitsMap[
+            convertToKorLabel(data.investType) as keyof typeof riskTypeTraitsMap
+          ];
+        console.log(gun);
+      } catch (error) {
+        console.log('error', error);
+        setLoadingLabel(false);
+      }
+    };
 
     fetchISA();
     fetchEtfPortfolio();
+    fetchRecommendEtf();
   }, []);
 
   useEffect(() => {
@@ -162,7 +183,14 @@ export const MyPageContainer = ({ session }: Props) => {
               <span>📈 초보 투자 이론가</span>
             </div>
           </div>
-          <h1 className='font-semibold'>ESFP : 자유로운 영혼의 연예인</h1>
+          {!loadingLabel ? (
+            <h1 className='font-semibold'>
+              {investLabel || '투자성향 테스트를 진행해주세요.'}
+            </h1>
+          ) : (
+            <h1 className='font-semibold text-transparent'>안보이지롱</h1>
+          )}
+
           <div
             className='flex justify-end items-center absolute bottom-4 right-3 cursor-pointer'
             onClick={() => router.push('mypage/profile')}

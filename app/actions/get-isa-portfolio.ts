@@ -91,8 +91,6 @@ export async function getISAPortfolio(yearMonth: string) {
 
   const total = bond + fund + els + etfDomestic + etfForeign + etfBoth;
 
-  console.log('Total portfolio value:', total);
-
   const format = (label: string, value: number) => ({
     category: label,
     value,
