@@ -6,6 +6,7 @@ import { seedGeneralHoldings } from '../general/general-holding';
 import { seedGeneralHoldingSnapshots } from '../general/general-holding-snapshot';
 import { seedGeneralTransactions } from '../general/general-transactions';
 import { seedMonthlyReturns } from '../general/monthly-return';
+import { updateCurrentBalance } from '../general/updateAccount';
 
 export async function seedAllData(isaAccountId: bigint) {
   await seedEtfTransactions(isaAccountId);
@@ -15,4 +16,5 @@ export async function seedAllData(isaAccountId: bigint) {
   await seedGeneralHoldings(isaAccountId);
   await seedGeneralHoldingSnapshots(isaAccountId);
   await seedMonthlyReturns(isaAccountId);
+  await updateCurrentBalance(isaAccountId);
 }

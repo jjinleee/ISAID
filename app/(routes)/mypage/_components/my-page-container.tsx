@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import ETFInfoSection from '@/app/(routes)/mypage/_components/etf-info-section';
 import IsaAccountSection from '@/app/(routes)/mypage/_components/isa-account-section';
 import ArrowIcon from '@/public/images/arrow-icon';
+import StarBoyGirl from '@/public/images/my-page/star-boy-girl.svg';
 import StarBoy from '@/public/images/star-boy';
 import { ChartData, type Account } from '@/types/my-page';
 import ProgressBar from '@/components/progress-bar';
@@ -24,6 +25,7 @@ export const MyPageContainer = ({ session }: Props) => {
   const [connected, setConnected] = useState(false);
   const [selectedItem, setSelectedItem] = useState<string>('');
   const [etfDetailList, setEtfDetailList] = useState<EtfInfo[]>([]);
+  const [noEtfData, setNoEtfData] = useState(false);
   const [selectedEtf, setSelectedEtf] = useState<EtfInfo>({
     name: '',
     avgCost: 0,
@@ -65,6 +67,7 @@ export const MyPageContainer = ({ session }: Props) => {
       } else {
         setConnected(true);
         console.log('res : ', res);
+
         setAccount(res);
       }
     };
@@ -72,7 +75,18 @@ export const MyPageContainer = ({ session }: Props) => {
     const fetchEtfPortfolio = async () => {
       try {
         const res = await fetch('/api/etf/portfolio');
+
+        if (res.status === 404) {
+          setNoEtfData(true); // ISA 계좌가 없을 때
+          return;
+        }
+
         const json = await res.json();
+
+        if (!json.data || json.data.length === 0) {
+          setNoEtfData(true); // 보유 ETF 없을 때
+          return;
+        }
 
         const sorted = json.data.sort(
           (a: any, b: any) => Number(b.totalPurchase) - Number(a.totalPurchase)
@@ -180,9 +194,26 @@ export const MyPageContainer = ({ session }: Props) => {
       </div>
       {selectedTab === 0 && (
         <div className='w-full flex flex-col gap-5'>
-          <EtfDetailRatioChart data={chartData} onClickItem={setSelectedItem} />
-          {selectedItem && selectedEtf && (
-            <ETFInfoSection selectedEtf={selectedEtf} />
+          {noEtfData ? (
+            <>
+              <h1 className='text-xl font-semibold'>ETF 계좌</h1>
+              <div className='border border-gray-2 rounded-2xl w-full flex flex-col gap-5 px-5 pt-4 pb-9 items-center'>
+                <h1 className='font-semibold self-start'>
+                  {session.user.name}님의 보유 ETF 항목이 없습니다.
+                </h1>
+                <StarBoyGirl />
+              </div>
+            </>
+          ) : (
+            <>
+              <EtfDetailRatioChart
+                data={chartData}
+                onClickItem={setSelectedItem}
+              />
+              {selectedItem && selectedEtf && (
+                <ETFInfoSection selectedEtf={selectedEtf} />
+              )}
+            </>
           )}
         </div>
       )}
