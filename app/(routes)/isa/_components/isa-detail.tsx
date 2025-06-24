@@ -18,7 +18,7 @@ const ISADetail = ({
   ptData: PieChartData[];
   userName: string;
 }) => {
-  const tabs = ['수익률', '포트폴리오', '절세계산기'];
+  const tabs = ['수익률', '포트폴리오', '절세 리포트'];
   const [selectedTab, setSelectedTab] = useState(0);
 
   return (
