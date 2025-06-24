@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ArrowLeft from '@/public/images/arrow-left.svg';
 import { CustomInput } from '@/components/input';
@@ -9,6 +9,17 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { formatPhoneNumber, formatTelNo, validateField } from '@/lib/utils';
 import AddressSearch from './address-modal';
+
+// WebOTP API 타입 정의
+interface OTPCredential extends Credential {
+  code: string;
+}
+
+interface OTPCredentialRequestOptions extends CredentialRequestOptions {
+  otp: {
+    transport: string[];
+  };
+}
 
 export interface FormData {
   name: string;
@@ -77,6 +88,50 @@ export default function RegisterForm() {
 
   const router = useRouter();
 
+  const [sentCode, setSentCode] = useState<string | null>(null);
+
+  // WebOTP API 지원 여부 확인
+  const isWebOTPSupported =
+    typeof window !== 'undefined' && 'OTPCredential' in window;
+
+  // WebOTP 이벤트 리스너 설정
+  useEffect(() => {
+    if (!isWebOTPSupported || currentStep !== 2) return; // phone step이 아닐 때는 리스너 제거
+
+    const abortController = new AbortController();
+
+    const handleWebOTP = async () => {
+      try {
+        const credential = (await navigator.credentials.get({
+          otp: { transport: ['sms'] },
+          signal: abortController.signal,
+        } as OTPCredentialRequestOptions)) as OTPCredential;
+
+        if (credential && credential.code) {
+          // WebOTP로 받은 코드를 인증번호 필드에 자동 입력
+          handleInputChange('verificationCode', credential.code);
+        }
+      } catch (error) {
+        // 사용자가 취소하거나 지원하지 않는 경우 무시
+        console.log('WebOTP not available or cancelled:', error);
+      }
+    };
+
+    // 페이지가 포커스될 때 WebOTP 요청
+    const handleFocus = () => {
+      if (isCodeSent) {
+        handleWebOTP();
+      }
+    };
+
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      abortController.abort();
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, [isWebOTPSupported, currentStep, isCodeSent]);
+
   const steps: (keyof FormData)[] = [
     'name',
     'rrn',
@@ -141,7 +196,13 @@ export default function RegisterForm() {
       case 'phone':
         return (
           validateField('phone', formData.phone, formData) &&
-          validateField('verificationCode', formData.verificationCode, formData)
+          validateField(
+            'verificationCode',
+            formData.verificationCode,
+            formData
+          ) &&
+          isCodeSent &&
+          formData.verificationCode === sentCode
         );
 
       case 'address':
@@ -220,8 +281,48 @@ export default function RegisterForm() {
     }
   };
 
-  const handleSendCode = () => {
-    setIsCodeSent(true);
+  const handleSendCode = async () => {
+    if (!formData.phone || formData.phone.length < 10) {
+      alert('올바른 휴대폰 번호를 입력해주세요.');
+      return;
+    }
+
+    try {
+      // 3자리 랜덤 인증번호 생성
+      const code = Math.floor(100 + Math.random() * 900).toString();
+
+      const response = await fetch('/api/auth/sms', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          phone: formData.phone,
+          code: code,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setSentCode(code);
+        setIsCodeSent(true);
+        alert('인증번호가 전송되었습니다.');
+
+        // WebOTP 지원 시 자동으로 인증번호 입력 요청
+        if (isWebOTPSupported) {
+          setTimeout(() => {
+            // 페이지 포커스 시 WebOTP 요청
+            window.focus();
+          }, 1000);
+        }
+      } else {
+        alert('인증번호 전송에 실패했습니다. 다시 시도해주세요.');
+      }
+    } catch (error) {
+      console.error('SMS 전송 오류:', error);
+      alert('인증번호 전송에 실패했습니다. 다시 시도해주세요.');
+    }
   };
 
   const handleAddressSelect = (address: string) => {
@@ -372,7 +473,20 @@ export default function RegisterForm() {
                   field='verificationCode'
                   value={formData.verificationCode}
                   onChangeField={handleInputChange}
+                  autocomplete='one-time-code'
                 />
+                {isCodeSent &&
+                  formData.verificationCode.length === 3 &&
+                  formData.verificationCode !== sentCode && (
+                    <p className='text-xs text-red-500 mt-1'>
+                      인증번호가 일치하지 않습니다.
+                    </p>
+                  )}
+                {isWebOTPSupported && isCodeSent && (
+                  <p className='text-xs text-primary mt-1'>
+                    SMS로 받은 인증번호를 입력해주세요.
+                  </p>
+                )}
               </div>
             </div>
 
