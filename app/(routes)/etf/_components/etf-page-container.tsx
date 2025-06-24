@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { RecommendSliderWrapper } from '@/app/(routes)/etf/_components/recommend-slider-wrapper';
 import { useHeader } from '@/context/header-context';
 import ArrowIcon from '@/public/images/arrow-icon';
-import { ETFArrow } from '@/public/images/etf/etf-rate';
 import {
   SlideImg1,
   SlideImg2,
@@ -15,11 +15,16 @@ import {
 import StarBoyFinger from '@/public/images/star-boy-finger.svg';
 import { SlideCardProps } from '@/types/components';
 import { SliderWrapper } from '../_components/slider-wrapper';
+import { etfCardDummyData, EtfCardProps } from '../data/recommend-etf-data';
 import { idToCategoryUrl } from './data/etf-category-url-map';
+import RecommendModal from './recommend-modal';
 
 const ETFPageContainer = () => {
   const { setHeader } = useHeader();
   const router = useRouter();
+  const [selectedETFId, setSelectedETFId] = useState(26);
+  const [recommendList, setRecommendList] = useState<EtfCardProps[]>([]);
+  const [showModal, setShowModal] = useState(false);
   const [investType, setInvestType] = useState<string | null>(null);
   const [preferredCategories, setPreferredCategories] = useState<
     { id: string; fullPath: string }[]
@@ -86,11 +91,6 @@ const ETFPageContainer = () => {
     },
   ];
 
-  const etfItems = [
-    { name: 'SCHD', rate: -8.23 },
-    { name: 'GUN', rate: 5.23 },
-  ];
-
   const handleClick = (id: number) => {
     const path = idToCategoryUrl[id];
     if (!path) {
@@ -99,6 +99,19 @@ const ETFPageContainer = () => {
     }
     router.push(`/etf/category/${path}`);
   };
+
+  const clickSelectedETF = () => {
+    router.push(`/etf/detail/${selectedETFId}`);
+  };
+
+  const clickRecommendETF = (idx: number) => {
+    setSelectedETFId(idx);
+    setShowModal(true);
+  };
+
+  useEffect(() => {
+    setRecommendList(etfCardDummyData);
+  }, []);
 
   return (
     <div className='flex flex-col px-6 pb-10'>
@@ -155,38 +168,19 @@ const ETFPageContainer = () => {
         {/* 테마 슬라이더 */}
         <h1 className='text-xl font-semibold'>ETF, 테마부터 시작해볼까요?</h1>
         <SliderWrapper cards={cards} />
-        <div className='flex items-center justify-between'>
-          <h1 className='font-bold text-xl'>내가 담은 ETF</h1>
-          <div className='flex gap-2 justify-center items-center text-sm cursor-pointer'>
-            <span className='font-semibold'>전체보기</span>
-            <ArrowIcon direction='right' className='w-5 h-5' />
-          </div>
-        </div>
-        <div className='flex flex-col gap-1'>
-          {etfItems.map((item, index) => {
-            return (
-              <div
-                key={item.name}
-                className='flex justify-between px-3 py-4 font-semibold shadow-md rounded-xl cursor-pointer'
-              >
-                <span>{item.name}</span>
-                <div className='flex gap-1 items-center'>
-                  {item.rate > 0 ? (
-                    <ETFArrow direction='up' />
-                  ) : (
-                    <ETFArrow direction='down' />
-                  )}
-                  <span
-                    className={`${item.rate > 0 ? 'text-hana-red' : 'text-[#155DFC]'}`}
-                  >
-                    {item.rate}%
-                  </span>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+        <RecommendSliderWrapper
+          slides={recommendList}
+          clickSlide={clickRecommendETF}
+        />
       </div>
+      {showModal && (
+        <RecommendModal
+          onClose={() => setShowModal(false)}
+          btnClick={() => clickSelectedETF()}
+          reasons={recommendList[selectedETFId].reasons}
+          issueName={recommendList[selectedETFId].issueName}
+        />
+      )}
     </div>
   );
 };
