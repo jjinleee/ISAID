@@ -55,7 +55,6 @@ const ETFPageContainer = ({ session }: Props) => {
         setRecommendList(res.data.recommendations);
         setIsRecommendListLoaded(true);
       } catch (error) {
-        console.error('추천 조회 실패', error);
         setIsRecommendListLoaded(true);
       }
     };
