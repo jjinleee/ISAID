@@ -88,7 +88,7 @@ export default function EtfDetailContainer({
   //   return maxIdx;
   // });
 
-  const [selectedPeriod, setSelectedPeriod] = useState(4);
+  const [selectedPeriod, setSelectedPeriod] = useState(3);
 
   const [showSelected, setShowSelected] = useState(selectedPeriod);
   const [chartReady, setChartReady] = useState(false);
