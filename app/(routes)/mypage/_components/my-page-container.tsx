@@ -67,6 +67,7 @@ export const MyPageContainer = ({ session }: Props) => {
       } else {
         setConnected(true);
         console.log('res : ', res);
+
         setAccount(res);
       }
     };

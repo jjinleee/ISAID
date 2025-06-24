@@ -64,12 +64,12 @@ export async function seedGeneralHoldingSnapshots(isaAccountId: bigint) {
         snapshotDate: new Date('2025-05-30T23:59:59.000Z'),
         evaluatedAmount: 10_666_450.0,
       },
-      {
-        isaAccountId,
-        snapshotType: 'CASH',
-        snapshotDate: new Date('2025-06-20T04:23:08.033Z'),
-        evaluatedAmount: 17_000_000.0,
-      },
+      // {
+      //   isaAccountId,
+      //   snapshotType: 'CASH',
+      //   snapshotDate: new Date('2025-06-20T04:23:08.033Z'),
+      //   evaluatedAmount: 17_000_000.0,
+      // },
       {
         isaAccountId,
         snapshotType: 'GENERAL',

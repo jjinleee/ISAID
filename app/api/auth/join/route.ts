@@ -39,8 +39,6 @@ export async function POST(req: Request) {
       );
     }
 
-    console.log('가입 요청 데이터:', data);
-
     // 중복 이메일 체크
     const existingUser = await prisma.user.findUnique({
       where: { email },
