@@ -124,7 +124,9 @@ export const IsaAccountSection = ({ connected, userName, account }: Props) => {
               </div>
               <div className='w-full flex justify-between items-center p-1'>
                 <span className='text-subtitle'>비과세 한도</span>
-                <span>200만원</span>
+                <span>
+                  {account.accountType === '서민형' ? '400만 원' : '200만 원'}
+                </span>
               </div>
             </div>
           </div>

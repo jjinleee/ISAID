@@ -16,9 +16,9 @@ import ISAPageContainerWhenHasnot from './_components/isa-page-container-when-ha
 const ISAPage = async () => {
   const hasIsa = await checkIsaAccount();
   if (!hasIsa) {
-    // 계좌가 없으면 아무것도 렌더링하지 않음
     return <ISAPageContainerWhenHasnot />;
   }
+
   const taxData = await taxSaving();
   const monthlyReturnsData: MonthlyReturnsSummary =
     await getMonthlyReturns('6');

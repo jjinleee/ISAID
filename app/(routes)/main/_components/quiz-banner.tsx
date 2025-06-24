@@ -8,16 +8,11 @@ import { isSameDay } from 'date-fns';
 import { getTodayKSTDate } from '@/lib/utils';
 
 interface Props {
-  onComplete: (date: Date) => void;
   streakLabel: string;
   completedDates: Date[];
 }
 
-export default function QuizBanner({
-  onComplete,
-  streakLabel,
-  completedDates,
-}: Props) {
+export default function QuizBanner({ streakLabel, completedDates }: Props) {
   const router = useRouter();
 
   const today = getTodayKSTDate();
