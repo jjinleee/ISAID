@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { AccountIcon } from '@/public/images/isa/account-icon';
 import type { Account } from '@/types/my-page';
 import { fetchISAInfo } from '@/lib/api/my-page';
@@ -37,11 +38,28 @@ const Account = () => {
     fetchISA();
   }, []);
 
+  const companyMap = {
+    하나증권: 'hanaIcon.svg',
+    미래에셋증권: 'miraeIcon.png',
+    삼성증권: 'samsungIcon.png',
+    NH투자증권: 'nhIcon.png',
+    한국투자증권: 'koreaIcon.png',
+    키움증권: 'kiwoomIcon.png',
+    신한투자증권: 'sinhanIcon.png',
+    KB증권: 'kbIcon.jpeg',
+  };
+
   return (
     <div className='w-full shadow rounded-lg p-4'>
       <div className='flex gap-2'>
         <div className='mt-1'>
-          <AccountIcon />
+          <Image
+            src={`/images/securities-icons/${companyMap[account.bankCode]}`}
+            alt={account.bankCode}
+            width={24}
+            height={24}
+            className='rounded-full p-0.5'
+          />
         </div>
         <div>
           <p className='font-semibold'>
