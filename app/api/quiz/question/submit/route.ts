@@ -3,6 +3,26 @@ import { NextResponse } from 'next/server';
 import { authOptions } from '@/lib/auth-options';
 import { prisma } from '@/lib/prisma';
 
+// 정확히 'KST 기준 오늘 자정'을 UTC로 계산
+function getTodayStartOfKST() {
+  const now = new Date();
+
+  // 오늘의 KST 자정은 UTC 기준 15:00 of 전날
+  const utcYear = now.getUTCFullYear();
+  const utcMonth = now.getUTCMonth();
+  const utcDate = now.getUTCDate();
+
+  const kstStartToday = new Date(
+    Date.UTC(utcYear, utcMonth, utcDate, 15, 0, 0)
+  );
+  const kstStartYesterday = new Date(
+    kstStartToday.getTime() - 24 * 60 * 60 * 1000
+  );
+
+  // 현재 시간이 KST 자정 이후면 오늘 자정 기준 사용
+  return now >= kstStartToday ? kstStartToday : kstStartYesterday;
+}
+
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
@@ -28,33 +48,29 @@ export async function POST(req: Request) {
 
   const isCorrect = correct.id.toString() === selectedId.toString();
 
-  //KST 기준으로 해야함
-  const now = new Date();
-  const kstNow = new Date(now.getTime() + 9 * 60 * 60 * 1000);
-  const kstDateOnly = new Date(
-    kstNow.getFullYear(),
-    kstNow.getMonth(),
-    kstNow.getDate()
-  );
+  // 정확한 출석 날짜 계산 (KST 자정 기준)
+  const solvedDate = getTodayStartOfKST();
 
+  //중복 방지 upsert
   await prisma.quizCalendar.upsert({
     where: {
       userId_solvedDate: {
         userId,
-        solvedDate: kstDateOnly,
+        solvedDate,
       },
     },
     update: {},
     create: {
       userId,
-      solvedDate: kstDateOnly,
+      solvedDate,
     },
   });
 
   console.log('QUIZ 저장:', {
     userId: userId.toString(),
-    date: kstDateOnly.toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' }),
+    solvedDate: solvedDate.toISOString(), // 항상 15:00:00Z 형식으로 저장됨
   });
+
   return NextResponse.json({
     isCorrect,
     correctAnswerId: correct.id.toString(),
