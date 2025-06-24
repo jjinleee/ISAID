@@ -39,6 +39,8 @@ export default function EtfDetailContainer({
   const [showPie, setShowPie] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
+  const { setHeader } = useHeader();
+
   const loadDetailAndRatio = async (id: string) => {
     setIsLoading(true);
 
@@ -55,11 +57,14 @@ export default function EtfDetailContainer({
     setRatioInfo(ratioRes.data);
     setIsLoading(false);
   };
+  useEffect(() => {
+    if (etfIntro) {
+      setHeader(etfIntro.issueName, etfIntro.category);
+    }
+  }, [etfIntro]);
 
   const [chartData, setChartData] = useState<EtfRatioData>(emptyRatioData);
   const [ratioInfo, setRatioInfo] = useState<RatioInfo[]>(emptyRatioInfo);
-
-  const { setHeader } = useHeader();
 
   useEffect(() => {
     // setHeader(etf.categoryId, '당신의 투자 성향에 맞는 테마');

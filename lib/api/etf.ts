@@ -51,3 +51,11 @@ export const fetchEtfRatio = async (etfId: string) => {
   const res = await fetch(`/api/etf/${etfId}/pdf`);
   return res.json();
 };
+
+export const fetchRecommend = async () => {
+  const res = await fetch(`/api/etf/recommend`);
+  if (!res.ok) {
+    return;
+  }
+  return res.json();
+};
