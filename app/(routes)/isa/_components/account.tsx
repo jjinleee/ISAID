@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import Image from 'next/image';
-import { AccountIcon } from '@/public/images/isa/account-icon';
 import type { Account } from '@/types/my-page';
 import { fetchISAInfo } from '@/lib/api/my-page';
 
