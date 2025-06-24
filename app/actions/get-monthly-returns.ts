@@ -62,26 +62,75 @@ export async function getMonthlyReturns(month: MonthKey) {
       ),
     }));
     const baseDate = MonthDate[month].value;
-    const snapshotDate = new Date(`${baseDate}T23:59:59.000Z`);
-    if (isNaN(snapshotDate.getTime())) {
-      throw new Error(`Invalid baseDate: ${baseDate}`);
-    }
+
+    // 실제 데이터베이스에 저장된 시간을 고려하여 범위 설정
+    // 데이터가 2025-06-30T23:59:59.000Z에 저장되어 있음
+    const startOfDay = new Date(`${baseDate}T00:00:00.000Z`);
+    const endOfDay = new Date(`${baseDate}T23:59:59.999Z`);
+
+    console.log('Date Range:', {
+      baseDate,
+      startOfDay: startOfDay.toISOString(),
+      endOfDay: endOfDay.toISOString(),
+      isaAccountId,
+    });
+
+    // 디버깅: 실제로 어떤 시간 범위가 설정되었는지 확인
+    console.log('Time range check:', {
+      startOfDayUTC: startOfDay.toISOString(),
+      endOfDayUTC: endOfDay.toISOString(),
+      targetDataTime: '2025-06-30T23:59:59.000Z',
+      isTargetInRange:
+        '2025-06-30T23:59:59.000Z' >= startOfDay.toISOString() &&
+        '2025-06-30T23:59:59.000Z' <= endOfDay.toISOString(),
+    });
 
     // 평가금액 계산= etf+general+ 현금
-    const etfEvaluated = await prisma.eTFHoldingSnapshot.aggregate({
+    const etfSnapshots = await prisma.eTFHoldingSnapshot.findMany({
       where: {
         isaAccountId,
-        snapshotDate,
+        snapshotDate: {
+          gte: startOfDay,
+          lte: endOfDay,
+        },
       },
-      _sum: {
+      select: {
+        etfId: true,
         evaluatedAmount: true,
+        snapshotDate: true,
       },
     });
+    console.log('ETF Snapshots:', etfSnapshots);
+
+    const etfEvaluatedAmount = etfSnapshots.reduce((sum, snap) => {
+      return sum + Number(snap.evaluatedAmount ?? 0);
+    }, 0);
+    console.log('ETF Evaluated Amount Total:', etfEvaluatedAmount);
+
+    // General 데이터 조회 전에 전체 데이터 확인
+    const allGeneralSnapshots = await prisma.generalHoldingSnapshot.findMany({
+      where: {
+        isaAccountId,
+      },
+      select: {
+        snapshotDate: true,
+        snapshotType: true,
+        evaluatedAmount: true,
+      },
+      orderBy: {
+        snapshotDate: 'desc',
+      },
+      take: 10,
+    });
+    console.log('Recent General Snapshots (last 10):', allGeneralSnapshots);
 
     const generalEvaluated = await prisma.generalHoldingSnapshot.aggregate({
       where: {
         isaAccountId,
-        snapshotDate,
+        snapshotDate: {
+          gte: startOfDay,
+          lte: endOfDay,
+        },
         snapshotType: {
           in: ['GENERAL', 'CASH'],
         },
@@ -90,9 +139,32 @@ export async function getMonthlyReturns(month: MonthKey) {
         evaluatedAmount: true,
       },
     });
+    console.log(
+      'General Holding Evaluated Amount:',
+      generalEvaluated._sum.evaluatedAmount
+    );
+
+    // snapshotType 필터 없이 조회해보기
+    const generalWithoutTypeFilter =
+      await prisma.generalHoldingSnapshot.aggregate({
+        where: {
+          isaAccountId,
+          snapshotDate: {
+            gte: startOfDay,
+            lte: endOfDay,
+          },
+        },
+        _sum: {
+          evaluatedAmount: true,
+        },
+      });
+    console.log(
+      'General Without Type Filter:',
+      generalWithoutTypeFilter._sum.evaluatedAmount
+    );
 
     const totalEvaluatedAmount =
-      Number(etfEvaluated._sum.evaluatedAmount ?? 0) +
+      Number(etfEvaluatedAmount ?? 0) +
       Number(generalEvaluated._sum.evaluatedAmount ?? 0);
 
     const totalInvestedAmount = 17_000_000; // 고정 초기 투자금

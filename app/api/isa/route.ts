@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
         },
         generalHoldingSnapshots: {
           create: {
-            snapshotDate: new Date(),
+            snapshotDate: new Date('2024-12-12T00:00:00.000Z'),
             evaluatedAmount: currentBalance,
             snapshotType: 'CASH',
           },
