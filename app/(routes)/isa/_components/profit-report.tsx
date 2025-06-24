@@ -166,7 +166,11 @@ const ProfitReport = ({
                     monthNumber as '1' | '2' | '3' | '4' | '5' | '6'
                   );
                   setSelectedMonth(monthNumber);
-                  setSelectedReport(updatedReport);
+                  setSelectedReport({
+                    ...updatedReport,
+                    monthlyEvaluatedAmounts: [],
+                    monthlyDetails: [],
+                  });
                 }}
               />
             ))}
