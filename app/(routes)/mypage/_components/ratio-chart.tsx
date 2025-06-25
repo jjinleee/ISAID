@@ -80,12 +80,12 @@ export default function EtfDetailRatioChart({
               onClickItem(String(item.id));
             }}
           >
-            <div className='flex items-center gap-2'>
+            <div className='flex items-center gap-2 min-w-0'>
               <span
-                className='inline-block w-2.5 h-2.5 rounded-full'
+                className='inline-block w-2.5 h-2.5 min-w-[10px] rounded-full flex-shrink-0'
                 style={{ backgroundColor: COLORS[idx % COLORS.length] }}
               />
-              <span className=''>{item.name}</span>
+              <span className='truncate text-gray-800'>{item.name}</span>
             </div>
             <span className='text-gray-500'>{item.value.toFixed(2)}%</span>
           </li>
