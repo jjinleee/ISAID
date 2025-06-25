@@ -1,13 +1,12 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useRouter } from 'next/navigation'; // useRouter 추가
+import { useRouter } from 'next/navigation';
 import StayBoyTest from '@/public/images/star-boy-test.svg';
 import Button from '@/components/button';
 import { getRecommendedTypesWithReasons, getRiskType } from '@/lib/test/utils';
 
 interface TestEndContainerProps {
-  btnClick: () => void;
   answers: (number | null)[];
 }
 
@@ -81,7 +80,7 @@ export const TestEndContainer = ({ answers }: TestEndContainerProps) => {
         text='ETF 보러가기'
         thin={false}
         active={true}
-        onClick={handleBtnClick} // 수정된 함수 연결
+        onClick={handleBtnClick}
         className='text-lg px-6 py-3 mt-8'
       />
     </div>
