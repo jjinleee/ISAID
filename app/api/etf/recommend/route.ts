@@ -371,10 +371,6 @@ export async function GET(req: NextRequest) {
       take: 400, // 더 많은 ETF를 가져와서 필터링 후 선택
     });
 
-    console.log(
-      `[ETF 데이터 조회] 총 ${etfs.length}개의 ETF 데이터를 조회했습니다.`
-    );
-
     if (etfs.length === 0) {
       return NextResponse.json(
         { message: '추천할 수 있는 ETF가 없습니다.' },
@@ -384,9 +380,6 @@ export async function GET(req: NextRequest) {
 
     // 거래대금이 있는 ETF만 필터링
     const etfsWithTradingData = etfs.filter((etf) => etf.tradings.length > 0);
-    console.log(
-      `[ETF 거래데이터 필터링] 거래대금 데이터가 있는 ETF: ${etfsWithTradingData.length}개`
-    );
 
     if (etfsWithTradingData.length === 0) {
       return NextResponse.json(
@@ -611,17 +604,17 @@ export async function GET(req: NextRequest) {
       .sort((a, b) => b.score - a.score)
       .slice(0, limit);
 
-    console.log(
-      `[ETF 추천 결과] 사용자 투자성향: ${investType}, 분석된 ETF 수: ${processedEtfs.length}, 필터링 후 ETF 수: ${scoredEtfs.length}, 최종 추천 수: ${recommendations.length}`
-    );
-    console.log(
-      `[ETF 추천 상위 10개] ${recommendations
-        .slice(0, 10)
-        .map(
-          (r) => `${r.issueName} (위험등급: ${r.riskGrade}, 점수: ${r.score})`
-        )
-        .join(', ')}`
-    );
+    // console.log(
+    //   `[ETF 추천 결과] 사용자 투자성향: ${investType}, 분석된 ETF 수: ${processedEtfs.length}, 필터링 후 ETF 수: ${scoredEtfs.length}, 최종 추천 수: ${recommendations.length}`
+    // );
+    // console.log(
+    //   `[ETF 추천 상위 10개] ${recommendations
+    //     .slice(0, 10)
+    //     .map(
+    //       (r) => `${r.issueName} (위험등급: ${r.riskGrade}, 점수: ${r.score})`
+    //     )
+    //     .join(', ')}`
+    // );
 
     return NextResponse.json({
       message: 'ETF 추천 성공',

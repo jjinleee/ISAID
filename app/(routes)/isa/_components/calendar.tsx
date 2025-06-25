@@ -10,7 +10,7 @@ import { ko } from 'date-fns/locale';
 type Transaction = {
   title: string;
   amount: number;
-  type: '매수' | '매도' | '입금' | '출금' | '배당금';
+  type: '매수' | '매도' | '입금' | '출금' | '배당금' | '챌린지 리워드';
 };
 
 const Calendar = ({ data }: { data: any }) => {
@@ -21,6 +21,8 @@ const Calendar = ({ data }: { data: any }) => {
 
   const selectedKey = selected ? formatDateKey(selected) : null;
   const transactions = selectedKey ? data.transactionData[selectedKey] : null;
+
+  console.log('transaction data', data);
 
   return (
     <div className='flex flex-col mt-3'>
@@ -59,7 +61,7 @@ const Calendar = ({ data }: { data: any }) => {
             {transactions.map((tx: Transaction, idx: number) => (
               <li
                 key={idx}
-                className='bg-white shadow rounded-xl px-4 py-3 flex justify-between items-center shadow-sm'
+                className='bg-white rounded-xl px-4 py-3 flex justify-between items-center shadow-sm'
               >
                 {/* 왼쪽: 항목 정보 */}
                 <div className='space-y-1'>
@@ -76,7 +78,9 @@ const Calendar = ({ data }: { data: any }) => {
                             ? 'text-white font-semibold bg-blue-600'
                             : tx.type === '배당금'
                               ? 'text-white font-semibold bg-yellow-500'
-                              : 'text-white font-semibold bg-gray-400'
+                              : tx.type === '챌린지 리워드'
+                                ? 'text-white font-semibold bg-pink-300' // ← 추가
+                                : 'text-white font-semibold bg-gray-400'
                     }`}
                   >
                     {tx.type}

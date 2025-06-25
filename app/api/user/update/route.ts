@@ -1,6 +1,6 @@
 import { getServerSession } from 'next-auth';
 import { NextResponse } from 'next/server';
-import { hash } from 'bcryptjs';
+import bcrypt, { hash } from 'bcryptjs';
 import { authOptions } from '@/lib/auth-options';
 import { prisma } from '@/lib/prisma';
 
@@ -53,21 +53,31 @@ export async function PATCH(req: Request) {
     }
 
     if ('pinCode' in body) {
-      if (!body.oldPinCode || body.oldPinCode !== existingUser.pinCode) {
+      if (!existingUser.pinCode) {
+        return NextResponse.json(
+          { error: '기존 핀코드가 설정되어 있지 않습니다.' },
+          { status: 400 }
+        );
+      }
+      const isPinCodeValid = await bcrypt.compare(
+        body.oldPinCode,
+        existingUser.pinCode
+      );
+      if (!body.oldPinCode || !isPinCodeValid) {
         return NextResponse.json(
           { error: '기존 핀코드가 일치하지 않습니다.' },
           { status: 400 }
         );
       }
 
-      if (!/^\d{6}$/.test(body.pinCode)) {
-        return NextResponse.json(
-          { error: '새 핀코드는 6자리 숫자여야 합니다.' },
-          { status: 400 }
-        );
-      }
+      // if (!/^\d{6}$/.test(body.pinCode)) {
+      //   return NextResponse.json(
+      //     { error: '새 핀코드는 6자리 숫자여야 합니다.' },
+      //     { status: 400 }
+      //   );
+      // }
 
-      data.pinCode = body.pinCode;
+      data.pinCode = await hash(body.pinCode, 10);
     }
 
     if (body.password !== undefined) {

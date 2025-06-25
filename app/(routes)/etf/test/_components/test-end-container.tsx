@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { useRouter } from 'next/navigation'; // useRouter 추가
 import StayBoyTest from '@/public/images/star-boy-test.svg';
 import Button from '@/components/button';
 import { getRecommendedTypesWithReasons, getRiskType } from '@/lib/test/utils';
@@ -10,15 +11,20 @@ interface TestEndContainerProps {
   answers: (number | null)[];
 }
 
-export const TestEndContainer = ({
-  btnClick,
-  answers,
-}: TestEndContainerProps) => {
+export const TestEndContainer = ({ answers }: TestEndContainerProps) => {
+  const router = useRouter(); // useRouter 초기화
   const riskType = getRiskType(answers);
   const recommended = getRecommendedTypesWithReasons(answers); // 상위 3개 분류체계
+
+  // ETF 페이지 이동 로직
+  const handleBtnClick = () => {
+    router.push('/etf'); // '/etf' 경로로 이동
+  };
+
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
+
   return (
     <div className='w-full flex flex-col items-center gap-10 px-6'>
       <h1 className='text-3xl font-bold text-center'>
@@ -75,7 +81,7 @@ export const TestEndContainer = ({
         text='ETF 보러가기'
         thin={false}
         active={true}
-        onClick={btnClick}
+        onClick={handleBtnClick} // 수정된 함수 연결
         className='text-lg px-6 py-3 mt-8'
       />
     </div>

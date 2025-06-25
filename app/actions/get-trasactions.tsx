@@ -5,7 +5,7 @@ import { prisma } from '@/lib/prisma';
 export type CalendarTx = {
   title: string;
   amount: number;
-  type: '매수' | '매도' | '입금' | '출금' | '배당금' | '이자';
+  type: '매수' | '매도' | '입금' | '출금' | '배당금' | '이자' | '챌린지 리워드';
 };
 
 export type CalendarData = {
@@ -81,6 +81,7 @@ export const getTransactions = async (): Promise<CalendarData> => {
     INTEREST: '이자',
     DEPOSIT: '입금',
     WITHDRAW: '출금',
+    CHALLENGE_REWARD: '챌린지 리워드',
   };
 
   const transactionData: Record<string, CalendarTx[]> = {};
