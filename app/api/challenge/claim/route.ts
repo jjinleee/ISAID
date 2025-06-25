@@ -1,8 +1,18 @@
 import { getServerSession } from 'next-auth';
 import { NextResponse } from 'next/server';
 import { Prisma } from '@prisma/client';
+import dayjs from 'dayjs';
+import timezone from 'dayjs/plugin/timezone';
+import utc from 'dayjs/plugin/utc';
 import { authOptions } from '@/lib/auth-options';
 import { prisma } from '@/lib/prisma';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
+function getTodayStartOfKST() {
+  return dayjs().tz('Asia/Seoul').startOf('day').utc().toDate();
+}
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
@@ -36,9 +46,7 @@ export async function POST(req: Request) {
 
   // 보상 수령일: 오늘 자정 (UTC)
   const now = new Date();
-  const utcMidnight = new Date(
-    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
-  );
+  const utcMidnight = getTodayStartOfKST();
 
   const latestPrice = await prisma.etfDailyTrading.findFirst({
     where: { etfId: challenge.etfId },
