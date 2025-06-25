@@ -63,7 +63,9 @@ export async function getChallenges(): Promise<ChallengeInfo[]> {
         const lastUpdated = updatedAt
           ? dayjs(updatedAt).tz('Asia/Seoul')
           : null;
-        const isStreakValid = lastUpdated?.isSame(yesterday, 'day');
+        const isStreakValid =
+          lastUpdated?.isSame(yesterday, 'day') ||
+          lastUpdated?.isSame(today, 'day');
 
         if (hasClaim) {
           status = 'CLAIMED';
