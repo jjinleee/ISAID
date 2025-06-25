@@ -35,7 +35,7 @@ export const EditNameContainer = () => {
     setHeader('내 정보 수정하기', '이름 수정');
     const fetchMe = async () => {
       const res = await fetchMyInfo();
-      console.log('res : ', res);
+
       setNameData({
         name: res.name || '',
         nameEng: res.engName || '',
