@@ -1,3 +1,6 @@
+import { checkFirstInvestTest } from '@/services/challenge/check';
+import { insertUserChallengeProgress } from '@/services/challenge/progress';
+import { ChallengeCodes } from '@/types/challenge';
 import { InvestType, Prisma } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 
@@ -38,19 +41,14 @@ export class EtfTestService {
           data: { userId, investType },
         });
 
-        // 'FIRST_INVEST_TEST' 챌린지 조회
-        const challenge = await tx.challenge.findUnique({
-          where: { code: 'FIRST_INVEST_TEST' },
-        });
-
-        if (challenge) {
-          await tx.userChallengeProgress.create({
-            data: {
-              userId,
-              challengeId: challenge.id,
-              progressVal: 1,
-            },
-          });
+        // 'FIRST_INVEST_TEST' 챌린지 조건 확인
+        const isPassed = await checkFirstInvestTest(userId, tx);
+        if (isPassed) {
+          await insertUserChallengeProgress(
+            tx,
+            userId,
+            ChallengeCodes.FIRST_INVEST_TEST
+          );
         }
       } else {
         await tx.investmentProfile.update({
