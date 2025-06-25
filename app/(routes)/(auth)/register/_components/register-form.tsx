@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import ArrowLeft from '@/public/images/arrow-left.svg';
 import { CustomInput } from '@/components/input';
@@ -85,6 +86,7 @@ export default function RegisterForm() {
   const [isCodeSent, setIsCodeSent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [isSending, setSending] = useState(false);
 
   const router = useRouter();
 
@@ -282,8 +284,10 @@ export default function RegisterForm() {
   };
 
   const handleSendCode = async () => {
+    setSending(true);
     if (!formData.phone || formData.phone.length < 10) {
-      alert('올바른 휴대폰 번호를 입력해주세요.');
+      toast.error('올바른 휴대폰 번호를 입력해주세요.');
+      setSending(false);
       return;
     }
 
@@ -307,8 +311,7 @@ export default function RegisterForm() {
       if (result.success) {
         setSentCode(code);
         setIsCodeSent(true);
-        alert('인증번호가 전송되었습니다.');
-
+        toast.success('인증번호가 전송되었습니다.');
         // WebOTP 지원 시 자동으로 인증번호 입력 요청
         if (isWebOTPSupported) {
           setTimeout(() => {
@@ -322,6 +325,8 @@ export default function RegisterForm() {
     } catch (error) {
       console.error('SMS 전송 오류:', error);
       alert('인증번호 전송에 실패했습니다. 다시 시도해주세요.');
+    } finally {
+      setSending(false);
     }
   };
 
@@ -457,7 +462,8 @@ export default function RegisterForm() {
                   </div>
                   <button
                     onClick={handleSendCode}
-                    className='bg-primary text-white px-4 py-2 rounded-xl '
+                    className='bg-primary text-white px-4 py-2 rounded-xl disabled:bg-subtitle disabled:cursor-not-allowed'
+                    disabled={isSending}
                   >
                     인증번호 전송
                   </button>
@@ -482,11 +488,13 @@ export default function RegisterForm() {
                       인증번호가 일치하지 않습니다.
                     </p>
                   )}
-                {isWebOTPSupported && isCodeSent && (
-                  <p className='text-xs text-primary mt-1'>
-                    SMS로 받은 인증번호를 입력해주세요.
-                  </p>
-                )}
+                {isWebOTPSupported &&
+                  isCodeSent &&
+                  formData.verificationCode.length < 3 && (
+                    <p className='text-xs text-primary mt-1'>
+                      SMS로 받은 인증번호를 입력해주세요.
+                    </p>
+                  )}
               </div>
             </div>
 
