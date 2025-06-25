@@ -39,7 +39,7 @@ export async function getChallenges(): Promise<ChallengeInfo[]> {
       },
       userChallengeProgresses: {
         where: { userId },
-        select: { progressVal: true, updatedAt: true },
+        select: { progressVal: true, createdAt: true, updatedAt: true },
       },
     },
   });
@@ -48,6 +48,7 @@ export async function getChallenges(): Promise<ChallengeInfo[]> {
     const hasClaim = c.userChallengeClaims.length > 0;
     const progress = c.userChallengeProgresses[0]?.progressVal ?? 0;
     const updatedAt = c.userChallengeProgresses[0]?.updatedAt;
+    const createdAt = c.userChallengeProgresses[0]?.createdAt;
 
     let status: ChallengeStatus;
     switch (c.challengeType) {
@@ -78,9 +79,19 @@ export async function getChallenges(): Promise<ChallengeInfo[]> {
           today.isSame(dayjs(cl.claimDate).tz('Asia/Seoul'), 'day')
         );
 
+        const updatedAtDay = updatedAt
+          ? dayjs(updatedAt).tz('Asia/Seoul')
+          : null;
+        const createdAtDay = createdAt
+          ? dayjs(createdAt).tz('Asia/Seoul')
+          : null;
+
+        const isUpdatedToday = updatedAtDay?.isSame(today, 'day');
+        const isCreatedToday = createdAtDay?.isSame(today, 'day');
+
         if (claimedToday) {
           status = 'CLAIMED';
-        } else if (progress > 0) {
+        } else if (progress > 0 && (isUpdatedToday || isCreatedToday)) {
           status = 'ACHIEVABLE';
         } else {
           status = 'INCOMPLETE';
