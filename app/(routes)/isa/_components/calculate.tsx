@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { Coffee, DollarSign, PlaySquare, Trophy, Wallet } from 'lucide-react';
 
 const format = (n: number) => n.toLocaleString('ko-KR');
@@ -55,25 +56,78 @@ const Calculate = ({
       <p className='text-sm text-gray-500 pl-8 mt-5'>
         일상 속의 금액으로 보여드릴게요!
       </p>
-      <div className='mt-5 grid grid-cols-2 gap-4 text-center'>
+      <div className='mt-5 grid grid-cols-3 gap-4 text-center'>
         <div className='flex flex-col items-center'>
-          <Coffee className='w-6 h-6 text-brown-500 mb-1' />
+          <Image
+            className='w-6 h-6 text-brown-500 mb-1'
+            src={'/images/isa/tax-report/starbucks.svg'}
+            width={10}
+            height={10}
+            alt='coffee'
+          />
           <p className='text-sm text-gray-500'>아메리카노</p>
           <p className='font-semibold text-gray-700'>{coffees}잔</p>
         </div>
         <div className='flex flex-col items-center'>
-          <PlaySquare className='w-6 h-6 text-red-500 mb-1' />
+          <Image
+            className='w-6 h-6 text-brown-500 mb-1'
+            src={'/images/isa/tax-report/netflix.svg'}
+            width={10}
+            height={10}
+            alt='coffee'
+          />
           <p className='text-sm text-gray-500'>넷플릭스 1인 요금</p>
           <p className='font-semibold text-gray-700'>{netflixs}개월</p>
         </div>
-      </div>
 
-      {/* <div className='mt-6 rounded-lg border-gray-3 border-[2px] shadow p-4 text-center'>
-        <p className='text-xs text-gray-500 mb-1'>일반 계좌라면 냈을 세금</p>
-        <p className='text-lg font-bold text-gray-800'>
-          {Math.floor(taxData.generalAccountTax).toLocaleString()} 원
-        </p>
-      </div> */}
+        <div className='flex flex-col items-center'>
+          <Image
+            className='w-6 h-6 text-brown-500 mb-1'
+            src={'/images/isa/tax-report/coupang.svg'}
+            width={10}
+            height={10}
+            alt='coffee'
+          />
+          <p className='text-sm text-gray-500'>로켓 와우 1달 요금</p>
+          <p className='font-semibold text-gray-700'>{coupangs}개월</p>
+        </div>
+
+        <div className='flex flex-col items-center'>
+          <Image
+            className='w-6 h-6 text-brown-500 mb-1'
+            src={'/images/isa/tax-report/chat-gpt.svg'}
+            width={10}
+            height={10}
+            alt='coffee'
+          />
+          <p className='text-sm text-gray-500'>Chat GPT 구독 1달 요금</p>
+          <p className='font-semibold text-gray-700'>{gpts}개월</p>
+        </div>
+
+        <div className='flex flex-col items-center'>
+          <Image
+            className='w-6 h-6 text-brown-500 mb-1'
+            src={'/images/isa/tax-report/baemin.svg'}
+            width={10}
+            height={10}
+            alt='coffee'
+          />
+          <p className='text-sm text-gray-500'>배민 클럽 1달 요금</p>
+          <p className='font-semibold text-gray-700'>{beamins}개월</p>
+        </div>
+
+        <div className='flex flex-col items-center'>
+          <Image
+            className='w-6 h-6 text-brown-500 mb-1'
+            src={'/images/isa/tax-report/youtube.svg'}
+            width={10}
+            height={10}
+            alt='coffee'
+          />
+          <p className='text-sm text-gray-500'>유튜브 프리미엄 1달 요금</p>
+          <p className='font-semibold text-gray-700'>{youtubes}개월</p>
+        </div>
+      </div>
 
       <div className='mt-6'>
         <p className='text-sm text-gray-500 mb-1'>
@@ -98,11 +152,6 @@ const Calculate = ({
           사용 한도: {Math.round(taxData.usedLimit).toLocaleString()} 원
         </p>
       </div>
-
-      {/* <button className='mt-6 w-full flex justify-center items-center gap-2 py-2 bg-hana-green text-white rounded-md font-semibold hover:bg-green-600 transition'>
-        <Wallet className='w-4 h-4' />
-        자동이체로 한도 채우기
-      </button> */}
     </div>
   );
 };
