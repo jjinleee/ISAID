@@ -1,3 +1,6 @@
+import { checkFirstInvestTest } from '@/services/challenge/check';
+import { insertUserChallengeProgress } from '@/services/challenge/progress';
+import { ChallengeCodes } from '@/types/challenge';
 import { InvestType, Prisma } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 
@@ -27,12 +30,32 @@ export class EtfTestService {
 
     // 트랜잭션으로 모든 작업을 원자적으로 처리
     await prisma.$transaction(async (tx) => {
-      // 1. 투자 성향 저장 (upsert)
-      await tx.investmentProfile.upsert({
+      const existingProfile = await tx.investmentProfile.findUnique({
         where: { userId },
-        update: { investType },
-        create: { userId, investType },
       });
+
+      const isFirstTime = !existingProfile;
+
+      if (isFirstTime) {
+        await tx.investmentProfile.create({
+          data: { userId, investType },
+        });
+
+        // 'FIRST_INVEST_TEST' 챌린지 조건 확인
+        const isPassed = await checkFirstInvestTest(userId, tx);
+        if (isPassed) {
+          await insertUserChallengeProgress(
+            tx,
+            userId,
+            ChallengeCodes.FIRST_INVEST_TEST
+          );
+        }
+      } else {
+        await tx.investmentProfile.update({
+          where: { userId },
+          data: { investType },
+        });
+      }
 
       // 2. fullPath로 EtfCategory ID들 조회
       const etfCategories = await this.getEtfCategoriesByPaths(

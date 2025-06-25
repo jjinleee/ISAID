@@ -28,9 +28,10 @@ type ISAAccount = {
 
 interface Props {
   userName?: string;
+  savedTax: number;
 }
 
-export default function MainPageContainer({ userName }: Props) {
+export default function MainPageContainer({ userName, savedTax }: Props) {
   const [completedDates, setCompletedDates] = useState<Date[]>([]);
   const [accountInfo, setAccountInfo] = useState<ISAAccount | null>(null);
   const [loading, setLoading] = useState(true);
@@ -74,27 +75,64 @@ export default function MainPageContainer({ userName }: Props) {
 
     fetchAllData();
   }, []);
-
   const calculateStreakLabel = (dates: Date[]): string => {
+    if (dates.length === 0) return '퀴즈를 풀고 출석해보세요!';
+
+    const today = getTodayKSTDate();
+
     const sorted = dates
       .map((d) => new Date(d.getFullYear(), d.getMonth(), d.getDate()))
       .sort((a, b) => a.getTime() - b.getTime());
 
-    if (sorted.length === 0) return '퀴즈를 풀고 출석해보세요!';
-    const today = getTodayKSTDate();
-    const last = sorted[sorted.length - 1];
-    if (!isSameDay(last, today)) return '퀴즈를 풀고 출석해보세요!';
+    const todayAttendance = sorted.some((d) => isSameDay(d, today));
 
-    let count = 1;
-    for (let i = sorted.length - 1; i > 0; i--) {
-      const curr = sorted[i];
-      const prev = sorted[i - 1];
-      const diff = (curr.getTime() - prev.getTime()) / (1000 * 60 * 60 * 24);
-      if (diff === 1) count++;
-      else break;
+    if (todayAttendance) {
+      // 오늘 출석했으면 오늘부터 streak 계산
+      let count = 1;
+      for (let i = sorted.length - 1; i > 0; i--) {
+        const curr = sorted[i];
+        const prev = sorted[i - 1];
+        const diffDays =
+          (curr.getTime() - prev.getTime()) / (1000 * 60 * 60 * 24);
+        if (diffDays === 1) {
+          count++;
+        } else if (diffDays >= 2) {
+          break;
+        }
+      }
+      return count === 1 ? '출석 1일차' : `연속 출석 ${count}일차`;
+    } else {
+      // 오늘 출석 안했을 때 → "어제까지 streak 계산"
+      const yesterday = new Date(today);
+      yesterday.setDate(today.getDate() - 1);
+
+      // 어제 출석했는지 확인
+      const yesterdayAttendance = sorted.some((d) => isSameDay(d, yesterday));
+      if (!yesterdayAttendance) {
+        return '퀴즈를 풀고 출석해보세요!';
+      }
+
+      // 어제부터 거꾸로 연속 출석 streak 계산
+      let count = 1;
+      for (let i = sorted.length - 1; i > 0; i--) {
+        const curr = sorted[i];
+        const prev = sorted[i - 1];
+
+        if (isSameDay(curr, yesterday) || curr < yesterday) {
+          const diffDays =
+            (curr.getTime() - prev.getTime()) / (1000 * 60 * 60 * 24);
+          if (diffDays === 1) {
+            count++;
+          } else if (diffDays >= 2) {
+            break;
+          }
+        }
+      }
+
+      return count === 1
+        ? '어제 1일 출석했어요!'
+        : `어제까지 ${count}일 연속 출석했어요!`;
     }
-
-    return count === 1 ? '출석 1일차' : `연속 출석 ${count}일차`;
   };
 
   const streakLabel = useMemo(
@@ -111,7 +149,9 @@ export default function MainPageContainer({ userName }: Props) {
       <ChallengeCard />
       <QuizBanner streakLabel={streakLabel} completedDates={completedDates} />
       <WeeklyCalendar completedDates={completedDates} />
-      {accountInfo && <AccountSummaryCard account={accountInfo} />}
+      {accountInfo && (
+        <AccountSummaryCard account={accountInfo} savedTax={savedTax} />
+      )}
       <BeginnerGuideCard />
     </div>
   );

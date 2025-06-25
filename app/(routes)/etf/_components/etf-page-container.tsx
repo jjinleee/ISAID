@@ -60,7 +60,6 @@ const ETFPageContainer = ({ session }: Props) => {
     };
 
     fetchRecommendEtf();
-
     fetchEtfTestInfo();
   }, []);
 
@@ -84,7 +83,7 @@ const ETFPageContainer = ({ session }: Props) => {
 
   return (
     <div className='flex flex-col px-6 pb-10'>
-      <div className='flex flex-col gap-5'>
+      <div className='flex flex-col gap-6'>
         {/* 테스트 카드 */}
         <div
           className='flex px-5 py-8 text-white bg-hana-green cursor-pointer
@@ -111,55 +110,57 @@ const ETFPageContainer = ({ session }: Props) => {
             />
           </div>
         </div>
-        {/* 추천 종목 */}
-        {isPreferredCategoriesLoaded &&
-        isRecommendListLoaded &&
-        preferredCategories.length > 0 &&
-        recommendList.length > 0 ? (
-          <div className='flex flex-col gap-5'>
-            <h1 className='text-xl font-semibold'>
-              {session?.user.name}님을 위한 추천 종목
-            </h1>
-            <RecommendSliderWrapper
-              slides={recommendList}
-              clickSlide={clickRecommendETF}
-            />
-          </div>
-        ) : !isPreferredCategoriesLoaded || !isRecommendListLoaded ? (
-          <div className='w-full h-[188px] rounded-2xl bg-gray-100 animate-pulse flex items-center justify-center'>
-            <div className='w-3/4 h-6 bg-gray-300 rounded mb-2'></div>
-          </div>
-        ) : null}
-        {/* 추천 카테고리 */}
-        {isPreferredCategoriesLoaded &&
-        isRecommendListLoaded &&
-        preferredCategories.length > 0 &&
-        recommendList.length > 0 ? (
-          <div className='flex flex-col gap-5'>
-            <h2 className='text-xl font-semibold'>선호 카테고리</h2>
-            <div className='flex flex-col gap-3'>
-              {preferredCategories.map((sub) => (
-                <div
-                  key={sub.id}
-                  className='flex justify-between items-center p-3.5 rounded-2xl bg-white shadow hover:bg-hana-light-green transition-colors duration-200 cursor-pointer group'
-                  onClick={() => handleClick(Number(sub.id))}
-                >
-                  <span className='text-base font-semibold text-gray-700 group-hover:text-hana-green'>
-                    {sub.fullPath}
-                  </span>
-                  <ArrowIcon
-                    direction='right'
-                    className='w-5 h-5 text-gray-400 group-hover:text-hana-green transition-transform duration-200 group-hover:translate-x-1'
-                  />
-                </div>
-              ))}
+        <div>
+          {/* 추천 종목 */}
+          {isPreferredCategoriesLoaded &&
+          isRecommendListLoaded &&
+          preferredCategories.length > 0 &&
+          recommendList.length > 0 ? (
+            <div className='flex flex-col gap-5'>
+              <h1 className='text-xl font-semibold'>
+                {session?.user.name}님을 위한 추천 종목
+              </h1>
+              <RecommendSliderWrapper
+                slides={recommendList}
+                clickSlide={clickRecommendETF}
+              />
             </div>
-          </div>
-        ) : !isPreferredCategoriesLoaded || !isRecommendListLoaded ? (
-          <div className='w-full h-[228px] rounded-2xl bg-gray-100 animate-pulse flex items-center justify-center'>
-            <div className='w-3/4 h-6 bg-gray-300 rounded mb-2'></div>
-          </div>
-        ) : null}
+          ) : !isPreferredCategoriesLoaded || !isRecommendListLoaded ? (
+            <div className='w-full h-[188px] rounded-2xl bg-gray-100 animate-pulse flex items-center justify-center'>
+              <div className='w-3/4 h-6 bg-gray-300 rounded mb-2'></div>
+            </div>
+          ) : null}
+          {/* 추천 카테고리 */}
+          {isPreferredCategoriesLoaded &&
+          isRecommendListLoaded &&
+          preferredCategories.length > 0 &&
+          recommendList.length > 0 ? (
+            <div className='flex flex-col gap-5'>
+              <h2 className='text-xl font-semibold'>선호 카테고리</h2>
+              <div className='flex flex-col gap-3'>
+                {preferredCategories.map((sub) => (
+                  <div
+                    key={sub.id}
+                    className='flex justify-between items-center p-3.5 rounded-2xl bg-white shadow hover:bg-hana-light-green transition-colors duration-200 cursor-pointer group'
+                    onClick={() => handleClick(Number(sub.id))}
+                  >
+                    <span className='text-base font-semibold text-gray-700 group-hover:text-hana-green'>
+                      {sub.fullPath}
+                    </span>
+                    <ArrowIcon
+                      direction='right'
+                      className='w-5 h-5 text-gray-400 group-hover:text-hana-green transition-transform duration-200 group-hover:translate-x-1'
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : !isPreferredCategoriesLoaded || !isRecommendListLoaded ? (
+            <div className='w-full h-[228px] rounded-2xl bg-gray-100 animate-pulse flex items-center justify-center'>
+              <div className='w-3/4 h-6 bg-gray-300 rounded mb-2'></div>
+            </div>
+          ) : null}
+        </div>
         {/* 테마 슬라이더 */}
         <div className='flex flex-col gap-5'>
           <h1 className='text-xl font-semibold'>ETF, 테마부터 시작해볼까요?</h1>

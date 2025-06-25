@@ -59,6 +59,7 @@ export default function ChallengePageContainer({
           return (
             <MissionItem
               key={item.id}
+              id={item.id}
               title={item.title}
               description={item.challengeDescription}
               reward={`${item.issueName} ${item.quantity}주`}

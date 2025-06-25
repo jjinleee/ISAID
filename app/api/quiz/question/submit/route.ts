@@ -66,6 +66,58 @@ export async function POST(req: Request) {
     },
   });
 
+  // DAILY 챌린지 수령 처리 (QUIZ_DAILY)
+  const quizChallenge = await prisma.challenge.findUnique({
+    where: { code: 'QUIZ_DAILY' },
+  });
+
+  // STREAK 챌린지 진행도 증가 (ATTEND_7DAY)
+  const streakChallenge = await prisma.challenge.findUnique({
+    where: { code: 'ATTEND_7DAY' },
+  });
+
+  if (streakChallenge) {
+    await prisma.userChallengeProgress.upsert({
+      where: {
+        userId_challengeId: {
+          userId,
+          challengeId: streakChallenge.id,
+        },
+      },
+      create: {
+        userId,
+        challengeId: streakChallenge.id,
+        progressVal: 1,
+      },
+      update: {
+        progressVal: {
+          increment: 1,
+        },
+      },
+    });
+  }
+
+  if (quizChallenge) {
+    await prisma.userChallengeProgress.upsert({
+      where: {
+        userId_challengeId: {
+          userId,
+          challengeId: quizChallenge.id,
+        },
+      },
+      create: {
+        userId,
+        challengeId: quizChallenge.id,
+        progressVal: 1,
+      },
+      update: {
+        progressVal: {
+          increment: 1,
+        },
+      },
+    });
+  }
+
   console.log('QUIZ 저장:', {
     userId: userId.toString(),
     solvedDate: solvedDate.toISOString(), // 항상 15:00:00Z 형식으로 저장됨
