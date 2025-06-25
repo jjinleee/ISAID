@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import { useHeader } from '@/context/header-context';
 import { isSameDay } from 'date-fns';
 import { getKSTDateFromISOString, getTodayKSTDate } from '@/lib/utils';
 import AccountSummaryCard from './account-summary-card';
@@ -25,14 +26,23 @@ type ISAAccount = {
   accountType: string;
 };
 
-export default function MainPageContainer() {
+interface Props {
+  userName?: string;
+}
+
+export default function MainPageContainer({ userName }: Props) {
   const [completedDates, setCompletedDates] = useState<Date[]>([]);
   const [accountInfo, setAccountInfo] = useState<ISAAccount | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const { setHeader } = useHeader();
+
   useEffect(() => {
     const fetchAllData = async () => {
       try {
+        // 헤더 설정
+        setHeader(`안녕하세요, ${userName} 님`, '오늘도 현명한 투자하세요');
+
         // 출석 데이터
         const calendarRes = await fetch('/api/quiz/calendar');
         const calendarData = await calendarRes.json();
@@ -64,7 +74,6 @@ export default function MainPageContainer() {
 
     fetchAllData();
   }, []);
-
   const calculateStreakLabel = (dates: Date[]): string => {
     if (dates.length === 0) return '퀴즈를 풀고 출석해보세요!';
 
