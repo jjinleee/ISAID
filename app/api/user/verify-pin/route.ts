@@ -1,5 +1,6 @@
 import { getServerSession } from 'next-auth';
 import { NextRequest, NextResponse } from 'next/server';
+import bcrypt from 'bcryptjs';
 import { authOptions } from '@/lib/auth-options';
 import { prisma } from '@/lib/prisma';
 
@@ -22,7 +23,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: '사용자 없음' }, { status: 404 });
     }
 
-    const isValid = user.pinCode === pinCode;
+    console.log('입력된 pinCode:', pinCode);
+    console.log('DB 해시 앞 10자:', user.pinCode?.slice(0, 10));
+
+    const isValid = await bcrypt.compare(pinCode, user.pinCode);
+
+    console.log('bcrypt 비교 결과 isValid:', isValid);
+
     return NextResponse.json({ success: isValid });
   } catch (error) {
     console.error('핀코드 검증 오류:', error);

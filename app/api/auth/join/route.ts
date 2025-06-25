@@ -32,12 +32,12 @@ export async function POST(req: Request) {
       );
     }
 
-    if (!/^\d{6}$/.test(pinCode)) {
-      return NextResponse.json(
-        { error: '핀코드는 6자리 숫자여야 합니다.' },
-        { status: 400 }
-      );
-    }
+    // if (!/^\d{6}$/.test(pinCode)) {
+    //   return NextResponse.json(
+    //     { error: '핀코드는 6자리 숫자여야 합니다.' },
+    //     { status: 400 }
+    //   );
+    // }
 
     // 중복 이메일 체크
     const existingUser = await prisma.user.findUnique({
@@ -52,6 +52,8 @@ export async function POST(req: Request) {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    const hashedPinCode = await bcrypt.hash(pinCode, 10);
+
     const newUser = await prisma.user.create({
       data: {
         name,
@@ -62,7 +64,7 @@ export async function POST(req: Request) {
         phone,
         address,
         telno,
-        pinCode,
+        pinCode: hashedPinCode,
       },
     });
 
