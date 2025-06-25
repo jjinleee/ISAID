@@ -18,6 +18,7 @@ export type InputProps = {
   displayValue?: string;
   onChangeField?: (field: keyof FormData, value: string) => void;
   onChange?: (value: string) => void;
+  autocomplete?: string;
 };
 
 export type ButtonProps = {

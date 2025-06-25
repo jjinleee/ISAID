@@ -13,6 +13,7 @@ export const CustomInput = ({
   value,
   displayValue,
   onChange,
+  autocomplete,
 }: InputProps) => {
   // type : number 일 경우 -> 좌측에 스크롤 버튼이 뜨지 않도록
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -74,6 +75,7 @@ export const CustomInput = ({
           onChange={handleChange}
           value={value ?? ''}
           inputMode={type === 'number' ? 'numeric' : undefined}
+          autoComplete={autocomplete}
           className={`
       w-full outline-0 border border-gray-2 rounded-xl focus:border-primary
       ${thin ? 'ps-4 py-3' : 'p-5'}
@@ -104,6 +106,7 @@ export const CustomInput = ({
       onInput={handleInput}
       onChange={handleChange}
       value={value ?? ''}
+      autoComplete={autocomplete}
       className={`outline-0 border border-gray-2 w-full
         placeholder-gray text-black rounded-xl
         focus:border-primary
