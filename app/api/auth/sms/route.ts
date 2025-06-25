@@ -1,4 +1,3 @@
-// app/api/auth/sms/route.ts
 import { NextResponse } from 'next/server';
 import { sendSMS } from '@/lib/solapi';
 
