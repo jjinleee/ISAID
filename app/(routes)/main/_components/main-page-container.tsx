@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { useHeader } from '@/context/header-context';
 import { isSameDay } from 'date-fns';
 import { getKSTDateFromISOString, getTodayKSTDate } from '@/lib/utils';
 import AccountSummaryCard from './account-summary-card';
@@ -26,23 +25,14 @@ type ISAAccount = {
   accountType: string;
 };
 
-interface Props {
-  userName?: string;
-}
-
-export default function MainPageContainer({ userName }: Props) {
+export default function MainPageContainer() {
   const [completedDates, setCompletedDates] = useState<Date[]>([]);
   const [accountInfo, setAccountInfo] = useState<ISAAccount | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const { setHeader } = useHeader();
-
   useEffect(() => {
     const fetchAllData = async () => {
       try {
-        // 헤더 설정
-        setHeader(`안녕하세요, ${userName} 님`, '오늘도 현명한 투자하세요');
-
         // 출석 데이터
         const calendarRes = await fetch('/api/quiz/calendar');
         const calendarData = await calendarRes.json();
@@ -76,22 +66,31 @@ export default function MainPageContainer({ userName }: Props) {
   }, []);
 
   const calculateStreakLabel = (dates: Date[]): string => {
+    if (dates.length === 0) return '퀴즈를 풀고 출석해보세요!';
+
+    const today = getTodayKSTDate();
     const sorted = dates
       .map((d) => new Date(d.getFullYear(), d.getMonth(), d.getDate()))
       .sort((a, b) => a.getTime() - b.getTime());
 
-    if (sorted.length === 0) return '퀴즈를 풀고 출석해보세요!';
-    const today = getTodayKSTDate();
-    const last = sorted[sorted.length - 1];
-    if (!isSameDay(last, today)) return '퀴즈를 풀고 출석해보세요!';
+    // 오늘 출석 여부
+    const todayAttendance = sorted.some((d) => isSameDay(d, today));
+    if (!todayAttendance) return '퀴즈를 풀고 출석해보세요!';
 
+    // 오늘부터 연속 출석일 계산
     let count = 1;
     for (let i = sorted.length - 1; i > 0; i--) {
       const curr = sorted[i];
       const prev = sorted[i - 1];
-      const diff = (curr.getTime() - prev.getTime()) / (1000 * 60 * 60 * 24);
-      if (diff === 1) count++;
-      else break;
+
+      // 오늘 날짜부터 거꾸로 계산하되, 중간에 gap 있으면 멈춤
+      const diffDays =
+        (curr.getTime() - prev.getTime()) / (1000 * 60 * 60 * 24);
+      if (diffDays === 1) {
+        count++;
+      } else if (diffDays >= 2) {
+        break;
+      }
     }
 
     return count === 1 ? '출석 1일차' : `연속 출석 ${count}일차`;
