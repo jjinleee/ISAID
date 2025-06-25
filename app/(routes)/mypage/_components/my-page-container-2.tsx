@@ -11,7 +11,7 @@ import StarBoyGirl from '@/public/images/my-page/star-boy-girl.svg';
 import StarBoy from '@/public/images/star-boy';
 import { ChartData, type Account } from '@/types/my-page';
 import { convertToKorLabel } from '@/utils/my-page';
-import { TrendingUp } from 'lucide-react';
+import { CircleAlert, TrendingUp } from 'lucide-react';
 import ProgressBar from '@/components/progress-bar';
 import Tab from '@/components/tab';
 import { fetchISAInfo } from '@/lib/api/my-page';
@@ -33,6 +33,8 @@ export const MyPageContainer2 = ({ session }: Props) => {
   const [loadingLabel, setLoadingLabel] = useState<boolean>(true);
   const [traits, setTraits] = useState<string[]>([]);
   const [hashTags, setHashTags] = useState<string[]>([]);
+  const [isTested, setIsTested] = useState<boolean>(false);
+  const [loading, setLoading] = useState(true);
 
   const [selectedEtf, setSelectedEtf] = useState<EtfInfo>({
     name: '',
@@ -68,7 +70,6 @@ export const MyPageContainer2 = ({ session }: Props) => {
       if ('error' in res) {
         if (res.error === 'NOT_FOUND') {
           setConnected(false);
-          console.log('ISA 계좌가 없습니다.');
         } else {
           console.log('에러 발생: ', res.status || res.error);
         }
@@ -88,7 +89,6 @@ export const MyPageContainer2 = ({ session }: Props) => {
         }
 
         const json = await res.json();
-        console.log('json : ', json);
 
         if (!json.data || json.data.length === 0) {
           setNoEtfData(true); // 보유 ETF 없을 때
@@ -118,14 +118,21 @@ export const MyPageContainer2 = ({ session }: Props) => {
       try {
         const res = await fetch('/api/etf/mbti', { method: 'GET' });
         const data = await res.json();
+        if (data.investType === null) {
+          setIsTested(false);
+          setLoading(false);
+          return;
+        }
+        setIsTested(true);
+        setLoading(false);
         setInvestLabel(convertToKorLabel(data.investType));
         setLoadingLabel(false);
-        const gun =
+        const mbtiInfo =
           riskTypeTraitsMap[
             convertToKorLabel(data.investType) as keyof typeof riskTypeTraitsMap
           ];
-        setTraits(gun.traits);
-        setHashTags(gun.hashtags);
+        setTraits(mbtiInfo.traits);
+        setHashTags(mbtiInfo.hashtags);
       } catch (error) {
         console.log('error', error);
         setLoadingLabel(false);
@@ -165,7 +172,7 @@ export const MyPageContainer2 = ({ session }: Props) => {
         <div className='flex flex-col gap-4'>
           <div className='flex gap-3'>
             <div
-              className='border-2 border-primary rounded-full p-2 w-20 h-20 overflow-hidden flex items-center justify-center
+              className='border-2 border-primary rounded-full p-2 w-21 h-21 overflow-hidden flex items-center justify-center
             bg-white
             '
             >
@@ -174,44 +181,68 @@ export const MyPageContainer2 = ({ session }: Props) => {
                 className='w-full h-full object-cover'
               />
             </div>
-            <div className='flex flex-col gap-2 justify-center'>
+            <div className='flex flex-col gap-2 py-2'>
               <span className='text-xl font-semibold'>
                 {session.user.name} 님
               </span>
-              <div className='py-1 px-2 text-center bg-primary-2 text-primary rounded-2xl'>
-                {!loadingLabel ? (
-                  <h1 className='font-semibold text-hana-green'>
-                    {investLabel || '투자성향 테스트를 진행해주세요.'}
-                  </h1>
-                ) : (
-                  <h1 className='font-semibold text-transparent'>안보이지롱</h1>
-                )}
-              </div>
-            </div>
-          </div>
-          <div className='flex flex-col gap-2'>
-            <div className='font-semibold flex gap-2 text-sm items-center'>
-              <TrendingUp className='text-primary' /> 나의 투자 성향
-            </div>
-            <div className='flex flex-col gap-1 pl-3 text-sm text-gray list-none'>
-              {traits.map((t, idx) => (
-                <div key={idx} className='flex items-start gap-2'>
-                  <div className='w-1 h-1 rounded-full bg-primary flex-shrink-0 mt-2' />
-                  {t}
+              {!loading && isTested && (
+                <div className='py-1 px-2 text-center bg-primary-2 text-primary rounded-2xl'>
+                  {!loadingLabel ? (
+                    <h1 className='font-semibold text-hana-green'>
+                      {investLabel || '투자성향 테스트를 진행해주세요.'}
+                    </h1>
+                  ) : (
+                    <h1 className='font-semibold text-transparent'>
+                      안보이지롱
+                    </h1>
+                  )}
                 </div>
-              ))}
+              )}
             </div>
           </div>
-          <div className='flex flex-wrap items-center gap-2'>
-            {hashTags.map((h, idx) => (
-              <div
-                key={idx}
-                className='text-xs bg-primary-2 border border-primary text-hana-green py-1 px-3 rounded-xl'
-              >
-                {h}
+          {!loading &&
+            (isTested ? (
+              <>
+                <div className='flex flex-col gap-2'>
+                  <div className='font-semibold flex gap-2 text-sm items-center'>
+                    <TrendingUp className='text-primary' /> 나의 투자 성향
+                  </div>
+                  <div className='flex flex-col gap-1 pl-3 text-sm text-gray list-none'>
+                    {traits.map((t, idx) => (
+                      <div key={idx} className='flex items-start gap-2'>
+                        <div className='w-1 h-1 rounded-full bg-primary flex-shrink-0 mt-2' />
+                        {t}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className='flex flex-wrap items-center gap-2'>
+                  {hashTags.map((h, idx) => (
+                    <div
+                      key={idx}
+                      className='text-xs bg-primary-2 border border-primary text-hana-green py-1 px-3 rounded-xl'
+                    >
+                      {h}
+                    </div>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <div className='flex flex-col gap-3 border border-primary-2 rounded-xl p-4 items-center'>
+                <div className='text-primary'>
+                  <CircleAlert />
+                </div>
+                <span className='font-semibold text-gray text-center'>
+                  아직 투자 성향 테스트를 진행하지 않으셨네요.
+                </span>
+                <button
+                  onClick={() => router.push('/etf/test')}
+                  className='text-xs px-3 py-1.5 bg-primary text-white rounded-md hover:bg-primary-dark cursor-pointer transition'
+                >
+                  테스트 하러 가기
+                </button>
               </div>
             ))}
-          </div>
           <div
             className='flex justify-end items-center absolute bottom-4 right-3 cursor-pointer'
             onClick={() => router.push('mypage/profile')}
