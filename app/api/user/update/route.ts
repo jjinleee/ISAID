@@ -53,6 +53,12 @@ export async function PATCH(req: Request) {
     }
 
     if ('pinCode' in body) {
+      if (!existingUser.pinCode) {
+        return NextResponse.json(
+          { error: '기존 핀코드가 설정되어 있지 않습니다.' },
+          { status: 400 }
+        );
+      }
       const isPinCodeValid = await bcrypt.compare(
         body.oldPinCode,
         existingUser.pinCode
