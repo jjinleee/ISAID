@@ -1,5 +1,6 @@
 import { getServerSession } from 'next-auth';
 import { NextResponse } from 'next/server';
+import { updateStreakProgress } from '@/services/challenge/streakChallengeProgress';
 import { authOptions } from '@/lib/auth-options';
 import { prisma } from '@/lib/prisma';
 
@@ -77,24 +78,7 @@ export async function POST(req: Request) {
   });
 
   if (streakChallenge) {
-    await prisma.userChallengeProgress.upsert({
-      where: {
-        userId_challengeId: {
-          userId,
-          challengeId: streakChallenge.id,
-        },
-      },
-      create: {
-        userId,
-        challengeId: streakChallenge.id,
-        progressVal: 1,
-      },
-      update: {
-        progressVal: {
-          increment: 1,
-        },
-      },
-    });
+    await updateStreakProgress(userId, streakChallenge.id);
   }
 
   if (quizChallenge) {

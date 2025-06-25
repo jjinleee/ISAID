@@ -1,10 +1,14 @@
-// app/actions/getChallenges.ts
 'use server';
 
 import { getServerSession } from 'next-auth';
 import dayjs from 'dayjs';
+import timezone from 'dayjs/plugin/timezone';
+import utc from 'dayjs/plugin/utc';
 import { authOptions } from '@/lib/auth-options';
 import { prisma } from '@/lib/prisma';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 export type ChallengeStatus = 'CLAIMED' | 'ACHIEVABLE' | 'INCOMPLETE';
 
@@ -21,7 +25,10 @@ export async function getChallenges(): Promise<ChallengeInfo[]> {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) throw new Error('Not authenticated');
   const userId = BigInt(session.user.id);
-  const today = dayjs().startOf('day');
+
+  // KST 자정 기준 today
+  const today = dayjs().tz('Asia/Seoul').startOf('day');
+  const yesterday = today.subtract(1, 'day');
 
   const rows = await prisma.challenge.findMany({
     include: {
@@ -32,7 +39,7 @@ export async function getChallenges(): Promise<ChallengeInfo[]> {
       },
       userChallengeProgresses: {
         where: { userId },
-        select: { progressVal: true },
+        select: { progressVal: true, updatedAt: true },
       },
     },
   });
@@ -40,6 +47,7 @@ export async function getChallenges(): Promise<ChallengeInfo[]> {
   return rows.map((c) => {
     const hasClaim = c.userChallengeClaims.length > 0;
     const progress = c.userChallengeProgresses[0]?.progressVal ?? 0;
+    const updatedAt = c.userChallengeProgresses[0]?.updatedAt;
 
     let status: ChallengeStatus;
     switch (c.challengeType) {
@@ -50,22 +58,33 @@ export async function getChallenges(): Promise<ChallengeInfo[]> {
             ? 'ACHIEVABLE'
             : 'INCOMPLETE';
         break;
-      case 'STREAK':
-        status = hasClaim
-          ? 'CLAIMED'
-          : progress >= 7
-            ? 'ACHIEVABLE'
-            : 'INCOMPLETE';
+      case 'STREAK': {
+        const lastUpdated = updatedAt
+          ? dayjs(updatedAt).tz('Asia/Seoul')
+          : null;
+        const isStreakValid = lastUpdated?.isSame(yesterday, 'day');
+
+        if (hasClaim) {
+          status = 'CLAIMED';
+        } else if (progress >= 7 && isStreakValid) {
+          status = 'ACHIEVABLE';
+        } else {
+          status = 'INCOMPLETE';
+        }
         break;
+      }
       case 'DAILY': {
         const claimedToday = c.userChallengeClaims.some((cl) =>
-          today.isSame(dayjs(cl.claimDate), 'day')
+          today.isSame(dayjs(cl.claimDate).tz('Asia/Seoul'), 'day')
         );
-        status = claimedToday
-          ? 'CLAIMED'
-          : progress > 0
-            ? 'ACHIEVABLE'
-            : 'INCOMPLETE';
+
+        if (claimedToday) {
+          status = 'CLAIMED';
+        } else if (progress > 0) {
+          status = 'ACHIEVABLE';
+        } else {
+          status = 'INCOMPLETE';
+        }
         break;
       }
       default:
