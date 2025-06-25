@@ -78,31 +78,60 @@ export default function MainPageContainer({ userName }: Props) {
     if (dates.length === 0) return '퀴즈를 풀고 출석해보세요!';
 
     const today = getTodayKSTDate();
+
     const sorted = dates
       .map((d) => new Date(d.getFullYear(), d.getMonth(), d.getDate()))
       .sort((a, b) => a.getTime() - b.getTime());
 
-    // 오늘 출석 여부
     const todayAttendance = sorted.some((d) => isSameDay(d, today));
-    if (!todayAttendance) return '퀴즈를 풀고 출석해보세요!';
 
-    // 오늘부터 연속 출석일 계산
-    let count = 1;
-    for (let i = sorted.length - 1; i > 0; i--) {
-      const curr = sorted[i];
-      const prev = sorted[i - 1];
-
-      // 오늘 날짜부터 거꾸로 계산하되, 중간에 gap 있으면 멈춤
-      const diffDays =
-        (curr.getTime() - prev.getTime()) / (1000 * 60 * 60 * 24);
-      if (diffDays === 1) {
-        count++;
-      } else if (diffDays >= 2) {
-        break;
+    if (todayAttendance) {
+      // 오늘 출석했으면 오늘부터 streak 계산
+      let count = 1;
+      for (let i = sorted.length - 1; i > 0; i--) {
+        const curr = sorted[i];
+        const prev = sorted[i - 1];
+        const diffDays =
+          (curr.getTime() - prev.getTime()) / (1000 * 60 * 60 * 24);
+        if (diffDays === 1) {
+          count++;
+        } else if (diffDays >= 2) {
+          break;
+        }
       }
-    }
+      return count === 1 ? '출석 1일차' : `연속 출석 ${count}일차`;
+    } else {
+      // 오늘 출석 안했을 때 → "어제까지 streak 계산"
+      const yesterday = new Date(today);
+      yesterday.setDate(today.getDate() - 1);
 
-    return count === 1 ? '출석 1일차' : `연속 출석 ${count}일차`;
+      // 어제 출석했는지 확인
+      const yesterdayAttendance = sorted.some((d) => isSameDay(d, yesterday));
+      if (!yesterdayAttendance) {
+        return '퀴즈를 풀고 출석해보세요!';
+      }
+
+      // 어제부터 거꾸로 연속 출석 streak 계산
+      let count = 1;
+      for (let i = sorted.length - 1; i > 0; i--) {
+        const curr = sorted[i];
+        const prev = sorted[i - 1];
+
+        if (isSameDay(curr, yesterday) || curr < yesterday) {
+          const diffDays =
+            (curr.getTime() - prev.getTime()) / (1000 * 60 * 60 * 24);
+          if (diffDays === 1) {
+            count++;
+          } else if (diffDays >= 2) {
+            break;
+          }
+        }
+      }
+
+      return count === 1
+        ? '어제 1일 출석했어요!'
+        : `어제까지 ${count}일 연속 출석했어요!`;
+    }
   };
 
   const streakLabel = useMemo(
