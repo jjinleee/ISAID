@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import Image from 'next/image';
 
 interface MissionItemProps {
@@ -53,10 +54,11 @@ export function MissionItem({
       if (!res.ok) throw new Error('보상 요청에 실패했습니다.');
 
       // 2) 성공 시 로컬 상태를 completed로 바꿔버리기
+      toast.success('보상 수령이 완료되었습니다!');
       setCurrentStatus('completed');
     } catch (error) {
       console.error(error);
-      alert('보상 요청 중 오류가 발생했습니다.');
+      toast.error('보상 수령에 실패했습니다.');
     } finally {
       setIsLoading(false);
     }
@@ -85,7 +87,7 @@ export function MissionItem({
       <button
         onClick={handleClaim}
         className={`
-          min-w-[64px] text-sm font-semibold px-2 py-1 rounded-md h-fit text-center
+          min-w-[64px] text-sm font-semibold px-2 py-1 rounded-md h-fit text-center cursor-pointer
           ${statusStyle[currentStatus]}
         `}
         disabled={currentStatus !== 'available' || isLoading}
