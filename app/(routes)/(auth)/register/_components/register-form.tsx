@@ -149,27 +149,27 @@ export default function RegisterForm() {
       return;
     }
 
-    // if (field === 'phone') {
-    //   const raw = value.replace(/\D/g, '').slice(0, 11);
-    //   setFormData((prev) => ({ ...prev, [field]: raw }));
-    //
-    //   setValidationErrors((prev) => ({
-    //     ...prev,
-    //     [field]: !validateField(field, raw, formData),
-    //   }));
-    //   return;
-    // }
+    if (field === 'phone') {
+      const raw = value.replace(/\D/g, '').slice(0, 11);
+      setFormData((prev) => ({ ...prev, [field]: raw }));
 
-    // if (field === 'verificationCode') {
-    //   const raw = value.replace(/\D/g, '').slice(0, 3);
-    //   setFormData((prev) => ({ ...prev, verificationCode: raw }));
-    //
-    //   setValidationErrors((prev) => ({
-    //     ...prev,
-    //     verificationCode: !validateField('verificationCode', raw, formData),
-    //   }));
-    //   return;
-    // }
+      setValidationErrors((prev) => ({
+        ...prev,
+        [field]: !validateField(field, raw, formData),
+      }));
+      return;
+    }
+
+    if (field === 'verificationCode') {
+      const raw = value.replace(/\D/g, '').slice(0, 3);
+      setFormData((prev) => ({ ...prev, verificationCode: raw }));
+
+      setValidationErrors((prev) => ({
+        ...prev,
+        verificationCode: !validateField('verificationCode', raw, formData),
+      }));
+      return;
+    }
 
     if (field === 'password') {
       const isValid = validateField(field, value, formData);
@@ -195,17 +195,17 @@ export default function RegisterForm() {
       case 'rrn':
         return validateField('rrn', formData.rrn, formData);
 
-      // case 'phone':
-      //   return (
-      //     validateField('phone', formData.phone, formData) &&
-      //     validateField(
-      //       'verificationCode',
-      //       formData.verificationCode,
-      //       formData
-      //     ) &&
-      //     isCodeSent &&
-      //     formData.verificationCode === sentCode
-      //   );
+      case 'phone':
+        return (
+          validateField('phone', formData.phone, formData) &&
+          validateField(
+            'verificationCode',
+            formData.verificationCode,
+            formData
+          ) &&
+          isCodeSent &&
+          formData.verificationCode === sentCode
+        );
 
       case 'address':
         return validateField('address', formData.address, formData);
@@ -285,11 +285,11 @@ export default function RegisterForm() {
 
   const handleSendCode = async () => {
     setSending(true);
-    // if (!formData.phone || formData.phone.length < 10) {
-    //   toast.error('올바른 휴대폰 번호를 입력해주세요.');
-    //   setSending(false);
-    //   return;
-    // }
+    if (!formData.phone || formData.phone.length < 10) {
+      toast.error('올바른 휴대폰 번호를 입력해주세요.');
+      setSending(false);
+      return;
+    }
 
     try {
       // 3자리 랜덤 인증번호 생성
