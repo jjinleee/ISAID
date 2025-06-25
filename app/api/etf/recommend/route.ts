@@ -568,9 +568,7 @@ export async function GET(req: NextRequest) {
           normalizedMetrics.divergenceRate * weights.divergenceRate +
           normalizedMetrics.volatility * weights.volatility;
 
-        console.log(
-          `[ETF 추천 점수] ${etf.issueName} (${etf.issueCode}) - 위험등급: ${riskGrade}, 점수: ${Math.round(score * 100) / 100}, 샤프비율: ${Math.round(sharpeRatio * 100) / 100}`
-        );
+        // console.log(`[ETF 추천 점수] ${etf.issueName} (${etf.issueCode}) - 위험등급: ${riskGrade}, 점수: ${Math.round(score * 100) / 100}, 샤프비율: ${Math.round(sharpeRatio * 100) / 100}`);
 
         return {
           etfId: etf.id.toString(),

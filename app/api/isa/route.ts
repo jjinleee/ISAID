@@ -1,5 +1,6 @@
 import { getServerSession } from 'next-auth';
 import { NextRequest, NextResponse } from 'next/server';
+import { applyIsaChallengeProgress } from '@/services/challenge/isaChallengeProgress';
 import { authOptions } from '@/lib/auth-options';
 import { seedAllData } from '@/lib/data/insert-all/seedAllData';
 import { prisma } from '@/lib/prisma';
@@ -52,6 +53,8 @@ export async function POST(req: NextRequest) {
     });
 
     await seedAllData(newAccount.id);
+
+    await applyIsaChallengeProgress(userId);
 
     return NextResponse.json({
       message: 'ISA 계좌 등록 성공',
