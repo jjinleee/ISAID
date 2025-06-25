@@ -32,13 +32,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // if (!/^\d{6}$/.test(pinCode)) {
-    //   return NextResponse.json(
-    //     { error: '핀코드는 6자리 숫자여야 합니다.' },
-    //     { status: 400 }
-    //   );
-    // }
-
     // 중복 이메일 체크
     const existingUser = await prisma.user.findUnique({
       where: { email },

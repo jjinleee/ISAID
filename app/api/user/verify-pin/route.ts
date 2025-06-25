@@ -23,9 +23,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: '사용자 없음' }, { status: 404 });
     }
 
-    console.log('입력된 pinCode:', pinCode);
-    console.log('DB 해시 앞 10자:', user.pinCode?.slice(0, 10));
-
     if (!user.pinCode) {
       return NextResponse.json(
         { success: false, error: '핀코드가 설정되어 있지 않습니다.' },
@@ -34,8 +31,6 @@ export async function POST(req: NextRequest) {
     }
 
     const isValid = await bcrypt.compare(pinCode, user.pinCode);
-
-    console.log('bcrypt 비교 결과 isValid:', isValid);
 
     return NextResponse.json({ success: isValid });
   } catch (error) {
