@@ -40,6 +40,9 @@ export default function MainPageContainer({ userName }: Props) {
   useEffect(() => {
     const fetchAllData = async () => {
       try {
+        // 헤더 설정
+        setHeader(`안녕하세요, ${userName} 님`, '오늘도 현명한 투자하세요');
+
         // 출석 데이터
         const calendarRes = await fetch('/api/quiz/calendar');
         const calendarData = await calendarRes.json();
@@ -59,8 +62,6 @@ export default function MainPageContainer({ userName }: Props) {
             paymentAmount: isaData.paymentAmount,
             accountType: isaData.accountType,
           });
-
-          setHeader(`안녕하세요, ${userName} 님`, '오늘도 현명한 투자하세요');
         } else {
           setAccountInfo(null); // 계좌 없음
         }

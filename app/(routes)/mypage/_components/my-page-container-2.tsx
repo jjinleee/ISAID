@@ -161,7 +161,7 @@ export const MyPageContainer2 = ({ session }: Props) => {
   }, [etfDetailList]);
 
   return (
-    <div className='w-full pt-24 pb-10 px-7 flex flex-col gap-7'>
+    <div className='w-full pb-10 px-7 flex flex-col gap-7'>
       <div className='border border-gray-2 rounded-2xl w-full flex flex-col justify-center relative pb-14 px-9 pt-9'>
         <div className='flex flex-col gap-4'>
           <div className='flex gap-3'>
@@ -270,7 +270,7 @@ export const MyPageContainer2 = ({ session }: Props) => {
         <div className='w-full flex flex-col gap-5'>
           {noEtfData ? (
             <>
-              <h1 className='text-xl font-semibold'>ETF 계좌</h1>
+              <h1 className='text-xl font-semibold'>내 ETF</h1>
               <div className='border-gray-2 rounded-2xl w-full flex flex-col gap-5 px-5 pt-4 pb-9 items-center'>
                 <h1 className='font-semibold self-start'>
                   {session.user.name}님의 보유 ETF 항목이 없습니다.
