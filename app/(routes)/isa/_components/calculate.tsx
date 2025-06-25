@@ -15,8 +15,17 @@ const Calculate = ({
 
   const COFFEE_PRICE = 4_500;
   const NETFLIX_PRICE = 5_500;
+  const YOUTUBE = 14_900;
+  const BEAMIN = 3_900;
+  const COUPANG = 7_890;
+  const CHAT_GPT = 30_000;
+
   const coffees = Math.floor(savedTax / COFFEE_PRICE);
   const netflixs = Math.floor(savedTax / NETFLIX_PRICE);
+  const youtubes = Math.floor(savedTax / YOUTUBE);
+  const beamins = Math.floor(savedTax / BEAMIN);
+  const coupangs = Math.floor(savedTax / COUPANG);
+  const gpts = Math.floor(savedTax / CHAT_GPT);
 
   return (
     <div className='rounded-xl bg-white px-5 sm:px-10 py-6 shadow-sm mt-4'>
@@ -34,13 +43,18 @@ const Calculate = ({
       <div className='mt-6 flex gap-2'>
         <DollarSign className='w-6 h-6 text-hana-green' />
         <div>
-          <p className='text-sm text-gray-500'>지금까지 아낀 세금</p>
+          <p className='text-sm text-gray-500'>
+            일반계좌 대비 지금까지 아낀 세금
+          </p>
           <p className='text-2xl font-extrabold text-hana-green'>
             {Math.floor(taxData.generalAccountTax).toLocaleString()} 원
           </p>
         </div>
       </div>
 
+      <p className='text-sm text-gray-500 pl-8 mt-5'>
+        일상 속의 금액으로 보여드릴게요!
+      </p>
       <div className='mt-5 grid grid-cols-2 gap-4 text-center'>
         <div className='flex flex-col items-center'>
           <Coffee className='w-6 h-6 text-brown-500 mb-1' />
@@ -54,12 +68,12 @@ const Calculate = ({
         </div>
       </div>
 
-      <div className='mt-6 rounded-lg border-gray-3 border-[2px] shadow p-4 text-center'>
+      {/* <div className='mt-6 rounded-lg border-gray-3 border-[2px] shadow p-4 text-center'>
         <p className='text-xs text-gray-500 mb-1'>일반 계좌라면 냈을 세금</p>
         <p className='text-lg font-bold text-gray-800'>
           {Math.floor(taxData.generalAccountTax).toLocaleString()} 원
         </p>
-      </div>
+      </div> */}
 
       <div className='mt-6'>
         <p className='text-sm text-gray-500 mb-1'>
@@ -85,10 +99,10 @@ const Calculate = ({
         </p>
       </div>
 
-      <button className='mt-6 w-full flex justify-center items-center gap-2 py-2 bg-hana-green text-white rounded-md font-semibold hover:bg-green-600 transition'>
+      {/* <button className='mt-6 w-full flex justify-center items-center gap-2 py-2 bg-hana-green text-white rounded-md font-semibold hover:bg-green-600 transition'>
         <Wallet className='w-4 h-4' />
         자동이체로 한도 채우기
-      </button>
+      </button> */}
     </div>
   );
 };
