@@ -50,7 +50,9 @@ export default function PageHeader() {
     >
       {pathname === '/login' ||
       pathname === '/register' ||
-      pathname === '/' ? null : pathname === '/main' ? (
+      pathname === '/' ? null : pathname === '/main' ||
+        pathname === '/isa' ||
+        pathname === '/etf' ? (
         <MainHeader title={title} subtitle={subtitle} onMenuClick={userClick} />
       ) : pathname === '/mypage' ? (
         <MainHeader

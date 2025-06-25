@@ -2,12 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { FormData } from '@/app/(routes)/(auth)/register/_components/register-form';
 import { useHeader } from '@/context/header-context';
 import Button from '@/components/button';
 import CustomInput from '@/components/input';
-import Input from '@/components/input';
-import { validateField } from '@/lib/utils';
+import SecurePinModal from '@/components/secure-pin-modal';
+import { Label } from '@/components/ui/label';
 import { submitUserUpdate } from '../../utils';
 
 interface PinData {
@@ -25,6 +24,8 @@ export const EditPinContainer = () => {
 
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [showOldModal, setShowOldModal] = useState(false);
+  const [showNewModal, setShowNewModal] = useState(false);
 
   useEffect(() => {
     setHeader('내 정보 수정하기', '전화번호 수정');
@@ -43,15 +44,26 @@ export const EditPinContainer = () => {
     oldPin: true,
     newPin: true,
   });
+  useEffect(() => {
+    console.log('validationErrors : ', validationErrors);
+  }, [validationErrors]);
+  useEffect(() => {
+    console.log('pinData : ', pinData);
+    setValidationErrors({
+      oldPin: pinData.oldPin.length !== 6,
+      newPin: pinData.newPin.length !== 6,
+    });
+  }, [pinData]);
 
   const handleInputChange = (field: keyof PinData, value: string) => {
     const raw = value.replace(/\D/g, '').slice(0, 6);
 
     setPinData((prev) => ({ ...prev, [field]: raw }));
+    console.log('gmlgml');
 
     setValidationErrors((prev) => ({
       ...prev,
-      [field]: !(raw.length === 6 && validateField(field, raw, pinData)),
+      [field]: raw.length === 6,
     }));
   };
 
@@ -70,25 +82,33 @@ export const EditPinContainer = () => {
       <h1 className='text-xl font-semibold'>간편 비밀번호 변경</h1>
       <div className='flex flex-col gap-4'>
         <div className='flex flex-col gap-2'>
-          <label>이전 비밀번호</label>
-          <CustomInput
-            type='password'
-            thin={true}
-            placeholder=''
-            value={pinData.oldPin}
-            onChange={(val) => handleInputChange('oldPin', val)}
-          />
+          <Label htmlFor='password' className='text-md'>
+            이전 비밀번호
+          </Label>
+          <div onClick={() => setShowOldModal(true)}>
+            <CustomInput
+              type='password'
+              thin={true}
+              placeholder=''
+              value={'●'.repeat(pinData.oldPin.length)}
+              onChange={(val) => handleInputChange('oldPin', val)}
+            />
+          </div>
         </div>
 
         <div className='flex flex-col gap-2'>
-          <label>새로운 비밀번호</label>
-          <CustomInput
-            type='password'
-            thin={true}
-            placeholder=''
-            value={pinData.newPin}
-            onChange={(val) => handleInputChange('newPin', val)}
-          />
+          <Label htmlFor='password' className='text-md'>
+            새로운 비밀번호
+          </Label>
+          <div onClick={() => setShowNewModal(true)}>
+            <CustomInput
+              type='password'
+              thin={true}
+              placeholder=''
+              value={'●'.repeat(pinData.newPin.length)}
+              onChange={(val) => handleInputChange('newPin', val)}
+            />
+          </div>
         </div>
       </div>
       <Button
@@ -96,8 +116,30 @@ export const EditPinContainer = () => {
         thin={false}
         active={!validationErrors.oldPin && !validationErrors.newPin}
         onClick={submitData}
-        disabled={validationErrors.oldPin || validationErrors.newPin}
+        disabled={validationErrors.oldPin || validationErrors.newPin || loading}
       />
+      {showOldModal && (
+        <SecurePinModal
+          visible={showOldModal}
+          onClose={() => setShowOldModal(false)}
+          onSubmit={async (pin) => {
+            setPinData((prev) => ({ ...prev, oldPin: pin }));
+            setShowOldModal(false);
+            return true;
+          }}
+        />
+      )}
+      {showNewModal && (
+        <SecurePinModal
+          visible={showNewModal}
+          onClose={() => setShowNewModal(false)}
+          onSubmit={async (pin) => {
+            setPinData((prev) => ({ ...prev, newPin: pin }));
+            setShowNewModal(false);
+            return true;
+          }}
+        />
+      )}
     </div>
   );
 };
