@@ -62,7 +62,7 @@ export default function AccountSummaryCard({ account }: Props) {
           />
           <div className='text-sm'>
             <div className='font-semibold text-gray-800'>
-              ISA ({accountType})
+              {account.bankCode} ISA [중개형]
             </div>
             <div className='flex items-center gap-2 text-gray-500'>
               {accountNum}
