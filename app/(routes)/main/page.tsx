@@ -10,7 +10,10 @@ const MainPage = async () => {
 
   const hasAccount = await checkIsaAccount();
   let savedTax = 0;
-  if (hasAccount) savedTax = await taxSaving();
+  if (hasAccount) {
+    const { savedTax: s } = await taxSaving(); // ← 구조분해로 꺼내기
+    savedTax = s;
+  }
 
   return (
     <div>
