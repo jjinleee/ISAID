@@ -24,7 +24,7 @@ export const idToCategoryUrl: Record<number, string> = {
   23: 'market-cap?sub=대형주',
   24: 'market-cap?sub=중형주',
   25: 'mixed-assets?sub=etc',
-  26: 'mixed-assets?sub=주식+채권',
+  26: 'mixed-assets?sub=주식%2B채권',
 };
 
 /*
