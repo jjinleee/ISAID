@@ -71,6 +71,7 @@ export const MyPageContainer = ({ session }: Props) => {
         }
       } else {
         setConnected(true);
+
         setAccount(res);
       }
     };
@@ -85,7 +86,6 @@ export const MyPageContainer = ({ session }: Props) => {
         }
 
         const json = await res.json();
-        console.log('json : ', json);
 
         if (!json.data || json.data.length === 0) {
           setNoEtfData(true); // 보유 ETF 없을 때

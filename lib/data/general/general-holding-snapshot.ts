@@ -74,7 +74,7 @@ export async function seedGeneralHoldingSnapshots(isaAccountId: bigint) {
         isaAccountId,
         snapshotType: 'GENERAL',
         snapshotDate: new Date('2025-06-30T23:59:59.000Z'),
-        evaluatedAmount: 3_500_000.0,
+        evaluatedAmount: 2_400_000.0,
       },
       {
         isaAccountId,

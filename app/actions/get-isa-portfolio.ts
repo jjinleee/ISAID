@@ -58,8 +58,6 @@ export async function getISAPortfolio(yearMonth: string) {
 
   if (!isa) throw new Error('ISA account not found');
 
-  console.log(`Portfolio snapshot for ${yearMonth}`);
-
   let bond = 0;
   let fund = 0;
   let els = 0;
@@ -84,10 +82,6 @@ export async function getISAPortfolio(yearMonth: string) {
     else if (type === '해외') etfForeign += value;
     else if (type === '국내&해외') etfBoth += value;
   }
-
-  console.log('ETF Domestic total:', etfDomestic);
-  console.log('ETF Foreign total:', etfForeign);
-  console.log('ETF Domestic&Foreign total:', etfBoth);
 
   const total = bond + fund + els + etfDomestic + etfForeign + etfBoth;
 
