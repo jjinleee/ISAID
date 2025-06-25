@@ -6,6 +6,7 @@ import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
 interface EtfDetailRatioChartProps {
   data: ChartData[];
   onClickItem: (id: string) => void;
+  selectedId?: string;
 }
 
 const COLORS = [
@@ -24,6 +25,7 @@ const COLORS = [
 export default function EtfDetailRatioChart({
   data,
   onClickItem,
+  selectedId,
 }: EtfDetailRatioChartProps) {
   return (
     <div className='flex flex-col gap-5 w-full'>
@@ -69,13 +71,21 @@ export default function EtfDetailRatioChart({
       </div>
       <ul className='grid grid-cols-2 gap-x-4 gap-y-2 text-sm'>
         {data.map((item, idx) => (
-          <li key={idx} className='flex justify-between items-center'>
+          <li
+            key={idx}
+            className={`flex justify-between items-center cursor-pointer ${
+              String(item.id) === selectedId ? 'font-bold' : ''
+            }`}
+            onClick={() => {
+              onClickItem(String(item.id));
+            }}
+          >
             <div className='flex items-center gap-2'>
               <span
                 className='inline-block w-2.5 h-2.5 rounded-full'
                 style={{ backgroundColor: COLORS[idx % COLORS.length] }}
               />
-              <span className='font-medium'>{item.name}</span>
+              <span className=''>{item.name}</span>
             </div>
             <span className='text-gray-500'>{item.value.toFixed(2)}%</span>
           </li>

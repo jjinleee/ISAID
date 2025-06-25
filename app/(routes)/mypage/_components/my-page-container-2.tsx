@@ -126,7 +126,6 @@ export const MyPageContainer2 = ({ session }: Props) => {
           ];
         setTraits(gun.traits);
         setHashTags(gun.hashtags);
-        console.log(gun);
       } catch (error) {
         console.log('error', error);
         setLoadingLabel(false);
@@ -212,31 +211,7 @@ export const MyPageContainer2 = ({ session }: Props) => {
                 {h}
               </div>
             ))}
-            {/*<div className='text-xs bg-primary-2 border border-primary text-hana-green py-1 px-3 rounded-xl'>*/}
-            {/*  #안정과수익사이*/}
-            {/*</div>*/}
-            {/*<div className='text-xs bg-primary-2 border border-primary text-hana-green py-1 px-3 rounded-xl'>*/}
-            {/*  #현실적인선택*/}
-            {/*</div>*/}
-            {/*<div className='text-xs bg-primary-2 border border-primary text-hana-green py-1 px-3 rounded-xl'>*/}
-            {/*  #무리하지않기*/}
-            {/*</div>*/}
-            {/*<div className='text-xs bg-primary-2 border border-primary text-hana-green py-1 px-3 rounded-xl'>*/}
-            {/*  #균형있는투자*/}
-            {/*</div>*/}
           </div>
-          {/*<div className='w-full flex flex-col text-sm text-gray'>*/}
-          {/*  <ProgressBar current={3} total={10} />*/}
-          {/*  <div className='flex justify-between '>*/}
-          {/*    <span>Lv2</span>*/}
-          {/*    <span>Lv3</span>*/}
-          {/*  </div>*/}
-          {/*  <div className='flex justify-between font-semibold'>*/}
-          {/*    <span>🔍 용어 탐색러</span>*/}
-          {/*    <span>📈 초보 투자 이론가</span>*/}
-          {/*  </div>*/}
-          {/*</div>*/}
-
           <div
             className='flex justify-end items-center absolute bottom-4 right-3 cursor-pointer'
             onClick={() => router.push('mypage/profile')}
@@ -283,6 +258,7 @@ export const MyPageContainer2 = ({ session }: Props) => {
               <EtfDetailRatioChart
                 data={chartData}
                 onClickItem={setSelectedItem}
+                selectedId={selectedItem}
               />
               {selectedItem && selectedEtf && (
                 <ETFInfoSection selectedEtf={selectedEtf} />
