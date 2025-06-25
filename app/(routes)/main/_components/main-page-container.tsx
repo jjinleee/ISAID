@@ -28,9 +28,10 @@ type ISAAccount = {
 
 interface Props {
   userName?: string;
+  savedTax: number;
 }
 
-export default function MainPageContainer({ userName }: Props) {
+export default function MainPageContainer({ userName, savedTax }: Props) {
   const [completedDates, setCompletedDates] = useState<Date[]>([]);
   const [accountInfo, setAccountInfo] = useState<ISAAccount | null>(null);
   const [loading, setLoading] = useState(true);
@@ -148,7 +149,9 @@ export default function MainPageContainer({ userName }: Props) {
       <ChallengeCard />
       <QuizBanner streakLabel={streakLabel} completedDates={completedDates} />
       <WeeklyCalendar completedDates={completedDates} />
-      {accountInfo && <AccountSummaryCard account={accountInfo} />}
+      {accountInfo && (
+        <AccountSummaryCard account={accountInfo} savedTax={savedTax} />
+      )}
       <BeginnerGuideCard />
     </div>
   );
