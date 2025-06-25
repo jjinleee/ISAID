@@ -1,16 +1,15 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
-import AddressSearch from '@/app/(routes)/(auth)/register/_components/address-modal';
 import { FormData } from '@/app/(routes)/(auth)/register/_components/register-form';
 import { submitUserUpdate } from '@/app/(routes)/mypage/edit-profile/utils';
 import { useHeader } from '@/context/header-context';
 import ModalWrapper from '@/utils/modal';
+import AddressSearch from '@/components/address-modal';
 import Button from '@/components/button';
 import CustomInput from '@/components/input';
-import { fetchMyInfo, updateUser } from '@/lib/api/my-page';
+import { fetchMyInfo } from '@/lib/api/my-page';
 import { formatTelNo, validateField } from '@/lib/utils';
 
 interface HomeData {

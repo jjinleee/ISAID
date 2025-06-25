@@ -98,7 +98,7 @@ export async function GET(req: NextRequest) {
         ? Number(etf.tradings[0]?.accTradeVolume)
         : 0,
       tddClosePrice: etf.tradings[0]?.tddClosePrice ?? 0,
-      flucRate: etf.tradings[0]?.flucRate ?? 0,
+      flucRate: etf.tradings[0]?.flucRate ?? '0',
     }));
 
     // 카테고리 테마 보여주기 위해 fullPath 반환, - 기준으로 가장 끝 요소 추출해서 사용
