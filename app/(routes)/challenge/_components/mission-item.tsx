@@ -1,9 +1,11 @@
 'use client';
 
+import { useState } from 'react';
+import toast from 'react-hot-toast';
 import Image from 'next/image';
-import { iconList } from '../data/challenge-list';
 
 interface MissionItemProps {
+  id: string;
   title: string;
   description: string;
   reward: string;
@@ -11,35 +13,56 @@ interface MissionItemProps {
   icon: string;
 }
 
-interface ChallengeProps {
-  id: string;
-  issueName: string;
-  title: string;
-  challengeDescription: string;
-  quantity: number;
-  status: string;
-}
-
 export function MissionItem({
+  id,
   title,
   description,
   reward,
-  status,
+  status, // 초기 상태
   icon,
 }: MissionItemProps) {
+  // 1) status를 로컬 상태로 복제
+  const [currentStatus, setCurrentStatus] =
+    useState<MissionItemProps['status']>(status);
+  const [isLoading, setIsLoading] = useState(false);
+
   const statusLabel = {
     completed: '받기 완료',
     available: '받기',
     pending: '미달성',
-  };
+  } as const;
 
   const statusStyle = {
     completed: 'bg-subtitle text-white',
     available: 'bg-primary text-white',
     pending: 'bg-primary-2 text-subtitle',
-  };
+  } as const;
 
   const rewardMatch = reward.match(/^(.+?)(\s\d+[\.\d]*[주%].*)$/);
+
+  const handleClaim = async () => {
+    if (currentStatus !== 'available' || isLoading) return;
+
+    setIsLoading(true);
+    try {
+      const res = await fetch('/api/challenge/claim', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ challengeId: id }),
+      });
+
+      if (!res.ok) throw new Error('보상 요청에 실패했습니다.');
+
+      // 2) 성공 시 로컬 상태를 completed로 바꿔버리기
+      toast.success('보상 수령이 완료되었습니다!');
+      setCurrentStatus('completed');
+    } catch (error) {
+      console.error(error);
+      toast.error('보상 수령에 실패했습니다.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className='flex items-center gap-4 border border-gray-3 rounded-xl p-4 bg-white shadow-sm'>
@@ -60,11 +83,16 @@ export function MissionItem({
           <div className='text-xs text-primary mt-1'>{reward}</div>
         )}
       </div>
+
       <button
-        className={`min-w-[64px] text-sm font-semibold px-2 py-1 rounded-md h-fit text-center ${statusStyle[status]}`}
-        disabled={status !== 'available'}
+        onClick={handleClaim}
+        className={`
+          min-w-[64px] text-sm font-semibold px-2 py-1 rounded-md h-fit text-center cursor-pointer
+          ${statusStyle[currentStatus]}
+        `}
+        disabled={currentStatus !== 'available' || isLoading}
       >
-        {statusLabel[status]}
+        {isLoading ? '요청 중...' : statusLabel[currentStatus]}
       </button>
     </div>
   );
