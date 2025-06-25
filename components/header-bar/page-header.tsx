@@ -21,7 +21,6 @@ export default function PageHeader() {
 
   const handleVerifyPin = async (pin: string) => {
     const res = await verifyPin(pin);
-    console.log('res : ', res);
     if (!res.success) {
       toast.error('비밀번호가 올바르지 않습니다.');
       return false;
@@ -52,11 +51,7 @@ export default function PageHeader() {
       {pathname === '/login' ||
       pathname === '/register' ||
       pathname === '/' ? null : pathname === '/main' ? (
-        <MainHeader
-          title='안녕하세요, OOO 님!'
-          subtitle='오늘도 현명한 투자하세요'
-          onMenuClick={userClick}
-        />
+        <MainHeader title={title} subtitle={subtitle} onMenuClick={userClick} />
       ) : pathname === '/mypage' ? (
         <MainHeader
           title='마이페이지'
