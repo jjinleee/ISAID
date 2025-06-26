@@ -55,7 +55,7 @@ export const VideoPreview = ({
   const category = Array.isArray(raw) ? (raw[0] as string) : (raw as string);
 
   const handleClick = (id: string) => {
-    router.push(`/guide/shorts-viewer/${category}/${id}`);
+    router.push(`/guide/shorts-viewer/hana/${id}`);
   };
 
   return (
