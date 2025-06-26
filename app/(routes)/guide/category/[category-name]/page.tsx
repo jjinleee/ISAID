@@ -4,10 +4,10 @@ import CategoryNameContainer from './_components/category-name-container';
 
 type ArticleCategory = '투자 기초' | '절세 전략' | '상품 비교';
 
-export default function Page({ params }: { params: any }) {
-  const raw = (params as { 'category-name': string | string[] })[
-    'category-name'
-  ];
+type Params = Promise<{ 'category-name': string | string[] }>;
+
+export default async function Page({ params }: { params: Params }) {
+  const { 'category-name': raw } = await params;
   const categoryName = Array.isArray(raw) ? raw[0] : raw;
   const decoded = decodeURIComponent(categoryName) as ArticleCategory;
 

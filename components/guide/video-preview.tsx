@@ -1,10 +1,10 @@
 'use client';
 
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { Play } from 'lucide-react';
 
-interface VideoPreviewProps {
+export interface VideoPreviewProps {
   id: string;
   title: string;
   duration: string;
@@ -49,8 +49,13 @@ export const VideoPreview = ({
   const thumbnailUrl = videoId
     ? `https://img.youtube.com/vi/${videoId}/0.jpg`
     : null;
+  const params = useParams();
+
+  const raw = params['category'];
+  const category = Array.isArray(raw) ? (raw[0] as string) : (raw as string);
+
   const handleClick = (id: string) => {
-    router.push(`/guide/shorts-viewer/${id}`);
+    router.push(`/guide/shorts-viewer/hana/${id}`);
   };
 
   return (
@@ -64,6 +69,7 @@ export const VideoPreview = ({
             src={thumbnailUrl}
             alt='YouTube Thumbnail'
             fill
+            sizes='(max-width: 768px) 100vw, 240px'
             className='object-cover'
           />
         ) : (
@@ -75,8 +81,10 @@ export const VideoPreview = ({
           <Play className='text-white w-10 h-10' />
         </div>
       </div>
-      <div className='mt-3 flex flex-col items-start w-full'>
-        <span className='font-medium text-sm truncate'>{title}</span>
+      <div className='mt-3 flex flex-col items-start w-full min-w-0'>
+        <span className='block font-medium text-sm truncate max-w-full'>
+          {title}
+        </span>
         <span className='text-xs text-gray-500'>
           {views} • {duration}
         </span>
