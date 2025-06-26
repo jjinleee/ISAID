@@ -1,13 +1,17 @@
 'use client';
 
-import Link from 'next/link';
 import HanaChallenge from '@/public/images/hanamoa-challenge.svg';
 import { ChevronRight } from 'lucide-react';
 
-export default function ChallengeCard() {
+interface Props {
+  onClick: () => void;
+}
+
+export default function ChallengeCard({ onClick }: Props) {
   return (
-    <Link
-      href='/challenge'
+    <div
+      // href='/challenge'
+      onClick={onClick}
       className='flex justify-between items-center bg-[#FFF6D6] rounded-2xl shadow-sm p-4'
     >
       {/* 좌측 캐릭터 이미지 */}
@@ -23,6 +27,6 @@ export default function ChallengeCard() {
       {/* 우측 화살표 */}
 
       <ChevronRight size={24} className='text-black' />
-    </Link>
+    </div>
   );
 }
