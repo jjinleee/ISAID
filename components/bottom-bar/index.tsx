@@ -5,12 +5,14 @@ import { usePathname } from 'next/navigation';
 import BottomChart from '@/public/images/bottom-chart';
 import Home from '@/public/images/home';
 import PiggyBank from '@/public/images/piggy-bank';
+import { Leaf } from 'lucide-react';
 import BottomTab from './bottom-tab';
 
 const items = [
-  { to: '/isa', text: 'ISA', icon: PiggyBank },
   { to: '/main', text: 'Home', icon: Home },
+  { to: '/isa', text: 'ISA', icon: PiggyBank },
   { to: '/etf', text: 'ETF', icon: BottomChart },
+  { to: '/guide', text: 'GUIDE', icon: Leaf },
 ];
 
 export const BottomBar = () => {
