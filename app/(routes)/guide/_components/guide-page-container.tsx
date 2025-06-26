@@ -1,22 +1,30 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { cards } from '@/app/(routes)/etf/_components/data/etf-category-data';
 import { useHeader } from '@/context/header-context';
 import ArrowIcon from '@/public/images/arrow-icon';
 import { BookOpen, Shield, ShoppingBasket } from 'lucide-react';
-import VideoPreview from '@/components/guide/video-preview';
 import { Card, CardContent } from '@/components/ui/card';
-import { shortVideos } from '../data/video-data';
+import { shortVideos, VideoItem } from '../data/video-data';
 import { SliderWrapper } from './slider-wrapper';
 
 export default function GuidePageContainer() {
   const { setHeader } = useHeader();
   const router = useRouter();
+  const [hanaVideo, setHanaVideo] = useState<VideoItem[]>([]);
+  const [recommendVideo, setRecommendVideo] = useState<VideoItem[]>([]);
 
   useEffect(() => {
     setHeader('금융 초보가이드', '쉽고 재미있게 배우는 투자');
+    const filteredHana = shortVideos.filter(
+      (video) => video.category === 'hana'
+    );
+    setHanaVideo(filteredHana);
+    const filteredRecommend = shortVideos.filter(
+      (video) => video.category === 'recommend'
+    );
+    setRecommendVideo(filteredRecommend);
   }, []);
 
   const guideCategories = [
@@ -77,10 +85,10 @@ export default function GuidePageContainer() {
           ))}
         </div>
         <div className='flex items-center justify-between'>
-          <h2 className='text-lg font-semibold'>숏츠 가이드</h2>
+          <h2 className='text-lg font-semibold'>숏츠 가이드(하나은행)</h2>
           <div
             className='flex items-end'
-            onClick={() => router.push('/guide/shorts-viewer')}
+            onClick={() => router.push('/guide/shorts-viewer/hana')}
           >
             <span>더 보기</span>
             <ArrowIcon
@@ -91,7 +99,24 @@ export default function GuidePageContainer() {
           </div>
         </div>
         <div>
-          <SliderWrapper videos={shortVideos.slice(0, 6)} />
+          <SliderWrapper videos={hanaVideo.slice(0, 6)} />
+        </div>
+        <div className='flex items-center justify-between'>
+          <h2 className='text-lg font-semibold'>추천 가이드</h2>
+          <div
+            className='flex items-end'
+            onClick={() => router.push('/guide/shorts-viewer/hana')}
+          >
+            <span>더 보기</span>
+            <ArrowIcon
+              direction='right'
+              className='text-black'
+              viewBox='0 0 12 36'
+            />
+          </div>
+        </div>
+        <div>
+          <SliderWrapper videos={recommendVideo.slice(0, 6)} />
         </div>
       </div>
     </div>

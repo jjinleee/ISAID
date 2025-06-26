@@ -1,5 +1,9 @@
-import ShortsViewer from './_components/shorts-viewer-container';
+const GuidePage = () => {
+  return (
+    <div className='px-4 py-5 space-y-6'>
+      <div> gmlgml</div>
+    </div>
+  );
+};
 
-export default function Page() {
-  return <ShortsViewer />;
-}
+export default GuidePage;

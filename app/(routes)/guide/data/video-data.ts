@@ -1,4 +1,16 @@
-export const shortVideos = [
+export interface VideoItem {
+  id: string;
+  title: string;
+  description: string;
+  duration: string;
+  views: string;
+  likes: number;
+  author: string;
+  videoUrl: string;
+  tags: string[];
+  category: string;
+}
+export const shortVideos: VideoItem[] = [
   {
     id: '1',
     title: '3분만에 알아보는 ETF',
@@ -9,6 +21,7 @@ export const shortVideos = [
     author: '금융쌤',
     videoUrl: 'https://www.youtube.com/embed/lsMZPZIa1tU',
     tags: ['ETF', '기초', '투자'],
+    category: 'hana',
   },
   {
     id: '2',
@@ -21,6 +34,7 @@ export const shortVideos = [
     author: '절세왕',
     videoUrl: 'https://www.youtube.com/embed/lsMZPZIa1tU',
     tags: ['ISA', '절세', '계좌'],
+    category: 'hana',
   },
   {
     id: '3',
@@ -32,6 +46,7 @@ export const shortVideos = [
     author: '투자멘토',
     videoUrl: 'https://www.youtube.com/embed/lsMZPZIa1tU',
     tags: ['20대', '투자', '시작'],
+    category: 'hana',
   },
   {
     id: '4',
@@ -44,6 +59,7 @@ export const shortVideos = [
     author: '포트폴리오마스터',
     videoUrl: 'https://www.youtube.com/embed/lsMZPZIa1tU',
     tags: ['리밸런싱', '포트폴리오', '전략'],
+    category: 'hana',
   },
   {
     id: '5',
@@ -54,8 +70,9 @@ export const shortVideos = [
     views: '6.7K',
     likes: 445,
     author: '포트폴리오마스터',
-    videoUrl: 'https://www.youtube.com/embed/lsMZPZIa1tU',
+    videoUrl: 'https://www.youtube.com/watch?v=N8aIuKDMEOE',
     tags: ['리밸런싱', '포트폴리오', '전략'],
+    category: 'recommend',
   },
   {
     id: '6',
@@ -66,8 +83,9 @@ export const shortVideos = [
     views: '6.7K',
     likes: 445,
     author: '포트폴리오마스터',
-    videoUrl: 'https://www.youtube.com/embed/lsMZPZIa1tU',
+    videoUrl: 'https://www.youtube.com/watch?v=N8aIuKDMEOE',
     tags: ['리밸런싱', '포트폴리오', '전략'],
+    category: 'recommend',
   },
   {
     id: '7',
@@ -78,8 +96,9 @@ export const shortVideos = [
     views: '6.7K',
     likes: 445,
     author: '포트폴리오마스터',
-    videoUrl: 'https://www.youtube.com/embed/lsMZPZIa1tU',
+    videoUrl: 'https://www.youtube.com/watch?v=N8aIuKDMEOE',
     tags: ['리밸런싱', '포트폴리오', '전략'],
+    category: 'recommend',
   },
   {
     id: '8',
@@ -90,8 +109,9 @@ export const shortVideos = [
     views: '6.7K',
     likes: 445,
     author: '포트폴리오마스터',
-    videoUrl: 'https://www.youtube.com/embed/lsMZPZIa1tU',
+    videoUrl: 'https://www.youtube.com/watch?v=N8aIuKDMEOE',
     tags: ['리밸런싱', '포트폴리오', '전략'],
+    category: 'recommend',
   },
   {
     id: '9',
@@ -102,7 +122,8 @@ export const shortVideos = [
     views: '6.7K',
     likes: 445,
     author: '포트폴리오마스터',
-    videoUrl: 'https://www.youtube.com/embed/lsMZPZIa1tU',
+    videoUrl: 'https://www.youtube.com/watch?v=N8aIuKDMEOE',
     tags: ['리밸런싱', '포트폴리오', '전략'],
+    category: 'recommend',
   },
 ];
