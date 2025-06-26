@@ -28,7 +28,6 @@ export async function getChallenges(): Promise<ChallengeInfo[]> {
 
   // KST 자정 기준 today
   const today = dayjs().tz('Asia/Seoul').startOf('day');
-  const yesterday = today.subtract(1, 'day');
 
   const rows = await prisma.challenge.findMany({
     include: {
@@ -63,9 +62,8 @@ export async function getChallenges(): Promise<ChallengeInfo[]> {
         const lastUpdated = updatedAt
           ? dayjs(updatedAt).tz('Asia/Seoul')
           : null;
-        const isStreakValid =
-          lastUpdated?.isSame(yesterday, 'day') ||
-          lastUpdated?.isSame(today, 'day');
+        // "7일 누적 연속 퀴즈 제출을 완료한 당일"만 허용 yesterday -> today
+        const isStreakValid = lastUpdated?.isSame(today, 'day');
 
         if (hasClaim) {
           status = 'CLAIMED';
