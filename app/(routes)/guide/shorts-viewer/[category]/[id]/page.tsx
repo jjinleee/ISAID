@@ -9,9 +9,7 @@ export default async function Page({ params }: { params: Params }) {
 
   const videoId = Array.isArray(raw) ? raw[0] : raw;
 
-  const video = shortVideos.find(
-    (v) => String(v.id) === videoId && v.category === category
-  );
+  const video = shortVideos.find((v) => String(v.id) === videoId);
 
   if (!video) notFound();
 

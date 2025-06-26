@@ -1,5 +1,9 @@
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/auth-options';
 import ShortsViewer from './_components/shorts-viewer-container';
 
-export default function Page() {
-  return <ShortsViewer />;
+export default async function Page() {
+  const session = await getServerSession(authOptions);
+
+  return <ShortsViewer session={session} />;
 }

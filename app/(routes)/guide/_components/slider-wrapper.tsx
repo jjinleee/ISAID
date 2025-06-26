@@ -6,7 +6,6 @@ import VideoPreview, {
 } from '@/components/guide/video-preview';
 import 'swiper/css';
 import 'swiper/css/pagination';
-import { useRouter } from 'next/navigation';
 
 interface SliderWrapperProps {
   videos: VideoPreviewProps[];
@@ -28,7 +27,10 @@ export const SliderWrapper = ({ videos }: SliderWrapperProps) => {
         }}
       >
         {videos.map((video: VideoPreviewProps) => (
-          <SwiperSlide key={video.id} className='!w-[240px] shrink-0 !p-2'>
+          <SwiperSlide
+            key={video.id}
+            className='!w-[240px] min-w-0 shrink-0 !p-2'
+          >
             <VideoPreview
               key={video.id}
               id={video.id}
