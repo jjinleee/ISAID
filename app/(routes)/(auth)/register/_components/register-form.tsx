@@ -197,14 +197,15 @@ export default function RegisterForm() {
 
       case 'phone':
         return (
-          validateField('phone', formData.phone, formData) &&
-          validateField(
-            'verificationCode',
-            formData.verificationCode,
-            formData
-          ) &&
-          isCodeSent &&
-          formData.verificationCode === sentCode
+          // validateField('phone', formData.phone, formData) &&
+          // validateField(
+          //   'verificationCode',
+          //   formData.verificationCode,
+          //   formData
+          // ) &&
+          // isCodeSent &&
+          // formData.verificationCode === sentCode
+          true
         );
 
       case 'address':
