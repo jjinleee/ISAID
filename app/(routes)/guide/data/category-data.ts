@@ -62,7 +62,7 @@ export const articles: Record<ArticleCategory, Article[]> = {
     },
     {
       id: 6,
-      title: '절세계좌 3종’ 혜택 하나씩 비교해보자면?',
+      title: '절세계좌 3종 혜택 하나씩 비교해보자면?',
       summary: '어떤 상품이 나에게 유리할까요?',
       views: '11.7K',
       difficulty: '중급',
