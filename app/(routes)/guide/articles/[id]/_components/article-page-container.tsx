@@ -3,9 +3,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useHeader } from '@/context/header-context';
-import { Bookmark } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 
 interface ArticleMeta {
   id: number;
@@ -35,7 +32,6 @@ export default function ArticlePageContainer({
   relatedArticles?: RelatedMini[];
 }) {
   const { setHeader } = useHeader();
-  const [bookmarked, setBookmarked] = useState(false);
   const router = useRouter();
   const handleNavigate = (id: number) => router.push(`/guide/articles/${id}`);
 
@@ -232,20 +228,6 @@ export default function ArticlePageContainer({
               }
               return elements;
             })()}
-          </div>
-          <div className='w-full flex justify-end'>
-            <Button
-              variant='outline'
-              size='icon'
-              className='text-white hover:bg-white/20 flex-col h-auto p-2 self-end'
-              onClick={() => setBookmarked((prev) => !prev)}
-            >
-              <Bookmark
-                className={`h-8 w-8 ${
-                  bookmarked ? 'fill-yellow-500 text-yellow-500' : 'text-black'
-                }`}
-              />
-            </Button>
           </div>
         </div>
       </div>

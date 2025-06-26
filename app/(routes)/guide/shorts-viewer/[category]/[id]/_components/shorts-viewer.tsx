@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useHeader } from '@/context/header-context';
-import { Bookmark, Share, Volume2, VolumeX } from 'lucide-react';
+import { Share, Volume2, VolumeX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ShareSheet from './share-sheet';
 
@@ -26,7 +26,6 @@ export default function ShortsViewer({ video }: ShortsViewerProps) {
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const [isMuted, setIsMuted] = useState(true);
   const [liked, setLiked] = useState(false);
-  const [bookmarked, setBookmarked] = useState(false);
   const [shareVisible, setShareVisible] = useState(false);
   const { setHeader } = useHeader();
   useEffect(() => {
@@ -132,19 +131,6 @@ export default function ShortsViewer({ video }: ShortsViewerProps) {
 
             {/* 버튼 그룹 */}
             <div className='absolute bottom-0 right-0 p-4 z-10 flex flex-col items-center gap-4'>
-              <Button
-                variant='ghost'
-                size='icon'
-                className='text-white hover:bg-white/20 flex-col h-auto p-2'
-                onClick={() => setBookmarked((prev) => !prev)}
-              >
-                <Bookmark
-                  className={`h-6 w-6 ${
-                    bookmarked ? 'fill-yellow-500 text-yellow-500' : ''
-                  }`}
-                />
-                <span className='text-xs mt-1'>저장</span>
-              </Button>
               <Button
                 variant='ghost'
                 size='icon'
