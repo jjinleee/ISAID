@@ -2,12 +2,12 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import AgreeDetailModal from '@/app/(routes)/main/_components/agree-detail-modal';
 import { useHeader } from '@/context/header-context';
 import { ReasonProps } from '@/types/etf';
 import { isSameDay } from 'date-fns';
 import { getKSTDateFromISOString, getTodayKSTDate } from '@/lib/utils';
 import AccountSummaryCard from './account-summary-card';
+import AgreeConfirmModal from './agree-confirm-modal';
 import AgreeModal from './agree-modal';
 import BeginnerGuideCard from './beginner-guide-card';
 import ChallengeCard from './challenge-card';
@@ -233,22 +233,20 @@ export default function MainPageContainer({ userName, savedTax }: Props) {
         <AgreeModal
           onClose={() => setShowModal(false)}
           btnClick={() => handleAgree()}
-          detailClick={detailClick}
           reasons={rewardConsentList}
         />
       )}
-
       {/* 약관 상세 모달 */}
-      {showDetailModal && (
-        <AgreeDetailModal
-          onClose={() => setShowDetailModal(false)}
-          btnClick={handleTermsAgree}
-        />
-      )}
-      {/* 약관 동의 했음 모달 */}
-      {/*{showConfirmModal && (*/}
-      {/*  <AgreeConfirmModal onClose={() => setShowConfirmModal(false)} />*/}
+      {/*{showDetailModal && (*/}
+      {/*  <AgreeDetailModal*/}
+      {/*    onClose={() => setShowDetailModal(false)}*/}
+      {/*    btnClick={handleTermsAgree}*/}
+      {/*  />*/}
       {/*)}*/}
+      약관 동의 했음 모달
+      {showConfirmModal && (
+        <AgreeConfirmModal onClose={() => setShowConfirmModal(false)} />
+      )}
     </div>
   );
 }

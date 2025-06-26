@@ -1,21 +1,38 @@
 'use client';
 
-import ArrowIcon from '@/public/images/arrow-icon';
-import { CircleAlert, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { toast } from 'react-hot-toast';
+import { TermDetail } from '@/app/(routes)/main/_components/term-detail';
+import { X } from 'lucide-react';
 import Button from '@/components/button';
 import { RewardProps } from './main-page-container';
 
 export default function AgreeModal({
   onClose,
   btnClick,
-  detailClick,
   reasons,
 }: {
   onClose: () => void;
   btnClick: () => void;
-  detailClick: () => void;
   reasons: RewardProps[];
 }) {
+  const [confirmed, setConfirmed] = useState<boolean[]>(
+    new Array(3).fill(false)
+  );
+
+  const handleOpen = (idx: number) => {
+    setConfirmed((prev) => prev.map((v, i) => (i === idx ? true : v)));
+  };
+  const allRead = confirmed.every(Boolean);
+
+  const handleAgree = () => {
+    if (!allRead) {
+      toast.error('모든 약관의 세부 사항을 확인해주세요.');
+      return;
+    }
+    btnClick();
+  };
+
   return (
     <div
       className='fixed inset-0 z-52 flex items-center justify-center overflow-hidden'
@@ -42,39 +59,21 @@ export default function AgreeModal({
         <div className='p-5 overflow-y-auto max-h-[calc(80vh-100px)] overscroll-contain scrollbar-hide'>
           <div className='flex flex-col gap-5'>
             <div className='flex flex-col gap-2'>
-              {reasons.map(({ title, description }, idx) => (
-                <div
+              {reasons.map(({ title, description, detail }, idx) => (
+                <TermDetail
                   key={idx}
-                  className='flex items-start gap-3 p-4 rounded-lg bg-[#f9fbfc] border border-gray-200'
-                >
-                  <CircleAlert className='w-6 h-6 text-green-600 mt-[2px] flex-shrink-0' />
-                  <div>
-                    <p className='font-semibold text-sm text-gray-900'>
-                      {title}
-                    </p>
-                    <p className='text-sm text-gray-700 mt-1'>{description}</p>
-                    <div className='text-xs flex justify-end mt-4'>
-                      약관 상세 보기
-                      <ArrowIcon
-                        direction='bottom'
-                        className='w-5 h-5 text-gray-400'
-                        viewBox={'-10 -5 28 28'}
-                      />
-                      {/*<ArrowIcon*/}
-                      {/*  direction='top'*/}
-                      {/*  className='w-5 h-5 text-gray-400'*/}
-                      {/*  viewBox={'-10 5 28 28'}*/}
-                      {/*/>*/}
-                    </div>
-                  </div>
-                </div>
+                  detail={detail}
+                  title={title}
+                  description={description}
+                  onOpen={() => handleOpen(idx)}
+                />
               ))}
             </div>
             <div className='flex flex-col gap-2'>
               <Button
                 thin={false}
                 text={'동의하기'}
-                onClick={btnClick}
+                onClick={handleAgree}
                 active={true}
               />
               <Button

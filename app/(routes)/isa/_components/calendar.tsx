@@ -22,8 +22,6 @@ const Calendar = ({ data }: { data: any }) => {
   const selectedKey = selected ? formatDateKey(selected) : null;
   const transactions = selectedKey ? data.transactionData[selectedKey] : null;
 
-  console.log('transaction data', data);
-
   return (
     <div className='flex flex-col mt-3'>
       <div className='flex gap-2 mb-4'>

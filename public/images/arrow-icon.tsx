@@ -35,7 +35,11 @@ export const ArrowIcon = ({
       viewBox={viewBox || '0 0 28 28'}
       fill='none'
       xmlns='http://www.w3.org/2000/svg'
-      className={cn('transition-transform', rotationClass, className)}
+      className={cn(
+        'transition-transform duration-300',
+        rotationClass,
+        className
+      )}
     >
       <path
         fillRule='evenodd'
