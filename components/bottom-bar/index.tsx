@@ -12,7 +12,7 @@ const items = [
   { to: '/main', text: 'Home', icon: Home },
   { to: '/isa', text: 'ISA', icon: PiggyBank },
   { to: '/etf', text: 'ETF', icon: BottomChart },
-  { to: '/guide', text: 'GUIDE', icon: Leaf },
+  { to: '/guide', text: 'Guide', icon: Leaf },
 ];
 
 export const BottomBar = () => {
