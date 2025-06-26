@@ -70,15 +70,6 @@ export async function GET() {
     return NextResponse.json({ message: 'No question found' }, { status: 404 });
   }
 
-  if (!existingCalendar) {
-    await prisma.quizCalendar.create({
-      data: {
-        userId: user.id,
-        solvedDate: today,
-      },
-    });
-  }
-
   return NextResponse.json({
     question: {
       ...question,
