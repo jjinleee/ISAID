@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Play } from 'lucide-react';
 
-interface VideoPreviewProps {
+export interface VideoPreviewProps {
   id: string;
   title: string;
   duration: string;

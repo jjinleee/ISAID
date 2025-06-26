@@ -2,12 +2,14 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { cards } from '@/app/(routes)/etf/_components/data/etf-category-data';
 import { useHeader } from '@/context/header-context';
 import ArrowIcon from '@/public/images/arrow-icon';
 import { BookOpen, Shield, ShoppingBasket } from 'lucide-react';
 import VideoPreview from '@/components/guide/video-preview';
 import { Card, CardContent } from '@/components/ui/card';
 import { shortVideos } from '../data/video-data';
+import { SliderWrapper } from './slider-wrapper';
 
 export default function GuidePageContainer() {
   const { setHeader } = useHeader();
@@ -89,18 +91,7 @@ export default function GuidePageContainer() {
           </div>
         </div>
         <div>
-          <div className='grid grid-cols-2 gap-3'>
-            {shortVideos.slice(0, 4).map((video) => (
-              <VideoPreview
-                key={video.id}
-                id={video.id}
-                title={video.title}
-                duration={video.duration}
-                views={video.views}
-                videoUrl={video.videoUrl}
-              />
-            ))}
-          </div>
+          <SliderWrapper videos={shortVideos.slice(0, 6)} />
         </div>
       </div>
     </div>
