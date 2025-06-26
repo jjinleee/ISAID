@@ -236,14 +236,7 @@ export default function MainPageContainer({ userName, savedTax }: Props) {
           reasons={rewardConsentList}
         />
       )}
-      {/* 약관 상세 모달 */}
-      {/*{showDetailModal && (*/}
-      {/*  <AgreeDetailModal*/}
-      {/*    onClose={() => setShowDetailModal(false)}*/}
-      {/*    btnClick={handleTermsAgree}*/}
-      {/*  />*/}
-      {/*)}*/}
-      약관 동의 했음 모달
+      {/*약관 동의 확인 모달*/}
       {showConfirmModal && (
         <AgreeConfirmModal onClose={() => setShowConfirmModal(false)} />
       )}
