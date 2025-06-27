@@ -6,6 +6,20 @@ export const createPrismaMock = (overrides = {}) => {
   const baseMock = {
     user: {
       findUnique: jest.fn(),
+    },
+    $transaction: jest.fn(),
+  };
+
+  return {
+    ...baseMock,
+    ...overrides,
+  };
+};
+
+export const createEtfTestPrismaMock = (overrides = {}) => {
+  const baseMock = {
+    user: {
+      findUnique: jest.fn(),
       findFirst: jest.fn(),
       create: jest.fn(),
       update: jest.fn(),
@@ -13,7 +27,8 @@ export const createPrismaMock = (overrides = {}) => {
     },
     investmentProfile: {
       findUnique: jest.fn(),
-      upsert: jest.fn(),
+      create: jest.fn(),
+      update: jest.fn(),
     },
     etfCategory: {
       findMany: jest.fn(),
@@ -36,33 +51,4 @@ export const createPrismaMock = (overrides = {}) => {
     ...baseMock,
     ...overrides,
   };
-};
-
-// 투자성향 조회용 Mock
-export const createInvestProfileMock = () => {
-  return createPrismaMock({
-    investmentProfile: {
-      findUnique: jest.fn(),
-    },
-    user: {
-      findUnique: jest.fn(),
-    },
-    $transaction: jest.fn(),
-  });
-};
-
-// 선호 카테고리 조회용 Mock
-export const createPreferredCategoryMock = () => {
-  return createPrismaMock({
-    etfCategory: {
-      findMany: jest.fn(),
-    },
-    userEtfCategory: {
-      findMany: jest.fn(),
-    },
-    user: {
-      findUnique: jest.fn(),
-    },
-    $transaction: jest.fn(),
-  });
 };

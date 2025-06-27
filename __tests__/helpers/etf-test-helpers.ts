@@ -64,12 +64,6 @@ export const createValidMbtiRequest = () => ({
   ],
 });
 
-// MBTI 제출 요청 - 유효하지 않은 데이터
-export const createInvalidMbtiRequest = () => ({
-  investType: 'INVALID_TYPE',
-  preferredCategories: [],
-});
-
 // Prisma Mock 객체 생성
 export const createMbtiServiceMock = () => ({
   investmentProfile: {
@@ -88,3 +82,32 @@ export const createMbtiServiceMock = () => ({
   },
   $transaction: jest.fn(),
 });
+
+// Prisma 트랜잭션 mock 생성 함수
+export const createTestTransactionMock = ({
+  profileExists = false,
+  preferredCategories = [],
+}: {
+  profileExists?: boolean;
+  preferredCategories?: string[]; // 상위에서 전달받음
+} = {}) => {
+  const allMockCategories = createMockEtfCategories();
+  const filteredCategories = allMockCategories.filter((c) =>
+    preferredCategories.includes(c.fullPath)
+  );
+
+  return {
+    investmentProfile: {
+      findUnique: jest.fn().mockResolvedValue(profileExists ? { id: 1 } : null),
+      create: jest.fn(),
+      update: jest.fn(),
+    },
+    etfCategory: {
+      findMany: jest.fn().mockResolvedValue(filteredCategories),
+    },
+    userEtfCategory: {
+      deleteMany: jest.fn(),
+      createMany: jest.fn(),
+    },
+  };
+};
