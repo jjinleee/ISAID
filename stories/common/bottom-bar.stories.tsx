@@ -1,16 +1,11 @@
-// src/components/BottomBar.stories.tsx
 'use client';
 
 import '../../app/globals.css';
 import React from 'react';
-/* 1) PathnameContext 가져오기 (App Router 내부 훅 컨텍스트) */
 import { PathnameContext } from 'next/dist/shared/lib/hooks-client-context.shared-runtime';
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import BottomBar from '@/components/bottom-bar';
 
-// ⬅️ 실제 존재
-
-/* 2) 데코레이터 팩토리: 원하는 pathname 값을 공급 */
 const withPathname = (pathname: string) => {
   // eslint-disable-next-line react/display-name
   return (Story: React.FC) => (

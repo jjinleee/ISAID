@@ -1,4 +1,3 @@
-// src/components/ProgressBar.stories.tsx
 'use client';
 
 import '../../app/globals.css';
@@ -10,7 +9,7 @@ export default {
   title: 'Components/ProgressBar',
   component: ProgressBar,
   parameters: {
-    layout: 'padded', // ⬅️ 가운데 박스 대신 패딩 레이아웃
+    layout: 'padded',
   },
   argTypes: {
     current: { control: { type: 'number', min: 0 } },

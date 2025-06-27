@@ -1,4 +1,3 @@
-// src/components/PinCodeSheet.stories.tsx
 'use client';
 
 import '../../app/globals.css';
@@ -19,7 +18,6 @@ export default {
   ],
   parameters: { layout: 'fullscreen' },
   argTypes: {
-    // visible 은 내부에서 제어하므로 패널에서 숨김
     visible: { table: { disable: true } },
   },
 } as Meta<typeof PinCodeSheet>;
@@ -38,7 +36,7 @@ export const Interactive: Story = {
         {...args}
         visible={open}
         onClose={() => {
-          setOpen(false); // ✨ 수동 닫기
+          setOpen(false);
           closeAction();
         }}
         onSubmit={async (pin: string) => {
@@ -46,7 +44,7 @@ export const Interactive: Story = {
           await new Promise((r) => setTimeout(r, 400)); // 테스트용 지연
           const success = pin === '123456';
           if (success)
-            setOpen(false); // ✨ 123456 이면 자동 닫기
+            setOpen(false); // 123456 이면 자동 닫기
           else setOpen(true); // 실패 → 그대로 유지
           return success;
         }}

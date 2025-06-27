@@ -1,4 +1,3 @@
-// src/components/Tab.stories.tsx
 'use client';
 
 import '../../app/globals.css';
@@ -12,7 +11,6 @@ export default {
   component: Tab,
   decorators: [
     (Story) => (
-      /* 탭이 옆으로 나란히 보이도록 래퍼 */
       <div className='flex w-full max-w-md border-b border-gray-200'>
         <Story />
       </div>
