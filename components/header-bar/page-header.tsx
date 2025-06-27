@@ -65,8 +65,6 @@ export default function PageHeader() {
         <HeaderBar title={title} subtitle={subtitle} onMenuClick={userClick} />
       )}
 
-      {/* 사이드바 */}
-      {/*<Sidebar isOpen={sidebarOpen} onClose={closeSidebar} />*/}
       <SecurePinModal
         visible={modalOpen}
         onClose={() => setModalOpen(false)}
