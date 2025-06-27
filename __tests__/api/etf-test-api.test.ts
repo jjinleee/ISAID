@@ -4,7 +4,7 @@
 import { getServerSession } from 'next-auth';
 import { NextRequest } from 'next/server';
 import { resetWithEtfTestPrismaMock } from '@/__mocks__/prisma';
-import type { EtfTestPrismaMock } from '@/__mocks__/prisma-factory';
+import { createEtfTestPrismaMock } from '@/__mocks__/prisma-factory';
 import { GET, POST } from '@/app/api/etf/mbti/route';
 import { InvestType } from '@prisma/client';
 import {
@@ -28,13 +28,15 @@ jest.mock('@/lib/prisma', () => {
   };
 });
 
-let mockPrisma: EtfTestPrismaMock;
+let mockPrisma: ReturnType<typeof createEtfTestPrismaMock>;
 const mockGetServerSession = getServerSession as jest.Mock;
 
 describe('/api/etf/mbti', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockPrisma = resetWithEtfTestPrismaMock() as EtfTestPrismaMock;
+    mockPrisma = resetWithEtfTestPrismaMock() as ReturnType<
+      typeof createEtfTestPrismaMock
+    >;
   });
 
   describe('POST', () => {

@@ -16,37 +16,6 @@ export const createPrismaMock = (overrides = {}) => {
   };
 };
 
-// ETF 테스트용 확장 Prisma Mock 타입 정의
-export type EtfTestPrismaMock = {
-  user: {
-    findUnique: jest.Mock;
-    findFirst: jest.Mock;
-    create: jest.Mock;
-    update: jest.Mock;
-    delete: jest.Mock;
-  };
-  investmentProfile: {
-    findUnique: jest.Mock;
-    create: jest.Mock;
-    update: jest.Mock;
-  };
-  etfCategory: {
-    findMany: jest.Mock;
-    findUnique: jest.Mock;
-  };
-  userEtfCategory: {
-    findMany: jest.Mock;
-    createMany: jest.Mock;
-    deleteMany: jest.Mock;
-  };
-  etf: {
-    findUnique: jest.Mock;
-    create: jest.Mock;
-    update: jest.Mock;
-  };
-  $transaction: jest.Mock;
-};
-
 export const createEtfTestPrismaMock = (overrides = {}) => {
   const baseMock = {
     user: {
