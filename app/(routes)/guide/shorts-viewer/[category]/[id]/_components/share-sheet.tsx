@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Copy, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import Button from '@/components/button';
 import { Input } from '@/components/ui/input';
 
