@@ -31,3 +31,21 @@ export interface PieChartData {
   name: string;
   value: number;
 }
+export interface RebalancingResponse {
+  recommendedPortfolio: RecommendedPortfolioData[];
+  score: number;
+  rebalancingOpinions: RebalancingOpinionData[];
+}
+
+export interface RecommendedPortfolioData {
+  category: string;
+  percentage: number;
+}
+
+export interface RebalancingOpinionData {
+  category: string;
+  userPercentage: number;
+  recommendedPercentage: number;
+  opinion: string;
+  detail: string;
+}

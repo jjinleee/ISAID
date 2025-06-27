@@ -481,7 +481,7 @@ function generateRebalancingOpinions(
     const threshold = 5;
 
     let opinion = '적정 비중';
-    let detail = `현재 비중(${userPercentage.toFixed(1)}%)은 권장 비중(${recommended.percentage}%)에 부합합니다.`;
+    let detail = `${recommended.category}의 현재 비중(${userPercentage.toFixed(1)}%)은 권장 비중(${recommended.percentage}%)에 부합합니다.`;
 
     if (diff > threshold) {
       opinion = '비중 축소 필요';

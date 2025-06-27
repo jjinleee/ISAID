@@ -70,7 +70,7 @@ export default function ResultPage({
             );
           })}
         </div>
-        <div className='w-full h-px bg-gray-300 px-4 my-4' />
+        {/*<div className='w-full h-px bg-gray-300 px-4 my-4' />*/}
         <div className='relative w-full max-w-md p-4 bg-white rounded-2xl border-3 border-primary overflow-visible mx-auto'>
           <div className='text-gray-800 text-md '>{question.description}</div>
 
