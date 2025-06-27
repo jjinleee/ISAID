@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import { FormData } from '@/app/(routes)/(auth)/register/_components/register-form';
 import { useHeader } from '@/context/header-context';
@@ -25,6 +26,9 @@ export const EditPhoneContainer = () => {
 
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [sending, setSending] = useState(false); // 인증번호 전송 중 여부
+  const [isCodeSent, setIsCodeSent] = useState(false);
+  const [sentCode, setSentCode] = useState(''); // 전송된 코드
 
   useEffect(() => {
     setHeader('내 정보 수정하기', '전화번호 수정');
@@ -74,11 +78,49 @@ export const EditPhoneContainer = () => {
       const raw = value.replace(/\D/g, '').slice(0, 3);
       setPhoneData((prev) => ({ ...prev, verificationCode: raw }));
 
-      setValidationErrors((prev) => ({
-        ...prev,
-        verificationCode: !validateField('verificationCode', raw, phoneData),
-      }));
+      if (raw.length === 3 && raw === sentCode) {
+        setValidationErrors((prev) => ({ ...prev, verificationCode: false }));
+      } else {
+        setValidationErrors((prev) => ({
+          ...prev,
+          verificationCode: !validateField('verificationCode', raw, phoneData),
+        }));
+      }
       return;
+    }
+  };
+
+  // 인증번호 전송
+  const handleSendCode = async () => {
+    if (validationErrors.phone || !phoneData.phone) {
+      toast.error('올바른 전화번호를 입력해주세요.');
+      return;
+    }
+
+    setSending(true);
+    try {
+      // 임시 3자리 코드 생성
+      const code = Math.floor(100 + Math.random() * 900).toString();
+
+      const res = await fetch('/api/auth/sms', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: phoneData.phone, code }),
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        setIsCodeSent(true);
+        setSentCode(code);
+        toast.success('인증번호가 전송되었습니다.');
+      } else {
+        toast.error('인증번호 전송에 실패했습니다.');
+      }
+    } catch (e) {
+      console.error(e);
+      toast.error('인증번호 전송 중 오류가 발생했습니다.');
+    } finally {
+      setSending(false);
     }
   };
 
@@ -108,8 +150,12 @@ export const EditPhoneContainer = () => {
               value={phoneData.phone}
               onChangeField={handleInputChange}
             />
-            <button className='bg-primary text-white px-4 py-2 rounded-xl whitespace-nowrap'>
-              인증번호 전송
+            <button
+              className='bg-primary text-white px-4 py-2 rounded-xl whitespace-nowrap disabled:opacity-50'
+              onClick={handleSendCode}
+              disabled={validationErrors.phone || sending}
+            >
+              {isCodeSent ? '재전송' : '인증번호 전송'}
             </button>
           </div>
         </div>
