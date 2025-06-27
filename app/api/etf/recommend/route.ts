@@ -6,12 +6,14 @@
 // 괴리율 -> etf.divergence_rate
 // 변동성 -> etf.volatility
 
-// 사용자 성향에 따라서 추천 가능한 상품 필터링 되어야함
-// 추천에 대한 화면 구성
-
 import { getServerSession } from 'next-auth';
 import { NextRequest, NextResponse } from 'next/server';
-import { EtfRecommendationService } from '@/services/etf/etf-recommendation-service';
+import {
+  EtfRecommendService,
+  InvestmentProfileNotFoundError,
+  NoEtfDataError,
+  NoTradingDataError,
+} from '@/services/etf/etf-recommend-service';
 import { authOptions } from '@/lib/auth-options';
 
 export async function GET(req: NextRequest) {
@@ -29,7 +31,7 @@ export async function GET(req: NextRequest) {
 
     console.log(`[ETF 추천] 사용자 ${userId}의 ETF 추천 요청 시작`);
 
-    const etfRecommendationService = new EtfRecommendationService();
+    const etfRecommendationService = new EtfRecommendService();
     const result = await etfRecommendationService.getRecommendations(
       userId,
       limit
@@ -46,23 +48,21 @@ export async function GET(req: NextRequest) {
   } catch (error) {
     console.error('ETF 추천 오류:', error);
 
+    // 커스텀 에러 클래스들을 사용한 에러 처리
+    if (error instanceof InvestmentProfileNotFoundError) {
+      return NextResponse.json({ message: error.message }, { status: 400 });
+    }
+
+    if (error instanceof NoEtfDataError) {
+      return NextResponse.json({ message: error.message }, { status: 404 });
+    }
+
+    if (error instanceof NoTradingDataError) {
+      return NextResponse.json({ message: error.message }, { status: 404 });
+    }
+
+    // 기타 알려진 에러들
     if (error instanceof Error) {
-      // 투자 성향 테스트 미완료
-      if (error.message.includes('투자 성향 테스트를 먼저 완료해주세요')) {
-        return NextResponse.json({ message: error.message }, { status: 400 });
-      }
-
-      // ETF 데이터 없음
-      if (error.message.includes('추천할 수 있는 ETF가 없습니다')) {
-        return NextResponse.json({ message: error.message }, { status: 404 });
-      }
-
-      // 거래 데이터 없음
-      if (error.message.includes('거래 데이터가 있는 ETF가 없습니다')) {
-        return NextResponse.json({ message: error.message }, { status: 404 });
-      }
-
-      // 기타 알려진 에러들
       if (
         error.message.includes('Database connection failed') ||
         error.message.includes('Service error') ||

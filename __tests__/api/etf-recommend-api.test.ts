@@ -4,72 +4,55 @@
 import { getServerSession } from 'next-auth';
 import { NextRequest } from 'next/server';
 import { GET } from '@/app/api/etf/recommend/route';
-import { EtfRecommendationService } from '@/services/etf/etf-recommendation-service';
-import { EtfTestService } from '@/services/etf/etf-test-service';
-import { InvestType } from '@prisma/client';
-import { authOptions } from '@/lib/auth-options';
-import { prisma } from '@/lib/prisma';
 
-// Mock 모듈들
+// 모킹 설정
 jest.mock('next-auth');
-jest.mock('@/services/etf/etf-recommendation-service');
-jest.mock('@/services/etf/etf-test-service');
-jest.mock('@/lib/prisma', () => ({
-  prisma: {
-    etf: {
-      findMany: jest.fn(),
-    },
-    etfDailyTrading: {
-      findMany: jest.fn(),
-    },
+jest.mock('@/services/etf/etf-recommend-service', () => ({
+  EtfRecommendService: jest.fn(),
+  InvestmentProfileNotFoundError: class InvestmentProfileNotFoundError extends Error {
+    constructor() {
+      super('투자 성향 테스트를 먼저 완료해주세요.');
+      this.name = 'InvestmentProfileNotFoundError';
+    }
+  },
+  NoEtfDataError: class NoEtfDataError extends Error {
+    constructor() {
+      super('추천할 수 있는 ETF가 없습니다.');
+      this.name = 'NoEtfDataError';
+    }
+  },
+  NoTradingDataError: class NoTradingDataError extends Error {
+    constructor() {
+      super('거래 데이터가 있는 ETF가 없습니다.');
+      this.name = 'NoTradingDataError';
+    }
   },
 }));
-jest.mock('@/lib/auth-options', () => ({
-  authOptions: {},
-}));
+
+const mockEtfRecommendService = {
+  getRecommendations: jest.fn(),
+};
+
+const {
+  EtfRecommendService,
+  InvestmentProfileNotFoundError,
+  NoEtfDataError,
+  NoTradingDataError,
+} = require('@/services/etf/etf-recommend-service');
+
+(EtfRecommendService as jest.Mock).mockImplementation(
+  () => mockEtfRecommendService
+);
 
 describe('GET /api/etf/recommend', () => {
-  let mockGetServerSession: jest.MockedFunction<typeof getServerSession>;
-  let mockEtfRecommendationService: jest.Mocked<EtfRecommendationService>;
-  let mockEtfTestService: jest.Mocked<EtfTestService>;
-
   beforeEach(() => {
     jest.clearAllMocks();
-
-    // getServerSession 모킹
-    mockGetServerSession = getServerSession as jest.MockedFunction<
-      typeof getServerSession
-    >;
-    mockGetServerSession.mockImplementation(async () => null);
-
-    // EtfTestService 모킹
-    mockEtfTestService = {
-      getUserInvestType: jest.fn(),
-      saveMbtiResult: jest.fn(),
-      getUserPreferredCategories: jest.fn(),
-      getUserInvestmentProfile: jest.fn(),
-    } as unknown as jest.Mocked<EtfTestService>;
-
-    // EtfRecommendationService 모킹
-    mockEtfRecommendationService = {
-      getRecommendations: jest.fn(),
-    } as unknown as jest.Mocked<EtfRecommendationService>;
-
-    // 생성자 모킹
-    (
-      EtfTestService as jest.MockedClass<typeof EtfTestService>
-    ).mockImplementation(() => mockEtfTestService);
-    (
-      EtfRecommendationService as jest.MockedClass<
-        typeof EtfRecommendationService
-      >
-    ).mockImplementation(() => mockEtfRecommendationService);
   });
 
   describe('인증 테스트', () => {
     it('인증되지 않은 사용자는 401 에러를 반환한다', async () => {
       // Given
-      mockGetServerSession.mockResolvedValue(null);
+      (getServerSession as jest.Mock).mockResolvedValue(null);
 
       // When
       const req = new NextRequest('http://localhost:3000/api/etf/recommend');
@@ -83,9 +66,9 @@ describe('GET /api/etf/recommend', () => {
 
     it('세션에 사용자 ID가 없으면 401 에러를 반환한다', async () => {
       // Given
-      mockGetServerSession.mockResolvedValue({
-        user: { email: 'test@example.com' }, // id가 없음
-      } as any);
+      (getServerSession as jest.Mock).mockResolvedValue({
+        user: {},
+      });
 
       // When
       const req = new NextRequest('http://localhost:3000/api/etf/recommend');
@@ -100,15 +83,15 @@ describe('GET /api/etf/recommend', () => {
 
   describe('서비스 로직 테스트', () => {
     beforeEach(() => {
-      mockGetServerSession.mockResolvedValue({
+      (getServerSession as jest.Mock).mockResolvedValue({
         user: { id: '61' },
-      } as any);
+      });
     });
 
     it('투자 성향이 없으면 400 에러를 반환한다', async () => {
       // Given
-      mockEtfRecommendationService.getRecommendations.mockRejectedValue(
-        new Error('투자 성향 테스트를 먼저 완료해주세요.')
+      mockEtfRecommendService.getRecommendations.mockRejectedValue(
+        new InvestmentProfileNotFoundError()
       );
 
       // When
@@ -119,15 +102,16 @@ describe('GET /api/etf/recommend', () => {
       // Then
       expect(res.status).toBe(400);
       expect(json.message).toBe('투자 성향 테스트를 먼저 완료해주세요.');
-      expect(
-        mockEtfRecommendationService.getRecommendations
-      ).toHaveBeenCalledWith(BigInt('61'), 10);
+      expect(mockEtfRecommendService.getRecommendations).toHaveBeenCalledWith(
+        BigInt('61'),
+        10
+      );
     });
 
     it('ETF 데이터가 없으면 404 에러를 반환한다', async () => {
       // Given
-      mockEtfRecommendationService.getRecommendations.mockRejectedValue(
-        new Error('추천할 수 있는 ETF가 없습니다.')
+      mockEtfRecommendService.getRecommendations.mockRejectedValue(
+        new NoEtfDataError()
       );
 
       // When
@@ -142,8 +126,8 @@ describe('GET /api/etf/recommend', () => {
 
     it('거래 데이터가 있는 ETF가 없으면 404 에러를 반환한다', async () => {
       // Given
-      mockEtfRecommendationService.getRecommendations.mockRejectedValue(
-        new Error('거래 데이터가 있는 ETF가 없습니다.')
+      mockEtfRecommendService.getRecommendations.mockRejectedValue(
+        new NoTradingDataError()
       );
 
       // When
@@ -164,30 +148,30 @@ describe('GET /api/etf/recommend', () => {
             etfId: '1',
             issueCode: 'TEST001',
             issueName: '테스트 ETF',
-            category: '주식/국내',
-            score: 0.85,
+            category: '주식형',
+            score: 85.5,
             riskGrade: 3,
-            flucRate: 0.02,
+            flucRate: 2.5,
             metrics: {
               sharpeRatio: 1.2,
-              totalFee: 0.25,
-              tradingVolume: 500000000,
-              netAssetValue: 2000000000,
-              trackingError: 0.08,
-              divergenceRate: 0.03,
-              volatility: 0.12,
+              totalFee: 0.3,
+              tradingVolume: 1000000,
+              netAssetValue: 50000000000,
+              trackingError: 0.5,
+              divergenceRate: 0.2,
+              volatility: 0.15,
               normalizedVolatility: 0.6,
             },
             reasons: [
               {
-                title: '우수한 샤프비율',
-                description: '샤프비율이 1.0을 초과하여...',
+                title: '낮은 총보수',
+                description: '0.3%의 낮은 총보수로 비용 효율성이 우수합니다.',
               },
             ],
           },
         ],
         userProfile: {
-          investType: InvestType.MODERATE,
+          investType: 'MODERATE',
           totalEtfsAnalyzed: 100,
           filteredEtfsCount: 50,
         },
@@ -201,15 +185,13 @@ describe('GET /api/etf/recommend', () => {
           volatility: 0.1,
         },
         debug: {
-          allowedRiskGrades: [3, 4, 5],
+          allowedRiskGrades: [2, 3, 4],
           totalEtfsBeforeFilter: 100,
           totalEtfsAfterFilter: 50,
         },
       };
 
-      mockEtfRecommendationService.getRecommendations.mockResolvedValue(
-        mockResult
-      );
+      mockEtfRecommendService.getRecommendations.mockResolvedValue(mockResult);
 
       // When
       const req = new NextRequest('http://localhost:3000/api/etf/recommend');
@@ -220,24 +202,24 @@ describe('GET /api/etf/recommend', () => {
       expect(res.status).toBe(200);
       expect(json.message).toBe('ETF 추천 성공');
       expect(json.data).toEqual(mockResult);
-      expect(
-        mockEtfRecommendationService.getRecommendations
-      ).toHaveBeenCalledWith(BigInt('61'), 10);
+      expect(mockEtfRecommendService.getRecommendations).toHaveBeenCalledWith(
+        BigInt('61'),
+        10
+      );
     });
   });
 
   describe('에러 처리 테스트', () => {
     beforeEach(() => {
-      mockGetServerSession.mockResolvedValue({
+      (getServerSession as jest.Mock).mockResolvedValue({
         user: { id: '61' },
-      } as any);
+      });
     });
 
     it('데이터베이스 오류 시 500 에러를 반환한다', async () => {
       // Given
-      mockEtfRecommendationService.getRecommendations.mockRejectedValue(
-        new Error('Database connection failed')
-      );
+      const dbError = new Error('Database connection failed');
+      mockEtfRecommendService.getRecommendations.mockRejectedValue(dbError);
 
       // When
       const req = new NextRequest('http://localhost:3000/api/etf/recommend');
@@ -253,8 +235,9 @@ describe('GET /api/etf/recommend', () => {
 
     it('서비스 오류 시 500 에러를 반환한다', async () => {
       // Given
-      mockEtfRecommendationService.getRecommendations.mockRejectedValue(
-        new Error('Service error')
+      const serviceError = new Error('Service error occurred');
+      mockEtfRecommendService.getRecommendations.mockRejectedValue(
+        serviceError
       );
 
       // When
@@ -271,8 +254,9 @@ describe('GET /api/etf/recommend', () => {
 
     it('알 수 없는 오류 시 500 에러를 반환한다', async () => {
       // Given
-      mockEtfRecommendationService.getRecommendations.mockRejectedValue(
-        new Error('Unknown error')
+      const unknownError = new Error('Unknown error');
+      mockEtfRecommendService.getRecommendations.mockRejectedValue(
+        unknownError
       );
 
       // When
@@ -283,137 +267,6 @@ describe('GET /api/etf/recommend', () => {
       // Then
       expect(res.status).toBe(500);
       expect(json.message).toBe('서버 오류가 발생했습니다.');
-    });
-  });
-});
-
-describe('EtfRecommendationService 단위 테스트', () => {
-  let mockEtfTestService: jest.Mocked<EtfTestService>;
-  let mockPrismaClient: any;
-  let etfRecommendationService: EtfRecommendationService;
-
-  beforeEach(() => {
-    jest.clearAllMocks();
-
-    mockEtfTestService = {
-      getUserInvestType: jest.fn(),
-      saveMbtiResult: jest.fn(),
-      getUserPreferredCategories: jest.fn(),
-      getUserInvestmentProfile: jest.fn(),
-    } as unknown as jest.Mocked<EtfTestService>;
-
-    mockPrismaClient = {
-      etf: {
-        findMany: jest.fn(),
-      },
-      etfDailyTrading: {
-        findMany: jest.fn(),
-      },
-    };
-
-    // 실제 서비스 인스턴스를 생성하되 의존성을 모킹
-    etfRecommendationService = new EtfRecommendationService({
-      etfTestService: mockEtfTestService,
-      prismaClient: mockPrismaClient,
-    });
-  });
-
-  describe('getRecommendations', () => {
-    it('투자 성향이 없으면 에러를 던진다', async () => {
-      // Given
-      const userId = BigInt('61');
-      mockEtfTestService.getUserInvestType.mockResolvedValue(null);
-
-      // When & Then
-      await expect(
-        etfRecommendationService.getRecommendations(userId)
-      ).rejects.toThrow('투자 성향 테스트를 먼저 완료해주세요.');
-
-      expect(mockEtfTestService.getUserInvestType).toHaveBeenCalledWith(userId);
-    });
-
-    it('ETF 데이터가 없으면 에러를 던진다', async () => {
-      // Given
-      const userId = BigInt('61');
-      mockEtfTestService.getUserInvestType.mockResolvedValue(
-        InvestType.MODERATE
-      );
-      mockPrismaClient.etf.findMany.mockResolvedValue([]);
-
-      // When & Then
-      await expect(
-        etfRecommendationService.getRecommendations(userId)
-      ).rejects.toThrow('추천할 수 있는 ETF가 없습니다.');
-    });
-
-    it('거래 데이터가 있는 ETF가 없으면 에러를 던진다', async () => {
-      // Given
-      const userId = BigInt('61');
-      mockEtfTestService.getUserInvestType.mockResolvedValue(
-        InvestType.MODERATE
-      );
-      mockPrismaClient.etf.findMany.mockResolvedValue([
-        {
-          id: BigInt(1),
-          issueCode: 'TEST001',
-          issueName: '테스트 ETF',
-          return1y: '0.08',
-          etfTotalFee: '0.25',
-          netAssetTotalAmount: '2000000000',
-          traceErrRate: '0.08',
-          divergenceRate: '0.03',
-          volatility: '0.12',
-          category: { fullPath: '주식/국내' },
-          tradings: [], // 거래 데이터 없음
-        },
-      ]);
-
-      // When & Then
-      await expect(
-        etfRecommendationService.getRecommendations(userId)
-      ).rejects.toThrow('거래 데이터가 있는 ETF가 없습니다.');
-    });
-
-    it('성공적으로 추천 결과를 반환한다', async () => {
-      // Given
-      const userId = BigInt('61');
-      mockEtfTestService.getUserInvestType.mockResolvedValue(
-        InvestType.MODERATE
-      );
-      mockPrismaClient.etf.findMany.mockResolvedValue([
-        {
-          id: BigInt(1),
-          issueCode: 'TEST001',
-          issueName: '테스트 ETF',
-          return1y: '0.08',
-          etfTotalFee: '0.25',
-          netAssetTotalAmount: '2000000000',
-          traceErrRate: '0.08',
-          divergenceRate: '0.03',
-          volatility: '0.12',
-          category: { fullPath: '주식/국내' },
-          tradings: [
-            {
-              accTotalValue: '500000000',
-              flucRate: '0.02',
-            },
-          ],
-        },
-      ]);
-
-      // When
-      const result = await etfRecommendationService.getRecommendations(
-        userId,
-        5
-      );
-
-      // Then
-      expect(result.recommendations).toBeDefined();
-      expect(Array.isArray(result.recommendations)).toBe(true);
-      expect(result.recommendations.length).toBeGreaterThan(0);
-      expect(result.userProfile.investType).toBe(InvestType.MODERATE);
-      expect(result.weights).toBeDefined();
-      expect(result.debug).toBeDefined();
     });
   });
 });

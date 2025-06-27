@@ -2,6 +2,66 @@ import { InvestType } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import { EtfTestService } from './etf-test-service';
 
+// 타입 정의 개선
+export interface EtfData {
+  id: bigint;
+  issueCode: string;
+  issueName: string;
+  return1y: string;
+  etfTotalFee: string;
+  netAssetTotalAmount: string;
+  traceErrRate: string;
+  divergenceRate: string;
+  volatility: string;
+  category: {
+    fullPath: string;
+  };
+  tradings: {
+    accTotalValue: string;
+    flucRate: string;
+  }[];
+}
+
+export interface ProcessedEtfData {
+  id: bigint;
+  issueCode: string;
+  issueName: string;
+  category: {
+    fullPath: string;
+  };
+  processedData: {
+    return1y: number;
+    etfTotalFee: number;
+    netAssetTotalAmount: number;
+    traceErrRate: number;
+    divergenceRate: number;
+    volatility: number;
+    riskGrade: number;
+    avgTradingVolume: number;
+    flucRate: number;
+  };
+}
+
+export interface MetricsData {
+  return1y: { min: number; max: number };
+  etfTotalFee: { min: number; max: number };
+  netAssetTotalAmount: { min: number; max: number };
+  traceErrRate: { min: number; max: number };
+  divergenceRate: { min: number; max: number };
+  volatility: { min: number; max: number };
+  tradingVolume: { min: number; max: number };
+}
+
+export interface WeightsData {
+  sharpeRatio: number;
+  totalFee: number;
+  tradingVolume: number;
+  netAssetValue: number;
+  trackingError: number;
+  divergenceRate: number;
+  volatility: number;
+}
+
 export interface EtfRecommendationResponse {
   etfId: string;
   issueCode: string;
@@ -41,9 +101,32 @@ export interface EtfRecommendationResult {
   };
 }
 
+// 의존성 주입 인터페이스 개선
 export interface EtfRecommendationDependencies {
   etfTestService?: EtfTestService;
   prismaClient?: typeof prisma;
+}
+
+// 커스텀 에러 클래스
+export class InvestmentProfileNotFoundError extends Error {
+  constructor() {
+    super('투자 성향 테스트를 먼저 완료해주세요.');
+    this.name = 'InvestmentProfileNotFoundError';
+  }
+}
+
+export class NoEtfDataError extends Error {
+  constructor() {
+    super('추천할 수 있는 ETF가 없습니다.');
+    this.name = 'NoEtfDataError';
+  }
+}
+
+export class NoTradingDataError extends Error {
+  constructor() {
+    super('거래 데이터가 있는 ETF가 없습니다.');
+    this.name = 'NoTradingDataError';
+  }
 }
 
 // 하나증권 위험등급 분류 함수 (5단계)
@@ -91,7 +174,7 @@ export function calculateSharpeRatio(
 }
 
 // 투자 성향별 가중치 설정
-export function getRiskBasedWeights(investType: InvestType) {
+export function getRiskBasedWeights(investType: InvestType): WeightsData {
   const weights = {
     CONSERVATIVE: {
       sharpeRatio: 0.05,
@@ -157,8 +240,16 @@ export function normalizeVolatilityByRiskGrade(riskGrade: number): number {
 
 // 추천 이유 생성 함수
 export function generateReasons(
-  etf: any,
-  metrics: any,
+  etf: EtfData,
+  metrics: {
+    sharpeRatio: number;
+    totalFee: number;
+    tradingVolume: number;
+    netAssetValue: number;
+    trackingError: number;
+    divergenceRate: number;
+    volatility: number;
+  },
   investType: InvestType,
   riskGrade: number
 ): { title: string; description: string }[] {
@@ -269,7 +360,7 @@ export function getAllowedRiskGrades(investType: InvestType): number[] {
   return allowedGrades[investType] || [3, 4, 5];
 }
 
-export class EtfRecommendationService {
+export class EtfRecommendService {
   private etfTestService: EtfTestService;
   private prismaClient: typeof prisma;
 
@@ -281,13 +372,31 @@ export class EtfRecommendationService {
   async getRecommendations(
     userId: bigint,
     limit: number = 10
-  ): Promise<EtfRecommendationResult> {
+  ): Promise<{
+    recommendations: EtfRecommendationResponse[];
+    userProfile: {
+      investType:
+        | 'CONSERVATIVE'
+        | 'MODERATE'
+        | 'NEUTRAL'
+        | 'ACTIVE'
+        | 'AGGRESSIVE';
+      totalEtfsAnalyzed: number;
+      filteredEtfsCount: number;
+    };
+    weights: WeightsData;
+    debug: {
+      allowedRiskGrades: number[];
+      totalEtfsBeforeFilter: number;
+      totalEtfsAfterFilter: number;
+    };
+  }> {
     // 사용자의 투자 성향 조회
     const userInvestType = await this.etfTestService.getUserInvestType(userId);
 
     // 사용자의 투자 성향이 없으면 추천 진행하지 않음
     if (!userInvestType) {
-      throw new Error('투자 성향 테스트를 먼저 완료해주세요.');
+      throw new InvestmentProfileNotFoundError();
     }
 
     const investType = userInvestType;
@@ -296,14 +405,14 @@ export class EtfRecommendationService {
     const etfs = await this.getEtfData();
 
     if (etfs.length === 0) {
-      throw new Error('추천할 수 있는 ETF가 없습니다.');
+      throw new NoEtfDataError();
     }
 
     // 거래대금이 있는 ETF만 필터링
     const etfsWithTradingData = etfs.filter((etf) => etf.tradings.length > 0);
 
     if (etfsWithTradingData.length === 0) {
-      throw new Error('거래 데이터가 있는 ETF가 없습니다.');
+      throw new NoTradingDataError();
     }
 
     // ETF 데이터 처리 및 점수 계산
@@ -342,8 +451,9 @@ export class EtfRecommendationService {
     };
   }
 
-  private async getEtfData() {
-    return await this.prismaClient.etf.findMany({
+  // private 메서드를 public으로 변경하여 테스트 가능하게 함
+  async getEtfData(): Promise<EtfData[]> {
+    const rawEtfData = await this.prismaClient.etf.findMany({
       where: {
         // 필수 지표가 모두 있는 ETF만 선택
         AND: [
@@ -383,9 +493,30 @@ export class EtfRecommendationService {
       },
       take: 400,
     });
+
+    // 반환 데이터 변환
+    return rawEtfData.map((etf) => ({
+      id: etf.id,
+      issueCode: etf.issueCode ?? '', // null일 경우 기본값 처리
+      issueName: etf.issueName ?? 'N/A',
+      return1y: etf.return1y?.toString() || '0.00', // null을 기본값으로 변환
+      etfTotalFee: etf.etfTotalFee?.toString() || '0.00',
+      netAssetTotalAmount: etf.netAssetTotalAmount?.toString() || '0',
+      traceErrRate: etf.traceErrRate?.toString() || '0.00',
+      divergenceRate: etf.divergenceRate?.toString() || '0.00',
+      volatility: etf.volatility?.toString() || '0.00',
+      category: {
+        fullPath: etf.category.fullPath,
+      },
+      tradings: etf.tradings.map((trading) => ({
+        accTotalValue: trading.accTotalValue?.toString() || '0',
+        flucRate: trading.flucRate?.toString() || '0.00',
+      })),
+    }));
   }
 
-  private processEtfData(etfs: any[]) {
+  // private 메서드를 public으로 변경하여 테스트 가능하게 함
+  processEtfData(etfs: EtfData[]): ProcessedEtfData[] {
     return etfs.map((etf) => {
       const return1y = Number(etf.return1y) || 0;
       const etfTotalFee = Number(etf.etfTotalFee) || 0;
@@ -393,23 +524,26 @@ export class EtfRecommendationService {
       const traceErrRate = Number(etf.traceErrRate) || 0;
       const divergenceRate = Number(etf.divergenceRate) || 0;
       const volatility = Number(etf.volatility) || 0;
-      const riskGrade = classifyRiskGrade(volatility);
 
-      // 평균 거래대금 계산
+      // tradings의 값이 비정상적일 경우의 방어 처리 (빈 배열 처리와 평균 계산).
       const avgTradingVolume =
-        etf.tradings.length > 0
+        etf.tradings?.length > 0
           ? etf.tradings.reduce(
-              (sum: number, t) => sum + Number(t.accTotalValue) || 0,
+              (sum: number, t) => sum + (Number(t.accTotalValue) || 0),
               0
             ) / etf.tradings.length
           : 0;
 
-      // 최신 변동률 계산
       const latestFlucRate =
-        etf.tradings.length > 0 ? Number(etf.tradings[0].flucRate) || 0 : 0;
+        etf.tradings && etf.tradings.length > 0
+          ? Number(etf.tradings[0].flucRate) || 0
+          : 0;
 
       return {
-        ...etf,
+        id: etf.id,
+        issueCode: etf.issueCode,
+        issueName: etf.issueName,
+        category: etf.category,
         processedData: {
           return1y,
           etfTotalFee,
@@ -417,7 +551,7 @@ export class EtfRecommendationService {
           traceErrRate,
           divergenceRate,
           volatility,
-          riskGrade,
+          riskGrade: classifyRiskGrade(volatility),
           avgTradingVolume,
           flucRate: latestFlucRate,
         },
@@ -425,7 +559,8 @@ export class EtfRecommendationService {
     });
   }
 
-  private calculateMetrics(processedEtfs: any[]) {
+  // private 메서드를 public으로 변경하여 테스트 가능하게 함
+  calculateMetrics(processedEtfs: ProcessedEtfData[]): MetricsData {
     const metrics = {
       return1y: {
         min: Math.min(...processedEtfs.map((e) => e.processedData.return1y)),
@@ -478,10 +613,11 @@ export class EtfRecommendationService {
     return { ...metrics, tradingVolume };
   }
 
-  private calculateEtfScores(
-    processedEtfs: any[],
-    metrics: any,
-    weights: any,
+  // private 메서드를 public으로 변경하여 테스트 가능하게 함
+  calculateEtfScores(
+    processedEtfs: ProcessedEtfData[],
+    metrics: MetricsData,
+    weights: WeightsData,
     allowedRiskGrades: number[],
     investType: InvestType
   ): EtfRecommendationResponse[] {
@@ -584,7 +720,19 @@ export class EtfRecommendationService {
             normalizedVolatility: normalizedVolatility,
           },
           reasons: generateReasons(
-            etf,
+            {
+              id: etf.id,
+              issueCode: etf.issueCode,
+              issueName: etf.issueName,
+              return1y: return1y.toString(),
+              etfTotalFee: etfTotalFee.toString(),
+              netAssetTotalAmount: netAssetTotalAmount.toString(),
+              traceErrRate: traceErrRate.toString(),
+              divergenceRate: divergenceRate.toString(),
+              volatility: volatility.toString(),
+              category: etf.category,
+              tradings: [],
+            },
             {
               sharpeRatio,
               totalFee: etfTotalFee,
