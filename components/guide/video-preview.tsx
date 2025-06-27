@@ -4,12 +4,13 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Play } from 'lucide-react';
 
-interface VideoPreviewProps {
+export interface VideoPreviewProps {
   id: string;
   title: string;
   duration: string;
   views: string;
   videoUrl: string;
+  category: string;
 }
 
 const getYoutubeVideoId = (url: string): string | null => {
@@ -43,6 +44,7 @@ export const VideoPreview = ({
   duration,
   views,
   videoUrl,
+  category,
 }: VideoPreviewProps) => {
   const router = useRouter();
   const videoId = getYoutubeVideoId(videoUrl);
@@ -50,7 +52,7 @@ export const VideoPreview = ({
     ? `https://img.youtube.com/vi/${videoId}/0.jpg`
     : null;
   const handleClick = (id: string) => {
-    router.push(`/guide/shorts-viewer/${id}`);
+    router.push(`/guide/shorts-viewer/${category}/${id}`);
   };
 
   return (
@@ -64,6 +66,7 @@ export const VideoPreview = ({
             src={thumbnailUrl}
             alt='YouTube Thumbnail'
             fill
+            sizes='(max-width: 768px) 100vw, 240px'
             className='object-cover'
           />
         ) : (
@@ -75,8 +78,10 @@ export const VideoPreview = ({
           <Play className='text-white w-10 h-10' />
         </div>
       </div>
-      <div className='mt-3 flex flex-col items-start w-full'>
-        <span className='font-medium text-sm truncate'>{title}</span>
+      <div className='mt-3 flex flex-col items-start w-full min-w-0'>
+        <span className='block font-medium text-sm truncate max-w-full'>
+          {title}
+        </span>
         <span className='text-xs text-gray-500'>
           {views} • {duration}
         </span>

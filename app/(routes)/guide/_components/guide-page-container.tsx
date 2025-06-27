@@ -1,21 +1,86 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { Session } from 'next-auth';
 import { useRouter } from 'next/navigation';
 import { useHeader } from '@/context/header-context';
 import ArrowIcon from '@/public/images/arrow-icon';
+import { fetchTitle } from '@/utils/guide';
 import { BookOpen, Shield, ShoppingBasket } from 'lucide-react';
-import VideoPreview from '@/components/guide/video-preview';
 import { Card, CardContent } from '@/components/ui/card';
-import { shortVideos } from '../data/video-data';
+import { shortVideos, VideoItem } from '../data/video-data';
+import { SliderWrapper } from './slider-wrapper';
 
-export default function GuidePageContainer() {
+interface Props {
+  session: Session;
+}
+
+export default function GuidePageContainer({ session }: Props) {
   const { setHeader } = useHeader();
   const router = useRouter();
+  const [hanaVideo, setHanaVideo] = useState<VideoItem[]>([]);
+  const [recommendVideo, setRecommendVideo] = useState<VideoItem[]>([]);
+  const [investType, setInvestType] = useState();
+  const [recommendTitle, setRecommendTitle] = useState<string>('');
+  const [userName, setUserName] = useState<string>('');
 
   useEffect(() => {
+    const fetchEtfTestInfo = async () => {
+      try {
+        const res = await fetch('/api/etf/mbti', { method: 'GET' });
+        if (!res.ok) return;
+        const data = await res.json();
+        setInvestType(data.investType);
+      } catch (error) {
+        console.error('MBTI 정보 조회 실패:', error);
+      }
+    };
+    fetchEtfTestInfo();
+
     setHeader('금융 초보가이드', '쉽고 재미있게 배우는 투자');
+    if (session?.user.name) {
+      setUserName(session.user.name);
+    }
   }, []);
+
+  useEffect(() => {
+    if (investType === undefined) return;
+
+    const filteredHana = shortVideos.filter(
+      (video) => video.category === 'hana'
+    );
+    setHanaVideo(filteredHana);
+
+    if (investType) {
+      const filteredRecommend = shortVideos.filter(
+        (video) =>
+          video.category === 'recommend' && video.investType === investType
+      );
+      setRecommendVideo(filteredRecommend);
+      setRecommendTitle(fetchTitle(userName, investType));
+    } else {
+      const recommendPool = shortVideos.filter(
+        (video) => video.category === 'recommend'
+      );
+
+      const randomIds = new Set<number>();
+      while (randomIds.size < 6) {
+        randomIds.add(Math.floor(Math.random() * 29) + 8);
+      }
+
+      let filteredRecommend = recommendPool.filter((video) =>
+        randomIds.has(Number(video.id))
+      );
+
+      if (filteredRecommend.length < 6) {
+        const shuffled = [...recommendPool].sort(() => 0.5 - Math.random());
+        filteredRecommend = shuffled.slice(0, 6);
+      }
+
+      setRecommendVideo(filteredRecommend);
+      setRecommendTitle('추천 가이드');
+    }
+  }, [investType]);
 
   const guideCategories = [
     {
@@ -37,6 +102,15 @@ export default function GuidePageContainer() {
       guides: ['ETF vs 펀드', '적금 vs 투자', '보험 상품'],
     },
   ];
+
+  const moreRecommend = () => {
+    const base = '/guide/shorts-viewer/recommend';
+    if (investType) {
+      router.push(`${base}?investType=${encodeURIComponent(investType)}`);
+    } else {
+      router.push(base);
+    }
+  };
 
   return (
     <div className='px-4 py-4'>
@@ -75,10 +149,10 @@ export default function GuidePageContainer() {
           ))}
         </div>
         <div className='flex items-center justify-between'>
-          <h2 className='text-lg font-semibold'>숏츠 가이드</h2>
+          <h2 className='text-lg font-semibold'>투자 꿀팁? 하나면 충분!</h2>
           <div
             className='flex items-end'
-            onClick={() => router.push('/guide/shorts-viewer')}
+            onClick={() => router.push('/guide/shorts-viewer/hana')}
           >
             <span>더 보기</span>
             <ArrowIcon
@@ -89,18 +163,30 @@ export default function GuidePageContainer() {
           </div>
         </div>
         <div>
-          <div className='grid grid-cols-2 gap-3'>
-            {shortVideos.slice(0, 4).map((video) => (
-              <VideoPreview
-                key={video.id}
-                id={video.id}
-                title={video.title}
-                duration={video.duration}
-                views={video.views}
-                videoUrl={video.videoUrl}
-              />
-            ))}
+          <SliderWrapper videos={hanaVideo.slice(0, 6)} />
+        </div>
+        <div className='flex items-center justify-between min-w-0'>
+          <h2 className='flex-1 text-lg font-semibold truncate pr-2'>
+            {recommendTitle}
+          </h2>
+          <div
+            className='flex items-end flex-shrink-0 whitespace-nowrap cursor-pointer'
+            onClick={() => moreRecommend()}
+          >
+            <span>더 보기</span>
+            <ArrowIcon
+              direction='right'
+              className='text-black'
+              viewBox='0 0 12 36'
+            />
           </div>
+        </div>
+        <div>
+          {recommendVideo.length === 0 ? (
+            <p className='text-sm text-gray-500'>추천 영상이 없습니다.</p>
+          ) : (
+            <SliderWrapper videos={recommendVideo.slice(0, 6)} />
+          )}
         </div>
       </div>
     </div>
