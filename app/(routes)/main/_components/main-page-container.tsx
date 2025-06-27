@@ -235,7 +235,7 @@ export default function MainPageContainer({ userName, savedTax }: Props) {
       {accountInfo && (
         <AccountSummaryCard account={accountInfo} savedTax={savedTax} />
       )}
-      {/*<BeginnerGuideCard />*/}
+      <BeginnerGuideCard />
 
       {/* 약관 개요 모달 */}
       {showModal && (

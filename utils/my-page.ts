@@ -8,5 +8,5 @@ export const convertToKorLabel = (enumValue: InvestType): string => {
     ACTIVE: '적극투자형',
     AGGRESSIVE: '공격투자형',
   };
-  return map[enumValue] ?? '위험중립형';
+  return map[enumValue] ?? '위험중립형'; // fallback
 };

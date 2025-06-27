@@ -195,21 +195,18 @@ export default function RegisterForm() {
       case 'rrn':
         return validateField('rrn', formData.rrn, formData);
 
-      // case 'phone':
-      //   return (
-      //     validateField('phone', formData.phone, formData) &&
-      //     validateField(
-      //       'verificationCode',
-      //       formData.verificationCode,
-      //       formData
-      //     ) &&
-      //     isCodeSent &&
-      //     formData.verificationCode === sentCode
-      //   );
-
-      // 문자 인증 패스
       case 'phone':
-        return true;
+        return (
+          // validateField('phone', formData.phone, formData) &&
+          // validateField(
+          //   'verificationCode',
+          //   formData.verificationCode,
+          //   formData
+          // ) &&
+          // isCodeSent &&
+          // formData.verificationCode === sentCode
+          true
+        );
 
       case 'address':
         return validateField('address', formData.address, formData);
