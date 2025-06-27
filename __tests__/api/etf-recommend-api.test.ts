@@ -11,7 +11,7 @@ describe('실제 DB - GET /api/etf/recommend', () => {
   it('실제 데이터를 확인한다', async () => {
     // 실제 로그인된 유저 세션 ID로 설정 (테스트용)
     (getServerSession as jest.Mock).mockResolvedValue({
-      user: { id: '25' }, // 실제 DB에 있는 유저 ID로 대체해야 함
+      user: { id: '59' }, // 실제 DB에 있는 유저 ID로 대체해야 함
     });
 
     const req = new NextRequest('http://localhost:3000/api/etf/recommend');

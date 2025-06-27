@@ -3,7 +3,8 @@
  */
 import { getServerSession } from 'next-auth';
 import { NextRequest } from 'next/server';
-import { resetPrismaMock, type getPrismaMock } from '@/__mocks__/prisma';
+import { resetWithEtfTestPrismaMock } from '@/__mocks__/prisma';
+import { createEtfTestPrismaMock } from '@/__mocks__/prisma-factory';
 import { GET, POST } from '@/app/api/etf/mbti/route';
 import { InvestType } from '@prisma/client';
 import {
@@ -27,17 +28,19 @@ jest.mock('@/lib/prisma', () => {
   };
 });
 
-let mockPrisma: ReturnType<typeof getPrismaMock>;
+let mockPrisma: ReturnType<typeof createEtfTestPrismaMock>;
 const mockGetServerSession = getServerSession as jest.Mock;
 
 describe('/api/etf/mbti', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockPrisma = resetPrismaMock();
+    mockPrisma = resetWithEtfTestPrismaMock() as ReturnType<
+      typeof createEtfTestPrismaMock
+    >;
   });
 
   describe('POST', () => {
-    it('정상적으로 MBTI 결과를 저장한다', async () => {
+    it('프로필 없으면 create가 호출되며 MBTI 결과가 정상적으로 저장된다', async () => {
       const mockSession = createMockSession('5');
       const validRequest = createValidMbtiRequest();
       const mockCategories = createMockEtfCategories();
@@ -48,14 +51,20 @@ describe('/api/etf/mbti', () => {
         validRequest.preferredCategories.includes(c.fullPath)
       );
 
-      const mockUpsert = jest.fn();
+      const mockFindUnique = jest.fn().mockResolvedValue(null);
+      const mockCreate = jest.fn();
+      const mockUpdate = jest.fn(); // 호출 X
       const mockFindMany = jest.fn().mockResolvedValue(filteredCategories);
       const mockDeleteMany = jest.fn();
       const mockCreateMany = jest.fn();
 
       const mockTransaction = jest.fn().mockImplementation(async (callback) => {
         const mockTx = {
-          investmentProfile: { upsert: mockUpsert },
+          investmentProfile: {
+            findUnique: mockFindUnique,
+            create: mockCreate,
+            update: mockUpdate,
+          },
           etfCategory: { findMany: mockFindMany },
           userEtfCategory: {
             deleteMany: mockDeleteMany,
@@ -81,14 +90,16 @@ describe('/api/etf/mbti', () => {
         message: '투자 성향 및 선호 카테고리 업데이트 성공',
       });
 
-      expect(mockUpsert).toHaveBeenCalledWith({
+      expect(mockFindUnique).toHaveBeenCalledWith({
         where: { userId: BigInt(mockSession.user.id) },
-        update: { investType: validRequest.investType },
-        create: {
+      });
+      expect(mockCreate).toHaveBeenCalledWith({
+        data: {
           userId: BigInt(mockSession.user.id),
           investType: validRequest.investType,
         },
       });
+      expect(mockUpdate).not.toHaveBeenCalled();
 
       expect(mockFindMany).toHaveBeenCalledWith({
         where: { fullPath: { in: validRequest.preferredCategories } },
@@ -104,6 +115,59 @@ describe('/api/etf/mbti', () => {
           userId: BigInt(mockSession.user.id),
           etfCategoryId: category.id,
         })),
+      });
+    });
+
+    it('프로필 있으면 update가 호출되며 MBTI 결과가 정상적으로 저장된다', async () => {
+      const mockSession = createMockSession('5');
+      const validRequest = createValidMbtiRequest();
+      const mockCategories = createMockEtfCategories();
+
+      mockGetServerSession.mockResolvedValue(mockSession);
+
+      const filteredCategories = mockCategories.filter((c) =>
+        validRequest.preferredCategories.includes(c.fullPath)
+      );
+
+      const mockFindUnique = jest.fn().mockResolvedValue({ userId: 5 });
+      const mockCreate = jest.fn(); // 호출 X
+      const mockUpdate = jest.fn();
+      const mockFindMany = jest.fn().mockResolvedValue(filteredCategories);
+      const mockDeleteMany = jest.fn();
+      const mockCreateMany = jest.fn();
+
+      const mockTransaction = jest.fn().mockImplementation(async (callback) => {
+        const mockTx = {
+          investmentProfile: {
+            findUnique: mockFindUnique,
+            create: mockCreate,
+            update: mockUpdate,
+          },
+          etfCategory: { findMany: mockFindMany },
+          userEtfCategory: {
+            deleteMany: mockDeleteMany,
+            createMany: mockCreateMany,
+          },
+        };
+        return await callback(mockTx as any);
+      });
+
+      mockPrisma.$transaction = mockTransaction;
+
+      const request = new NextRequest('http://localhost:3000/api/etf/mbti', {
+        method: 'POST',
+        body: JSON.stringify(validRequest),
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      const response = await POST(request);
+      const data = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(mockCreate).not.toHaveBeenCalled();
+      expect(mockUpdate).toHaveBeenCalledWith({
+        where: { userId: BigInt(mockSession.user.id) },
+        data: { investType: validRequest.investType },
       });
     });
 
@@ -156,7 +220,11 @@ describe('/api/etf/mbti', () => {
 
       const mockTransaction = jest.fn().mockImplementation(async (callback) => {
         const mockTx = {
-          investmentProfile: { upsert: jest.fn() },
+          investmentProfile: {
+            findUnique: jest.fn().mockResolvedValue(null),
+            create: jest.fn(),
+            update: jest.fn(),
+          },
           etfCategory: { findMany: jest.fn().mockResolvedValue([]) },
           userEtfCategory: {
             deleteMany: jest.fn(),

@@ -1,17 +1,18 @@
 /**
  * @jest-environment node
  */
-import { createPrismaMock } from '@/__mocks__/prisma-factory';
+import { createEtfTestPrismaMock } from '@/__mocks__/prisma-factory';
 import { EtfTestService } from '@/services/etf/etf-test-service';
 import { InvestType } from '@prisma/client';
 import {
   createMockEtfCategories,
+  createTestTransactionMock,
   createValidMbtiRequest,
   mockInvestmentProfileResult,
   mockUserEtfCategoriesResult,
 } from '../helpers/etf-test-helpers';
 
-let mockPrisma: ReturnType<typeof createPrismaMock>;
+let mockPrisma: ReturnType<typeof createEtfTestPrismaMock>;
 
 jest.mock('@/lib/prisma', () => ({
   get prisma() {
@@ -24,7 +25,7 @@ describe('EtfTestService', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockPrisma = createPrismaMock();
+    mockPrisma = createEtfTestPrismaMock();
     etfMbtiService = new EtfTestService();
   });
 
@@ -39,48 +40,25 @@ describe('EtfTestService', () => {
       ],
     };
 
-    it('정상적으로 MBTI 결과를 저장한다-(1)', async () => {
-      const mockCategories = createMockEtfCategories();
-      const mockTransaction = jest.fn().mockImplementation(async (callback) => {
-        const mockTx = {
-          investmentProfile: { upsert: jest.fn() },
-          etfCategory: {
-            findMany: jest
-              .fn()
-              .mockResolvedValue(
-                mockCategories.filter((c) =>
-                  validParams.preferredCategories.includes(c.fullPath)
-                )
-              ),
-          },
-          userEtfCategory: {
-            deleteMany: jest.fn(),
-            createMany: jest.fn(),
-          },
-        };
-        return await callback(mockTx as any);
-      });
-
-      mockPrisma.$transaction = mockTransaction;
-      await etfMbtiService.saveMbtiResult(validParams);
-
-      expect(mockTransaction).toHaveBeenCalledTimes(1);
-    });
-
-    it('정상적으로 MBTI 결과를 저장한다-(2)', async () => {
+    it('첫 저장 시 전체 흐름 테스트', async () => {
       const mockCategories = createMockEtfCategories();
       const filteredCategories = mockCategories.filter((c) =>
         validParams.preferredCategories.includes(c.fullPath)
       );
 
-      const mockUpsert = jest.fn();
+      const mockFindUnique = jest.fn().mockResolvedValue(null); // 최초 저장
+      const mockCreate = jest.fn();
       const mockFindMany = jest.fn().mockResolvedValue(filteredCategories);
       const mockDeleteMany = jest.fn();
       const mockCreateMany = jest.fn();
 
       const mockTransaction = jest.fn().mockImplementation(async (callback) => {
         const mockTx = {
-          investmentProfile: { upsert: mockUpsert },
+          investmentProfile: {
+            findUnique: mockFindUnique,
+            create: mockCreate,
+            update: jest.fn(), // 호출 안 됨
+          },
           etfCategory: { findMany: mockFindMany },
           userEtfCategory: {
             deleteMany: mockDeleteMany,
@@ -94,29 +72,82 @@ describe('EtfTestService', () => {
 
       await etfMbtiService.saveMbtiResult(validParams);
 
-      expect(mockUpsert).toHaveBeenCalledWith({
+      expect(mockFindUnique).toHaveBeenCalledWith({
         where: { userId: validParams.userId },
-        update: { investType: validParams.investType },
-        create: {
+      });
+      expect(mockCreate).toHaveBeenCalledWith({
+        data: {
           userId: validParams.userId,
           investType: validParams.investType,
         },
       });
-
       expect(mockFindMany).toHaveBeenCalledWith({
         where: { fullPath: { in: validParams.preferredCategories } },
         select: { id: true, fullPath: true },
       });
-
       expect(mockDeleteMany).toHaveBeenCalledWith({
         where: { userId: validParams.userId },
       });
-
       expect(mockCreateMany).toHaveBeenCalledWith({
         data: filteredCategories.map((category) => ({
           userId: validParams.userId,
           etfCategoryId: category.id,
         })),
+      });
+    });
+
+    describe('Single Responsibility Tests', () => {
+      it('프로필 없으면 create만 호출된다', async () => {
+        const tx = createTestTransactionMock({
+          profileExists: false,
+          preferredCategories: validParams.preferredCategories,
+        });
+        mockPrisma.$transaction.mockImplementation(async (cb) => cb(tx as any));
+        await etfMbtiService.saveMbtiResult(validParams);
+        expect(tx.investmentProfile.create).toHaveBeenCalled();
+        expect(tx.investmentProfile.update).not.toHaveBeenCalled();
+      });
+
+      it('프로필 있으면 update만 호출된다', async () => {
+        const tx = createTestTransactionMock({
+          profileExists: true,
+          preferredCategories: validParams.preferredCategories,
+        });
+        mockPrisma.$transaction.mockImplementation(async (cb) => cb(tx as any));
+        await etfMbtiService.saveMbtiResult(validParams);
+        expect(tx.investmentProfile.update).toHaveBeenCalled();
+        expect(tx.investmentProfile.create).not.toHaveBeenCalled();
+      });
+
+      it('항상 deleteMany가 호출된다', async () => {
+        const tx = createTestTransactionMock({
+          preferredCategories: validParams.preferredCategories,
+        });
+        mockPrisma.$transaction.mockImplementation(async (cb) => cb(tx as any));
+        await etfMbtiService.saveMbtiResult(validParams);
+        expect(tx.userEtfCategory.deleteMany).toHaveBeenCalledWith({
+          where: { userId: validParams.userId },
+        });
+      });
+
+      it('카테고리 유효 시 createMany가 호출된다', async () => {
+        const filteredCategories = createMockEtfCategories().filter((c) =>
+          validParams.preferredCategories.includes(c.fullPath)
+        );
+
+        const tx = createTestTransactionMock({
+          preferredCategories: validParams.preferredCategories,
+        });
+
+        mockPrisma.$transaction.mockImplementation(async (cb) => cb(tx as any));
+        await etfMbtiService.saveMbtiResult(validParams);
+
+        expect(tx.userEtfCategory.createMany).toHaveBeenCalledWith({
+          data: filteredCategories.map((c) => ({
+            userId: validParams.userId,
+            etfCategoryId: c.id,
+          })),
+        });
       });
     });
 
@@ -150,7 +181,11 @@ describe('EtfTestService', () => {
 
       const mockTransaction = jest.fn().mockImplementation(async (callback) => {
         const mockTx = {
-          investmentProfile: { upsert: jest.fn() },
+          investmentProfile: {
+            findUnique: jest.fn().mockResolvedValue(null),
+            create: jest.fn(),
+            update: jest.fn(),
+          },
           etfCategory: { findMany: jest.fn().mockResolvedValue([]) },
           userEtfCategory: {
             deleteMany: jest.fn(),
