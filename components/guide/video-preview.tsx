@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { Play } from 'lucide-react';
 
 export interface VideoPreviewProps {
@@ -10,6 +10,7 @@ export interface VideoPreviewProps {
   duration: string;
   views: string;
   videoUrl: string;
+  category: string;
 }
 
 const getYoutubeVideoId = (url: string): string | null => {
@@ -43,19 +44,15 @@ export const VideoPreview = ({
   duration,
   views,
   videoUrl,
+  category,
 }: VideoPreviewProps) => {
   const router = useRouter();
   const videoId = getYoutubeVideoId(videoUrl);
   const thumbnailUrl = videoId
     ? `https://img.youtube.com/vi/${videoId}/0.jpg`
     : null;
-  const params = useParams();
-
-  const raw = params['category'];
-  const category = Array.isArray(raw) ? (raw[0] as string) : (raw as string);
-
   const handleClick = (id: string) => {
-    router.push(`/guide/shorts-viewer/hana/${id}`);
+    router.push(`/guide/shorts-viewer/${category}/${id}`);
   };
 
   return (

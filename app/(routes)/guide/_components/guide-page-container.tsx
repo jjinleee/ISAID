@@ -44,10 +44,13 @@ export default function GuidePageContainer({ session }: Props) {
   }, []);
 
   useEffect(() => {
+    if (investType === undefined) return;
+
     const filteredHana = shortVideos.filter(
       (video) => video.category === 'hana'
     );
     setHanaVideo(filteredHana);
+
     if (investType) {
       const filteredRecommend = shortVideos.filter(
         (video) =>
@@ -55,7 +58,7 @@ export default function GuidePageContainer({ session }: Props) {
       );
       setRecommendVideo(filteredRecommend);
       setRecommendTitle(fetchTitle(userName, investType));
-    } else if (investType === null) {
+    } else {
       const recommendPool = shortVideos.filter(
         (video) => video.category === 'recommend'
       );
@@ -179,7 +182,11 @@ export default function GuidePageContainer({ session }: Props) {
           </div>
         </div>
         <div>
-          <SliderWrapper videos={recommendVideo.slice(0, 6)} />
+          {recommendVideo.length === 0 ? (
+            <p className='text-sm text-gray-500'>추천 영상이 없습니다.</p>
+          ) : (
+            <SliderWrapper videos={recommendVideo.slice(0, 6)} />
+          )}
         </div>
       </div>
     </div>
