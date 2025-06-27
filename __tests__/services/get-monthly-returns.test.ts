@@ -22,164 +22,264 @@ jest.mock('@/lib/prisma', () => ({
   },
 }));
 
+// getMonthlyReturns 함수 테스트
+// 목적: 세션, ISA 계좌 여부, ETF 및 일반 자산 평가금액을 기반으로 총 평가금액과 수익률을 계산하는지 검증
+
 describe('getMonthlyReturns', () => {
   const mockUserId = 1;
 
   beforeEach(() => {
-    jest.clearAllMocks();
-    // 로그인된 사용자 세션을 모킹, user.id를 문자열로 설정
+    jest.clearAllMocks(); // 모든 mock 초기화
+    // 기본 세션 및 ISA 계좌 모킹 함수
     (getServerSession as jest.Mock).mockResolvedValue({
       user: { id: mockUserId.toString() },
     });
+    (prisma.iSAAccount.findUnique as jest.Mock).mockResolvedValue({
+      id: mockUserId,
+    });
   });
 
-  it('로그인하지 않은 경우 오류를 발생시킵니다', async () => {
-    // 로그인 세션이 없을 경우 null 반환하도록 모킹
-    (getServerSession as jest.Mock).mockResolvedValueOnce(null);
-    // getMonthlyReturns 호출 시 "로그인이 필요합니다." 오류가 발생하는지 검증
-    await expect(getMonthlyReturns('6')).rejects.toThrow(
-      '로그인이 필요합니다.'
-    );
-  });
+  // 헬퍼 함수: 기본 모킹 세팅 변경
+  function setupMockData({
+    session,
+    isaAccount,
+    monthlyReturns,
+    etfSnapshots,
+    generalSnapshot,
+  }: {
+    session?: any;
+    isaAccount?: any;
+    monthlyReturns?: any[];
+    etfSnapshots?: any[];
+    generalSnapshot?: any;
+  }) {
+    if (session !== undefined) {
+      (getServerSession as jest.Mock).mockResolvedValue(session);
+    }
+    if (isaAccount !== undefined) {
+      (prisma.iSAAccount.findUnique as jest.Mock).mockResolvedValue(isaAccount);
+    }
+    if (monthlyReturns !== undefined) {
+      (prisma.monthlyReturn.findMany as jest.Mock).mockResolvedValue(
+        monthlyReturns
+      );
+    }
+    if (etfSnapshots !== undefined) {
+      (prisma.eTFHoldingSnapshot.findMany as jest.Mock).mockResolvedValue(
+        etfSnapshots
+      );
+    }
+    if (generalSnapshot !== undefined) {
+      (prisma.generalHoldingSnapshot.aggregate as jest.Mock).mockResolvedValue(
+        generalSnapshot
+      );
+    }
+  }
 
-  it('ISA 계좌가 없을 때 오류를 발생시킵니다', async () => {
-    // ISA 계좌 조회 시 null 반환하도록 모킹하여 계좌가 없음을 시뮬레이션
-    (prisma.iSAAccount.findUnique as jest.Mock).mockResolvedValue(null);
-    // getMonthlyReturns 호출 시 "ISA 계좌가 없습니다." 오류가 발생하는지 검증
-    await expect(getMonthlyReturns('6')).rejects.toThrow(
-      'ISA 계좌가 없습니다.'
-    );
+  // 헬퍼 함수: 월별 수익률 객체 생성
+  function createMockMonthlyReturn(entireProfit: number) {
+    return { baseDate: new Date('2025-06-30T00:00:00Z'), entireProfit };
+  }
+
+  // 헬퍼 함수: ETF 스냅샷 객체 생성
+  function createMockETFSnapshot(evaluatedAmount: number, etfId = 1) {
+    return { evaluatedAmount, snapshotDate: new Date(), etfId };
+  }
+
+  // 헬퍼 함수: 일반 스냅샷 객체 생성
+  function createMockGeneralSnapshot(evaluatedAmount: number) {
+    return { _sum: { evaluatedAmount } };
+  }
+
+  // 헬퍼 함수: 예상 값 계산
+  function calculateExpectedValues(etfAmount: number, generalAmount: number) {
+    const totalAmount = etfAmount + generalAmount;
+    const invested = 17000000; // 고정 투자원금
+    const profit = totalAmount - invested;
+    return { totalAmount, profit };
+  }
+
+  describe('에러 케이스', () => {
+    it('로그인하지 않은 경우 오류를 발생시킵니다', async () => {
+      // given
+      setupMockData({ session: null });
+
+      // when & then
+      await expect(getMonthlyReturns('6')).rejects.toThrow(
+        '로그인이 필요합니다.'
+      );
+    });
+
+    it('ISA 계좌가 없을 때 오류를 발생시킵니다', async () => {
+      // given
+      setupMockData({ isaAccount: null });
+
+      // when & then
+      await expect(getMonthlyReturns('6')).rejects.toThrow(
+        'ISA 계좌가 없습니다.'
+      );
+    });
   });
 
   describe('정확한 평가금액 및 평가수익 계산', () => {
-    //isa 계좌 존재조건 모킹
-    beforeEach(() => {
-      (prisma.iSAAccount.findUnique as jest.Mock).mockResolvedValue({
-        id: mockUserId,
-      });
-    });
-
     it('ETF 500만원 + 일반 1200만원 → 총 1700만원, 평가수익 0원', async () => {
-      //수익률 모킹
-      (prisma.monthlyReturn.findMany as jest.Mock).mockResolvedValue([
-        { baseDate: new Date('2025-06-30T00:00:00Z'), entireProfit: 0.12 },
-      ]);
-      //ETF 스냅샷 평가금액
-      (prisma.eTFHoldingSnapshot.findMany as jest.Mock).mockResolvedValue([
-        { evaluatedAmount: 5000000, snapshotDate: new Date(), etfId: 1 },
-      ]);
-      //general 평가금액
-      (prisma.generalHoldingSnapshot.aggregate as jest.Mock).mockResolvedValue({
-        _sum: { evaluatedAmount: 12000000 },
+      // given
+      const etfAmount = 5_000_000;
+      const generalAmount = 12_000_000;
+      const { totalAmount, profit } = calculateExpectedValues(
+        etfAmount,
+        generalAmount
+      );
+
+      setupMockData({
+        monthlyReturns: [createMockMonthlyReturn(0.12)],
+        etfSnapshots: [createMockETFSnapshot(etfAmount)],
+        generalSnapshot: createMockGeneralSnapshot(generalAmount),
       });
 
-      //계산검증
-      const res = await getMonthlyReturns('6');
+      // when
+      const result = await getMonthlyReturns('6');
 
-      console.log('getMonthlyReturns 실행 결과:', res);
-      expect(prisma.iSAAccount.findUnique).toHaveBeenCalled();
-      expect(prisma.monthlyReturn.findMany).toHaveBeenCalled();
-      expect(prisma.eTFHoldingSnapshot.findMany).toHaveBeenCalled();
-      expect(prisma.generalHoldingSnapshot.aggregate).toHaveBeenCalled();
-
-      const etf = 5000000;
-      const general = 12000000;
-      const total = etf + general;
-      const invested = 17000000; //투자원금
-      const profit = total - invested;
-
-      expect(res.evaluatedAmount).toBe(total);
-      expect(res.evaluatedProfit).toBe(profit);
-      expect(res).toEqual({
+      // then
+      expect(result.evaluatedAmount).toBe(totalAmount);
+      expect(result.evaluatedProfit).toBe(profit);
+      expect(result).toEqual({
         returns: [{ '2025-06-30': 12.0 }],
-        evaluatedAmount: 17000000,
-        evaluatedProfit: 0,
-      });
-    });
-
-    it('ETF 600만원 + 일반 1400만원 → 총 2000만원, 평가수익 300만원', async () => {
-      (prisma.monthlyReturn.findMany as jest.Mock).mockResolvedValue([
-        { baseDate: new Date('2025-06-30T00:00:00Z'), entireProfit: 0.15 },
-      ]);
-      (prisma.eTFHoldingSnapshot.findMany as jest.Mock).mockResolvedValue([
-        { evaluatedAmount: 6000000, snapshotDate: new Date(), etfId: 1 },
-      ]);
-      (prisma.generalHoldingSnapshot.aggregate as jest.Mock).mockResolvedValue({
-        _sum: { evaluatedAmount: 14000000 },
-      });
-
-      const res = await getMonthlyReturns('6');
-
-      console.log('getMonthlyReturns 실행 결과:', res);
-      expect(prisma.iSAAccount.findUnique).toHaveBeenCalled();
-      expect(prisma.monthlyReturn.findMany).toHaveBeenCalled();
-      expect(prisma.eTFHoldingSnapshot.findMany).toHaveBeenCalled();
-      expect(prisma.generalHoldingSnapshot.aggregate).toHaveBeenCalled();
-
-      const etf = 6000000;
-      const general = 14000000;
-      const total = etf + general;
-      const invested = 17000000;
-      const profit = total - invested;
-
-      expect(res.evaluatedAmount).toBe(total);
-      expect(res.evaluatedProfit).toBe(profit);
-      expect(res).toEqual({
-        returns: [{ '2025-06-30': 15.0 }],
-        evaluatedAmount: total,
+        evaluatedAmount: totalAmount,
         evaluatedProfit: profit,
       });
     });
 
-    // 수익률 수식 테스트
+    it('ETF 600만원 + 일반 1400만원 → 총 2000만원, 평가수익 300만원', async () => {
+      // given
+      const etfAmount = 6_000_000;
+      const generalAmount = 14_000_000;
+      const { totalAmount, profit } = calculateExpectedValues(
+        etfAmount,
+        generalAmount
+      );
 
-    // - E (평가금액), B (투자원금), C (중간 입금액) 값을 모킹
-    // - expectedRate = (E - B - C) / (B + 0.5 * C) 계산
-    // - entireProfit으로 모킹한 수익률이 계산 수식과 일치하는지 테스트
-    // - returns 값이 수식에 따라 계산된 9.68%와 일치하는지 확인
-
-    it('수익률 공식 (E - B - C) / (B + 0.5 * C) 계산을 실제 테스트 코드에서 검증', async () => {
-      // ISA 계좌 mock
-      (prisma.iSAAccount.findUnique as jest.Mock).mockResolvedValue({
-        id: mockUserId,
+      setupMockData({
+        monthlyReturns: [createMockMonthlyReturn(0.15)],
+        etfSnapshots: [createMockETFSnapshot(etfAmount)],
+        generalSnapshot: createMockGeneralSnapshot(generalAmount),
       });
 
-      // 수익률: (17.5M - 15M - 1M) / (15M + 0.5M) = 1.5M / 15.5M ≈ 0.0968 (9.68%)
-      const B = 15000000;
-      const C = 1000000;
-      const E = 17500000;
+      // when
+      const result = await getMonthlyReturns('6');
+
+      // then
+      expect(result.evaluatedAmount).toBe(totalAmount);
+      expect(result.evaluatedProfit).toBe(profit);
+      expect(result).toEqual({
+        returns: [{ '2025-06-30': 15.0 }],
+        evaluatedAmount: totalAmount,
+        evaluatedProfit: profit,
+      });
+    });
+  });
+
+  describe('수익률 공식 검증', () => {
+    it('수익률 공식 (E - B - C) / (B + 0.5 * C) 계산을 실제 테스트 코드에서 검증', async () => {
+      // given
+      const B = 15_000_000;
+      const C = 1_000_000;
+      const E = 17_500_000;
 
       const expectedRate = (E - B - C) / (B + 0.5 * C);
       const expectedPercent = Number((expectedRate * 100).toFixed(2)); // 9.68
 
-      // 수익률 값 mocking
-      (prisma.monthlyReturn.findMany as jest.Mock).mockResolvedValue([
-        {
-          baseDate: new Date('2025-06-30T00:00:00Z'),
-          entireProfit: expectedRate,
-        },
-      ]);
+      const etfAmount = 10_000_000;
+      const generalAmount = 7_500_000;
 
-      // ETF 평가금액 E의 일부
-      (prisma.eTFHoldingSnapshot.findMany as jest.Mock).mockResolvedValue([
-        { evaluatedAmount: 10000000, snapshotDate: new Date(), etfId: 1 },
-      ]);
-
-      // 일반 + 현금 E의 일부
-      (prisma.generalHoldingSnapshot.aggregate as jest.Mock).mockResolvedValue({
-        _sum: { evaluatedAmount: 7500000 },
+      setupMockData({
+        monthlyReturns: [createMockMonthlyReturn(expectedRate)],
+        etfSnapshots: [createMockETFSnapshot(etfAmount)],
+        generalSnapshot: createMockGeneralSnapshot(generalAmount),
       });
 
-      const res = await getMonthlyReturns('6');
+      // when
+      const result = await getMonthlyReturns('6');
 
-      console.log('getMonthlyReturns 실행 결과:', res);
-      expect(prisma.iSAAccount.findUnique).toHaveBeenCalled();
-      expect(prisma.monthlyReturn.findMany).toHaveBeenCalled();
-      expect(prisma.eTFHoldingSnapshot.findMany).toHaveBeenCalled();
-      expect(prisma.generalHoldingSnapshot.aggregate).toHaveBeenCalled();
+      // then
+      expect(result.returns).toEqual([{ '2025-06-30': expectedPercent }]);
+      expect(result.evaluatedAmount).toBe(E);
+    });
+  });
 
-      expect(res.returns).toEqual([{ '2025-06-30': expectedPercent }]);
-      expect(res.evaluatedAmount).toBe(E);
+  describe('다양한 시나리오 테스트', () => {
+    it('ETF만 있고 일반 자산이 없는 경우', async () => {
+      // given
+      const etfAmount = 8_000_000;
+      const generalAmount = 0;
+      const { totalAmount, profit } = calculateExpectedValues(
+        etfAmount,
+        generalAmount
+      );
+
+      setupMockData({
+        monthlyReturns: [createMockMonthlyReturn(0.1)],
+        etfSnapshots: [createMockETFSnapshot(etfAmount)],
+        generalSnapshot: createMockGeneralSnapshot(generalAmount),
+      });
+
+      // when
+      const result = await getMonthlyReturns('6');
+
+      // then
+      expect(result.evaluatedAmount).toBe(totalAmount);
+      expect(result.evaluatedProfit).toBe(profit);
+    });
+
+    it('일반 자산만 있고 ETF가 없는 경우', async () => {
+      // given
+      const etfAmount = 0;
+      const generalAmount = 9_000_000;
+      const { totalAmount, profit } = calculateExpectedValues(
+        etfAmount,
+        generalAmount
+      );
+
+      setupMockData({
+        monthlyReturns: [createMockMonthlyReturn(0.08)],
+        etfSnapshots: [],
+        generalSnapshot: createMockGeneralSnapshot(generalAmount),
+      });
+
+      // when
+      const result = await getMonthlyReturns('6');
+
+      // then
+      expect(result.evaluatedAmount).toBe(totalAmount);
+      expect(result.evaluatedProfit).toBe(profit);
+    });
+
+    it('여러 개의 ETF 스냅샷이 있는 경우', async () => {
+      // given
+      const etfSnapshots = [
+        createMockETFSnapshot(3_000_000, 1),
+        createMockETFSnapshot(2_000_000, 2),
+        createMockETFSnapshot(1_500_000, 3),
+      ];
+      const generalAmount = 10_500_000;
+      const totalEtfAmount = 6_500_000;
+      const { totalAmount, profit } = calculateExpectedValues(
+        totalEtfAmount,
+        generalAmount
+      );
+
+      setupMockData({
+        monthlyReturns: [createMockMonthlyReturn(0.12)],
+        etfSnapshots,
+        generalSnapshot: createMockGeneralSnapshot(generalAmount),
+      });
+
+      // when
+      const result = await getMonthlyReturns('6');
+
+      // then
+      expect(result.evaluatedAmount).toBe(totalAmount);
+      expect(result.evaluatedProfit).toBe(profit);
     });
   });
 });
