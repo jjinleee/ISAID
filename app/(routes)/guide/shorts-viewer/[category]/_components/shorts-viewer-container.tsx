@@ -66,7 +66,7 @@ export const ShortsViewerContainer = ({ session }: Props) => {
   return (
     <div className='flex flex-col py-5 px-4 gap-5'>
       <h2 className='text-lg font-semibold'>{pageTitle}</h2>
-      <div className='grid grid-cols-2 gap-4'>
+      <div className='grid grid-cols-3 gap-4'>
         {filteredVideo.map(({ id, title, duration, views, videoUrl }) => (
           <VideoPreview
             key={id}

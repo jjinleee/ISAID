@@ -110,7 +110,7 @@ export default function GuidePageContainer({ session }: Props) {
   };
 
   return (
-    <div className='px-4 py-8'>
+    <div className='px-4 py-4'>
       <div className='flex flex-col gap-5'>
         <h2 className='text-xl font-semibold'>카테고리별 가이드</h2>
         <div className='space-y-3'>
