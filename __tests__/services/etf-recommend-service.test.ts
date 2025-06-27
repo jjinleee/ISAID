@@ -57,7 +57,34 @@ describe('EtfRecommendService', () => {
   describe('getRecommendations', () => {
     it('정상적으로 ETF 추천을 반환한다', async () => {
       // Given
-      const mockEtfs = createMockEtfList(3);
+      // MODERATE 투자자는 위험등급 3,4,5 허용
+      // 변동성 0.03 (월간) → 연간 약 10.4% → 4등급 (저위험)
+      // 변동성 0.04 (월간) → 연간 약 13.8% → 3등급 (중위험)
+      // 변동성 0.02 (월간) → 연간 약 6.9% → 5등급 (초저위험)
+      const mockEtfs = [
+        createMockEtfData({
+          id: BigInt(1),
+          issueCode: 'TEST001',
+          issueName: '저위험 ETF',
+          volatility: '0.03', // 4등급
+          return1y: '0.06',
+        }),
+        createMockEtfData({
+          id: BigInt(2),
+          issueCode: 'TEST002',
+          issueName: '중위험 ETF',
+          volatility: '0.04', // 3등급
+          return1y: '0.08',
+        }),
+        createMockEtfData({
+          id: BigInt(3),
+          issueCode: 'TEST003',
+          issueName: '초저위험 ETF',
+          volatility: '0.02', // 5등급
+          return1y: '0.04',
+        }),
+      ];
+
       mockEtfTestService.getUserInvestType.mockResolvedValue(
         InvestType.MODERATE
       );
@@ -324,11 +351,11 @@ describe('EtfRecommendService', () => {
 describe('Utility Functions', () => {
   describe('classifyRiskGrade', () => {
     it('변동성에 따라 올바른 위험등급을 반환한다', () => {
-      expect(classifyRiskGrade(0.04)).toBe(5); // 초저위험
-      expect(classifyRiskGrade(0.09)).toBe(4); // 저위험
-      expect(classifyRiskGrade(0.14)).toBe(3); // 중위험
-      expect(classifyRiskGrade(0.19)).toBe(2); // 고위험
-      expect(classifyRiskGrade(0.25)).toBe(1); // 초고위험
+      expect(classifyRiskGrade(0.01)).toBe(5); // 초저위험
+      expect(classifyRiskGrade(0.025)).toBe(4); // 저위험
+      expect(classifyRiskGrade(0.043)).toBe(3); // 중위험
+      expect(classifyRiskGrade(0.057)).toBe(2); // 고위험
+      expect(classifyRiskGrade(0.06)).toBe(1); // 초고위험
     });
   });
 

@@ -559,7 +559,6 @@ export class EtfRecommendService {
     });
   }
 
-  // private 메서드를 public으로 변경하여 테스트 가능하게 함
   calculateMetrics(processedEtfs: ProcessedEtfData[]): MetricsData {
     const metrics = {
       return1y: {
@@ -613,7 +612,6 @@ export class EtfRecommendService {
     return { ...metrics, tradingVolume };
   }
 
-  // private 메서드를 public으로 변경하여 테스트 가능하게 함
   calculateEtfScores(
     processedEtfs: ProcessedEtfData[],
     metrics: MetricsData,
