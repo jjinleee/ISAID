@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { Session } from 'next-auth';
-import { useParams, useSearchParams } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { useHeader } from '@/context/header-context';
 import { fetchTitle } from '@/utils/guide';
 import { convertToKorLabel } from '@/utils/my-page';
@@ -25,7 +25,7 @@ const ShortsScrollViewer: React.FC<ShortsScrollViewerProps> = ({
 
   const raw = params['category'];
   const category = Array.isArray(raw) ? (raw[0] as string) : (raw as string);
-  const searchParams = useSearchParams();
+  const searchParams = new URLSearchParams(window.location.search);
   const investType = searchParams.get('investType') ?? undefined;
 
   const containerRef = useRef<HTMLDivElement | null>(null);

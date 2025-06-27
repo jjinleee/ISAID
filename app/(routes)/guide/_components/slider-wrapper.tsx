@@ -38,6 +38,7 @@ export const SliderWrapper = ({ videos }: SliderWrapperProps) => {
               duration={video.duration}
               views={video.views}
               videoUrl={video.videoUrl}
+              category={video.category}
             />
           </SwiperSlide>
         ))}
