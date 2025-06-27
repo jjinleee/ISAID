@@ -37,9 +37,6 @@ const Portfolio = ({
   const tabList = ['잘하고 있어요', '아쉬워요'];
 
   const popoverRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    console.log('rebalancingData : ', rebalancingData);
-  }, [rebalancingData]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -91,12 +88,6 @@ const Portfolio = ({
   const improperPtData = ptData.filter((item) =>
     improperNames.includes(item.name)
   );
-
-  // console.log('ptData : ', ptData);
-  console.log('properOpinions : ', properOpinions);
-  console.log('improperOpinions : ', improperOpinions);
-  console.log('properPtData : ', properPtData);
-  console.log('improperPtData : ', improperPtData);
 
   const buildChartData = (
     pt: PieChartData[],
@@ -245,8 +236,8 @@ const Portfolio = ({
                 ))}
               </div>
 
-              <div className='flex flex-col gap-2 sm:flex-row-reverse'>
-                <div className='w-full sm:w-[340px] flex gap-4 items-start'>
+              <div className='flex flex-col gap-2'>
+                <div className='w-full flex gap-4 items-start'>
                   <ResponsiveContainer width='100%' height={currentChartHeight}>
                     <BarChart
                       data={currentChartData}
