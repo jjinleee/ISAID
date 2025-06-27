@@ -1,18 +1,9 @@
 import { getServerSession } from 'next-auth';
 import { NextResponse } from 'next/server';
+import { getTodayStartOfKST } from '@/utils/date';
 import { Prisma } from '@prisma/client';
-import dayjs from 'dayjs';
-import timezone from 'dayjs/plugin/timezone';
-import utc from 'dayjs/plugin/utc';
 import { authOptions } from '@/lib/auth-options';
 import { prisma } from '@/lib/prisma';
-
-dayjs.extend(utc);
-dayjs.extend(timezone);
-
-function getTodayStartOfKST() {
-  return dayjs().tz('Asia/Seoul').startOf('day').utc().toDate();
-}
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
