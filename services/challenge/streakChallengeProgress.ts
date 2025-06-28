@@ -1,10 +1,5 @@
-import dayjs from 'dayjs';
-import timezone from 'dayjs/plugin/timezone';
-import utc from 'dayjs/plugin/utc';
+import { getTodayStartOfKST, getYesterdayStartOfKST } from '@/utils/date';
 import { prisma } from '@/lib/prisma';
-
-dayjs.extend(utc);
-dayjs.extend(timezone);
 
 /**
  * STREAK 챌린지 진행도 업데이트 (7일 누적 출석 기준)
@@ -13,8 +8,8 @@ export async function updateStreakProgress(
   userId: bigint,
   challengeId: bigint
 ) {
-  const todayStart = dayjs().tz('Asia/Seoul').startOf('day').toDate();
-  const yesterdayStart = dayjs(todayStart).subtract(1, 'day').toDate();
+  const todayStart = getTodayStartOfKST();
+  const yesterdayStart = getYesterdayStartOfKST();
 
   // 현재 진행 정보
   const existingProgress = await prisma.userChallengeProgress.findUnique({
