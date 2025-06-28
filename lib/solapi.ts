@@ -113,7 +113,7 @@ export async function sendSMS(
       {
         to: phone,
         from: sender,
-        text: `ISAID 회원가입 인증번호입니다. #${code}`, // WebOTP 형식: @도메인 #인증번호
+        text: `ISAID 회원가입 인증번호입니다.\n` + `${code}`,
       },
     ],
   };
