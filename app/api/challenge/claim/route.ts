@@ -30,11 +30,19 @@ export async function POST(req: Request) {
   });
   //console.log('Challenge fetched:', challenge.id, challenge.challengeType);
 
+  // 보상 수령일: 오늘 자정 (UTC)
+  const todayStartOfKST = getTodayStartOfKST();
+  const tomorrowStartOfKST = dayjs(todayStartOfKST).add(1, 'day').toDate();
+
   // 수령 여부 확인
   const existingClaim = await prisma.userChallengeClaim.findFirst({
     where: {
       userId,
       challengeId,
+      claimDate: {
+        gte: todayStartOfKST,
+        lt: tomorrowStartOfKST,
+      },
     },
   });
   // console.log('Existing claim:', !!existingClaim);
@@ -46,7 +54,7 @@ export async function POST(req: Request) {
 
   // 보상 수령일: 오늘 자정 (UTC)
   const now = new Date();
-  const utcMidnight = getTodayStartOfKST();
+  const utcMidnight = todayStartOfKST;
 
   const latestPrice = await prisma.etfDailyTrading.findFirst({
     where: { etfId: challenge.etfId },
