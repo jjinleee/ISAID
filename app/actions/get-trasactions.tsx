@@ -57,7 +57,7 @@ export const getTransactions = async (): Promise<CalendarData> => {
     label: string;
   };
 
-  const normalized: TxCommon[] = [
+  const allTxs: TxCommon[] = [
     ...generalTxs.map((g) => ({
       id: g.id.toString(),
       rawType: g.transactionType,
@@ -68,11 +68,16 @@ export const getTransactions = async (): Promise<CalendarData> => {
     ...etfTxs.map((e) => ({
       id: e.id.toString(),
       rawType: e.transactionType,
-      amount: e.price.toNumber(),
+      amount: e.price.toNumber() * e.quantity.toNumber(),
       at: e.transactionAt,
       label: e.etf.issueNameKo ?? 'ETF',
     })),
   ];
+
+  const now = new Date();
+  const pastAndTodayTxs = allTxs.filter(
+    (tx) => tx.at.getTime() <= now.getTime()
+  );
 
   const typeMap: Record<string, CalendarTx['type']> = {
     BUY: '매수',
@@ -85,8 +90,8 @@ export const getTransactions = async (): Promise<CalendarData> => {
   };
 
   const transactionData: Record<string, CalendarTx[]> = {};
-  normalized.forEach((tx) => {
-    const key = tx.at.toISOString().slice(0, 10);
+  pastAndTodayTxs.forEach((tx) => {
+    const key = tx.at.toISOString().slice(0, 10); // YYYY-MM-DD
     if (!transactionData[key]) transactionData[key] = [];
     transactionData[key].push({
       title: tx.label,

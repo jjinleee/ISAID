@@ -151,9 +151,10 @@ export async function getMonthlyReturns(month: MonthKey) {
   } catch (error: unknown) {
     if (error instanceof Error) {
       console.error('[getMonthlyReturns] Error:', error.message);
+      throw error;
     } else {
       console.error('[getMonthlyReturns] Unknown error:', error);
+      throw new Error('Failed to fetch monthly returns');
     }
-    throw new Error('Failed to fetch monthly returns');
   }
 }
