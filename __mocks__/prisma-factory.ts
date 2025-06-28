@@ -2,6 +2,9 @@ type MockFn<T> = {
   [P in keyof T]: jest.Mock;
 };
 
+/**
+ * 기본 Prisma Mock 생성
+ */
 export const createPrismaMock = (overrides = {}) => {
   const baseMock = {
     user: {
@@ -16,6 +19,9 @@ export const createPrismaMock = (overrides = {}) => {
   };
 };
 
+/**
+ * ETF 테스트용 Prisma Mock 생성
+ */
 export const createEtfTestPrismaMock = (overrides = {}) => {
   const baseMock = {
     user: {
@@ -53,6 +59,9 @@ export const createEtfTestPrismaMock = (overrides = {}) => {
   };
 };
 
+/**
+ * 챌린지 테스트용 Prisma Mock 생성
+ */
 export const createChallengePrismaMock = (overrides = {}) => {
   const baseMock = {
     user: {
