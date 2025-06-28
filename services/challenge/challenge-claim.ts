@@ -1,7 +1,6 @@
 import { getTodayStartOfKST } from '@/utils/date';
 import type { Prisma } from '@prisma/client';
 import type { PrismaTransaction } from '@/lib/prisma';
-import { calculateChallengeStatus } from './challenge-status';
 
 export type ClaimChallengeParams = {
   challengeId: bigint;
@@ -23,38 +22,17 @@ export async function claimChallengeReward(
 ): Promise<ClaimChallengeResult> {
   const { challengeId, userId } = params;
 
-  // 1. 챌린지 정보 조회 (상태 판단에 필요한 데이터 포함)
+  // 1. 챌린지 정보 조회
   const challenge = await tx.challenge.findUnique({
     where: { id: challengeId },
-    include: {
-      etf: true,
-      userChallengeClaims: {
-        where: { userId },
-        select: { claimDate: true },
-      },
-      userChallengeProgresses: {
-        where: { userId },
-        select: { progressVal: true, createdAt: true, updatedAt: true },
-      },
-    },
+    include: { etf: true },
   });
 
   if (!challenge) {
     return { success: false, message: 'Challenge not found' };
   }
 
-  // 2. 챌린지 상태 확인 (calculateChallengeStatus 사용)
-  const challengeStatus = calculateChallengeStatus(challenge, userId);
-
-  if (challengeStatus === 'CLAIMED') {
-    return { success: false, message: 'Already claimed' };
-  }
-
-  if (challengeStatus !== 'ACHIEVABLE') {
-    return { success: false, message: 'Challenge not completed' };
-  }
-
-  // 3. 사용자 ISA 계좌 확인
+  // 2. 사용자 ISA 계좌 확인
   const user = await tx.user.findUnique({
     where: { id: userId },
     include: { isaAccount: true },
@@ -66,7 +44,7 @@ export async function claimChallengeReward(
 
   const isaAccountId = user.isaAccount.id;
 
-  // 4. 최신 ETF 종가 조회
+  // 3. 최신 ETF 종가 조회
   const latestTrading = await tx.etfDailyTrading.findFirst({
     where: { etfId: challenge.etfId },
     orderBy: { baseDate: 'desc' },
@@ -79,8 +57,8 @@ export async function claimChallengeReward(
   const now = new Date();
   const utcMidnight = getTodayStartOfKST();
 
-  // 5. 보상 수령 처리
-  // 5-1. 수령 기록 저장
+  // 4. 보상 수령 처리
+  // 4-1. 수령 기록 저장
   await tx.userChallengeClaim.create({
     data: {
       userId,
@@ -89,7 +67,7 @@ export async function claimChallengeReward(
     },
   });
 
-  // 5-2. 진행도 초기화 (ONCE 타입 제외)
+  // 4-2. 진행도 초기화 (ONCE 타입 제외)
   if (challenge.challengeType !== 'ONCE') {
     await tx.userChallengeProgress.updateMany({
       where: { userId, challengeId },
@@ -97,7 +75,7 @@ export async function claimChallengeReward(
     });
   }
 
-  // 5-3. ETF 거래 기록 생성
+  // 4-3. ETF 거래 기록 생성
   const transaction = await tx.eTFTransaction.create({
     data: {
       isaAccountId,
@@ -109,7 +87,7 @@ export async function claimChallengeReward(
     },
   });
 
-  // 5-4. ETF 보유량 업데이트
+  // 4-4. ETF 보유량 업데이트
   const existingHolding = await tx.eTFHolding.findUnique({
     where: {
       isaAccountId_etfId: {

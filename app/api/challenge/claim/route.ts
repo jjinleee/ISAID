@@ -1,7 +1,7 @@
 import { getServerSession } from 'next-auth';
 import { NextResponse } from 'next/server';
-import { getTodayStartOfKST } from '@/utils/date';
-import { Prisma } from '@prisma/client';
+import { claimChallengeReward } from '@/services/challenge/challenge-claim';
+import { canClaimChallenge } from '@/services/challenge/challenge-status';
 import { authOptions } from '@/lib/auth-options';
 import { prisma } from '@/lib/prisma';
 
@@ -14,143 +14,51 @@ export async function POST(req: Request) {
   const userId = BigInt(session.user.id);
   const { challengeId } = await req.json();
 
-  // 챌린지 정보 불러오기 (유형 포함)
-  const challenge = await prisma.challenge.findUniqueOrThrow({
-    where: { id: challengeId },
-    include: { etf: true },
-  });
-  //console.log('Challenge fetched:', challenge.id, challenge.challengeType);
-
-  // 수령 여부 확인
-  const existingClaim = await prisma.userChallengeClaim.findFirst({
-    where: {
-      userId,
-      challengeId,
-    },
-  });
-  // console.log('Existing claim:', !!existingClaim);
-
-  //이미 받았음
-  if (existingClaim) {
-    return NextResponse.json({ message: 'Already claimed' }, { status: 400 });
+  if (!challengeId) {
+    return NextResponse.json(
+      { message: 'Challenge ID is required' },
+      { status: 400 }
+    );
   }
 
-  // 보상 수령일: 오늘 자정 (UTC)
-  const now = new Date();
-  const utcMidnight = getTodayStartOfKST();
+  const challengeIdBigInt = BigInt(challengeId);
 
-  const latestPrice = await prisma.etfDailyTrading.findFirst({
-    where: { etfId: challenge.etfId },
-    orderBy: { baseDate: 'desc' },
-    select: { tddClosePrice: true },
-  });
-
-  if (latestPrice?.tddClosePrice) {
-    //const expectedCost = challenge.quantity.mul(latestPrice.tddClosePrice)
-    //console.log('✅ 검증용 expected avgCost:', expectedCost.toFixed(2))
-  }
-
-  //트랜잭션 처리
-  await prisma.$transaction(async (tx) => {
-    // 1. 수령 기록 저장
-    await tx.userChallengeClaim.create({
-      data: {
+  try {
+    const result = await prisma.$transaction(async (tx) => {
+      // 1. 보상 수령 가능 여부 확인
+      const { canClaim, reason } = await canClaimChallenge(
+        challengeIdBigInt,
         userId,
-        challengeId,
-        claimDate: utcMidnight,
-      },
-    });
-    //console.log(' 📍Claim record created for user:', userId.toString(), 'challenge:', challengeId.toString());
+        tx
+      );
 
-    // 2. 진행도 초기화
-    if (challenge.challengeType !== 'ONCE') {
-      await tx.userChallengeProgress.updateMany({
-        where: { userId, challengeId },
-        data: { progressVal: 0 },
-      });
-      //console.log('Progress reset for user:', userId.toString(), 'challenge:', challengeId.toString());
+      if (!canClaim) {
+        throw new Error(reason || 'Cannot claim reward');
+      }
+
+      // 2. 보상 수령 처리
+      return await claimChallengeReward(
+        { challengeId: challengeIdBigInt, userId },
+        tx
+      );
+    });
+
+    if (!result.success) {
+      return NextResponse.json({ message: result.message }, { status: 400 });
     }
 
-    // 3. 보상 지급 처리
-    const user = await tx.user.findUniqueOrThrow({
-      where: { id: userId },
-      include: { isaAccount: true },
+    return NextResponse.json({
+      message: result.message,
+      transactionId: result.transactionId?.toString(),
     });
-    const isaAccountId = user.isaAccount?.id;
-    //console.log('📍User fetched with ISA account:', isaAccountId?.toString());
-
-    if (!isaAccountId) throw new Error('ISA 계좌가 없습니다');
-
-    // ETF daily trading 에서 가장 최신 종가
-    const latestTrading = await tx.etfDailyTrading.findFirst({
-      where: { etfId: challenge.etfId },
-      orderBy: { baseDate: 'desc' },
-    });
-    //console.log("최신종가 : ", latestTrading);
-
-    if (!latestTrading?.tddClosePrice) {
-      throw new Error('최신 종가 정보를 찾을 수 없습니다');
-    }
-
-    const transaction = await tx.eTFTransaction.create({
-      data: {
-        isaAccountId,
-        etfId: challenge.etfId,
-        quantity: challenge.quantity,
-        transactionType: 'CHALLENGE_REWARD',
-        price: latestTrading.tddClosePrice,
-        transactionAt: now,
+  } catch (error) {
+    console.error('Challenge claim error:', error);
+    return NextResponse.json(
+      {
+        message:
+          error instanceof Error ? error.message : 'Internal server error',
       },
-    });
-    //console.log('Transaction created:', transaction);
-
-    //최신종가 * 지급수량
-    const existingHolding = await tx.eTFHolding.findUnique({
-      where: {
-        isaAccountId_etfId: {
-          isaAccountId,
-          etfId: challenge.etfId,
-        },
-      },
-    });
-
-    let avgCost: Prisma.Decimal;
-
-    if (existingHolding) {
-      const totalQuantity = existingHolding.quantity.add(challenge.quantity);
-      const totalCost = existingHolding.avgCost
-        .mul(existingHolding.quantity)
-        .add(challenge.quantity.mul(latestTrading.tddClosePrice));
-      avgCost = totalCost.div(totalQuantity);
-      //console.log('📌 Adjusted avgCost for existing holding:', avgCost.toFixed(2))
-    } else {
-      avgCost = latestTrading.tddClosePrice;
-      //console.log('📌 New holding avgCost (latest price):', avgCost.toFixed(2))
-    }
-
-    await tx.eTFHolding.upsert({
-      where: {
-        isaAccountId_etfId: {
-          isaAccountId,
-          etfId: challenge.etfId,
-        },
-      },
-      update: {
-        quantity: { increment: challenge.quantity },
-        avgCost: avgCost,
-        updatedAt: now,
-      },
-      create: {
-        isaAccountId,
-        etfId: challenge.etfId,
-        quantity: challenge.quantity,
-        avgCost: avgCost,
-        acquiredAt: now,
-        updatedAt: now,
-      },
-    });
-    //console.log('ETF holding updated or created');
-  });
-
-  return NextResponse.json({ message: 'Reward claimed successfully' });
+      { status: 500 }
+    );
+  }
 }
