@@ -68,7 +68,7 @@ export const getTransactions = async (): Promise<CalendarData> => {
     ...etfTxs.map((e) => ({
       id: e.id.toString(),
       rawType: e.transactionType,
-      amount: e.price.toNumber(),
+      amount: e.price.toNumber() * e.quantity.toNumber(),
       at: e.transactionAt,
       label: e.etf.issueNameKo ?? 'ETF',
     })),
