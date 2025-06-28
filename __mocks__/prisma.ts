@@ -1,4 +1,8 @@
-import { createEtfTestPrismaMock, createPrismaMock } from './prisma-factory';
+import {
+  createChallengePrismaMock,
+  createEtfTestPrismaMock,
+  createPrismaMock,
+} from './prisma-factory';
 
 // Jest에서 사용할 수 있도록 전역 mock 인스턴스 생성
 let mockPrismaInstance = createPrismaMock();
@@ -14,6 +18,11 @@ export const resetPrismaMock = () => {
 // 특화된 mock으로 재설정하는 함수들
 export const resetWithEtfTestPrismaMock = () => {
   mockPrismaInstance = createEtfTestPrismaMock();
+  return mockPrismaInstance;
+};
+
+export const resetWithChallengePrismaMock = () => {
+  mockPrismaInstance = createChallengePrismaMock();
   return mockPrismaInstance;
 };
 
