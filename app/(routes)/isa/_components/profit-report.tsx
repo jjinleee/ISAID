@@ -81,7 +81,7 @@ const ProfitReport = ({
           <p className='text-sm text-gray-500'>전체 수익률</p>
           <div className='flex justify-center items-center gap-1'>
             <p
-              className={`font-bold text-lg ${currentRate >= 0 ? 'text-hana-red ' : 'text-blue'}`}
+              className={`font-bold text-base sm:text-lg ${currentRate >= 0 ? 'text-hana-red ' : 'text-blue'}`}
             >
               {currentRate >= 0 ? `+${currentRate} %` : `${currentRate} %`}
             </p>
@@ -99,7 +99,7 @@ const ProfitReport = ({
         <div>
           <p className='text-sm text-gray-500'>평가 수익</p>
           <p
-            className={`${evaluatedProfit >= 0 ? 'text-hana-green' : 'text-blue-500'} font-bold text-lg`}
+            className={`${evaluatedProfit >= 0 ? 'text-hana-green' : 'text-blue-500'} font-bold text-base sm:text-lg`}
           >
             {evaluatedProfit >= 0
               ? `+${formatComma(evaluatedProfit)} 원`
@@ -108,7 +108,7 @@ const ProfitReport = ({
         </div>
         <div>
           <p className='text-sm text-gray-500'>평가 금액</p>
-          <p className='text-blue-500 font-bold text-lg'>
+          <p className='text-blue-500 font-bold text-base sm:text-lg'>
             {formatComma(evaluatedAmount)}원
           </p>
         </div>

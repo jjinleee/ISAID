@@ -51,7 +51,7 @@ const Calendar = ({ data }: { data: any }) => {
       </div>
 
       {transactions && (
-        <div className='mt-5 px-4'>
+        <div className='mt-5'>
           <p className='text-base font-semibold mb-4'>
             {format(selected!, 'M월 d일 (E)', { locale: ko })}
           </p>
@@ -63,7 +63,7 @@ const Calendar = ({ data }: { data: any }) => {
               >
                 {/* 왼쪽: 항목 정보 */}
                 <div className='space-y-1'>
-                  <p className='text-sm text-gray-800 font-semibold'>
+                  <p className='text-xs sm:text-sm text-gray-800 font-semibold'>
                     {tx.title}
                   </p>
                   <span
@@ -87,7 +87,7 @@ const Calendar = ({ data }: { data: any }) => {
 
                 {/* 오른쪽: 금액 */}
                 <div className='text-right'>
-                  <p className='font-semibold text-gray-800'>
+                  <p className='font-semibold sm:text-base text-sm text-gray-800'>
                     {tx.amount.toLocaleString()}원
                   </p>
                 </div>

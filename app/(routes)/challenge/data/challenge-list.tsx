@@ -15,9 +15,9 @@ export const iconList = [
   { id: '41', icon: '/images/challenge/icon-connect-isa.svg' },
   { id: '42', icon: '/images/challenge/icon-own-3-etfs.svg' },
   { id: '43', icon: '/images/challenge/icon-hold-isa-500days.svg' },
-  { id: '44', icon: '/images/challenge/icon-view-ai-portfolio.svg' },
+  { id: '47', icon: '/images/challenge/icon-view-ai-portfolio.svg' },
   { id: '45', icon: '/images/challenge/icon-investment-dna-test.svg' },
-  { id: '46', icon: '/images/challenge/icon-annual-deposit-over-1m.svg' },
+  { id: '48', icon: '/images/challenge/icon-annual-deposit-over-1m.svg' },
 ];
 
 export const challengeList: Mission[] = [

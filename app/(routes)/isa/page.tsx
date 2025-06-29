@@ -20,7 +20,7 @@ const ISAPage = async () => {
   }
 
   const taxData = await taxSaving();
-  console.log(taxData);
+
   const monthlyReturnsData: MonthlyReturnsSummary = {
     ...(await getMonthlyReturns('6')),
     monthlyEvaluatedAmounts: [],
