@@ -9,7 +9,7 @@ export interface Article {
   tags: string[];
   image: string;
 }
-const imagePath = '/images/star-boy-finger.svg';
+const imagePath = '/images/quiz/Star_Pro_Quiz.svg';
 
 export const articles: Record<ArticleCategory, Article[]> = {
   '투자 기초': [
