@@ -99,16 +99,6 @@ const ETFPageContainer = ({ session }: Props) => {
                 : '몇 가지 질문에 답하면, 당신에게 어울리는 테마를 추천해드릴게요'}
             </span>
           </div>
-          <div className='flex gap-1 justify-center items-center absolute bottom-3 right-3'>
-            <span>
-              {investType ? '테스트 다시 하기 ' : '테스트 하러 가기 '}
-            </span>
-            <ArrowIcon
-              direction='right'
-              className='text-white'
-              viewBox='0 0 11 28'
-            />
-          </div>
         </div>
         <div>
           {/* 추천 종목 */}
