@@ -12,7 +12,7 @@ const ChallengePage = async () => {
       {hasIsaAccount ? (
         <ChallengePageContainer challenges={await getChallenges()} />
       ) : (
-        <NoIsaModal /> // ← 계좌가 없으면 모달만 렌더
+        <NoIsaModal />
       )}
     </div>
   );
