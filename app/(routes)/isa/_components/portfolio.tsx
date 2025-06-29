@@ -320,7 +320,8 @@ const Portfolio = ({
                     ))}
                   </ul>
                 </div>
-                <div className='mt-6 p-4 bg-hana-green/10 rounded-lg flex items-center justify-between'>
+                <div className='mt-6 p-4 bg-hana-green/10 rounded-lg flex flex-col sm:flex-row justify-between items-center'>
+                  {/* 왼쪽 블록 */}
                   <div className='flex items-start gap-2'>
                     <Sparkles className='text-hana-green w-5 h-5 mt-0.5' />
                     <div>
@@ -328,22 +329,19 @@ const Portfolio = ({
                         전문가 모델 기반 리밸런싱을 원하시나요?
                       </p>
                       <div className='flex items-center gap-1 text-xs text-gray-500'>
-                        <Bot className='w-3.5 h-3.5 text-gray-400' />
                         하나은행 AI 기반 ISA 포트폴리오 추천과 연동해보세요.
                       </div>
                     </div>
                   </div>
-                  <button className='flex items-center gap-1 text-sm text-hana-green font-semibold hover:underline whitespace-nowrap'>
+
+                  {/* 오른쪽 버튼 */}
+                  <button className='mt-4 sm:mt-0 flex items-center gap-1 text-sm text-hana-green font-semibold hover:underline whitespace-nowrap'>
                     ISA 포트폴리오 연결하기
                     <ArrowRight className='w-4 h-4' />
                   </button>
                 </div>
               </div>
             </div>
-
-            {/*<div className='bg-green-50 rounded-lg p-3 text-xs leading-relaxed text-gray-700'>*/}
-            {/*  {generateRebalancingSummary(rebalancingOpinions)}*/}
-            {/*</div>*/}
           </div>
         </div>
       )}
