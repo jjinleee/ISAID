@@ -32,9 +32,9 @@ export default function CategoryNameContainer({
           className='hover:shadow-md transition-shadow cursor-pointer'
           onClick={() => router.push('/guide/articles/' + article.id)}
         >
-          <CardContent className='p-4'>
+          <CardContent>
             <div className='flex gap-4'>
-              <div className='w-20 h-16 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0'>
+              <div className='h-26 rounded-lg overflow-hidden flex-shrink-0'>
                 <img
                   src={article.image || '/images/star-boy-finger.svg'}
                   alt={article.title}
