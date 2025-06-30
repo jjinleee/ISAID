@@ -320,26 +320,26 @@ const Portfolio = ({
                     ))}
                   </ul>
                 </div>
-                <div className='mt-6 p-4 bg-hana-green/10 rounded-lg flex flex-col sm:flex-row justify-between items-center'>
-                  {/* 왼쪽 블록 */}
-                  <div className='flex items-start gap-2'>
-                    <Sparkles className='text-hana-green w-5 h-5 mt-0.5' />
-                    <div>
-                      <p className='font-medium text-gray-800 mb-1'>
-                        전문가 모델 기반 리밸런싱을 원하시나요?
-                      </p>
-                      <div className='flex items-center gap-1 text-xs text-gray-500'>
-                        하나은행 AI 기반 ISA 포트폴리오 추천과 연동해보세요.
-                      </div>
-                    </div>
-                  </div>
+                {/*<div className='mt-6 p-4 bg-hana-green/10 rounded-lg flex flex-col sm:flex-row justify-between items-center'>*/}
+                {/*  /!* 왼쪽 블록 *!/*/}
+                {/*  <div className='flex items-start gap-2'>*/}
+                {/*    <Sparkles className='text-hana-green w-5 h-5 mt-0.5' />*/}
+                {/*    <div>*/}
+                {/*      <p className='font-medium text-gray-800 mb-1'>*/}
+                {/*        전문가 모델 기반 리밸런싱을 원하시나요?*/}
+                {/*      </p>*/}
+                {/*      <div className='flex items-center gap-1 text-xs text-gray-500'>*/}
+                {/*        하나은행 AI 기반 ISA 포트폴리오 추천과 연동해보세요.*/}
+                {/*      </div>*/}
+                {/*    </div>*/}
+                {/*  </div>*/}
 
-                  {/* 오른쪽 버튼 */}
-                  <button className='mt-4 sm:mt-0 flex items-center gap-1 text-sm text-hana-green font-semibold hover:underline whitespace-nowrap'>
-                    ISA 포트폴리오 연결하기
-                    <ArrowRight className='w-4 h-4' />
-                  </button>
-                </div>
+                {/*  /!* 오른쪽 버튼 *!/*/}
+                {/*  <button className='mt-4 sm:mt-0 flex items-center gap-1 text-sm text-hana-green font-semibold hover:underline whitespace-nowrap'>*/}
+                {/*    ISA 포트폴리오 연결하기*/}
+                {/*    <ArrowRight className='w-4 h-4' />*/}
+                {/*  </button>*/}
+                {/*</div>*/}
               </div>
             </div>
           </div>

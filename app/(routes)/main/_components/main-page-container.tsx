@@ -191,7 +191,6 @@ export default function MainPageContainer({ userName, savedTax }: Props) {
   };
 
   const handleAgree = () => {
-    console.log('어그리 ~');
     setShowModal(false);
     setIsAgree(true);
     setShowConfirmModal(true);

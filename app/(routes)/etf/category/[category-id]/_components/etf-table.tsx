@@ -21,7 +21,7 @@ export default function EtfTable({ data }: EtfTableProps) {
           onClick={() => router.push(`/etf/detail/${item.etfId}`)}
         >
           <div>
-            <div className='font-medium text-sm'>{item.name}</div>
+            <div className='font-medium text-sm truncate'>{item.name}</div>
             <div className='text-xs text-subtitle'>{item.code}</div>
           </div>
 

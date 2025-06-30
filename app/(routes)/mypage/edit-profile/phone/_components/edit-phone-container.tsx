@@ -78,14 +78,11 @@ export const EditPhoneContainer = () => {
       const raw = value.replace(/\D/g, '').slice(0, 3);
       setPhoneData((prev) => ({ ...prev, verificationCode: raw }));
 
-      if (raw.length === 3 && raw === sentCode) {
-        setValidationErrors((prev) => ({ ...prev, verificationCode: false }));
-      } else {
-        setValidationErrors((prev) => ({
-          ...prev,
-          verificationCode: !validateField('verificationCode', raw, phoneData),
-        }));
-      }
+      const isValid = raw.length === 3 && raw === sentCode;
+      setValidationErrors((prev) => ({
+        ...prev,
+        verificationCode: !isValid,
+      }));
       return;
     }
   };

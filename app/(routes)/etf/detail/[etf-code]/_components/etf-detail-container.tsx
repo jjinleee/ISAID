@@ -120,7 +120,7 @@ export default function EtfDetailContainer({
         <div className='flex flex-col gap-5 w-full'>
           <div className='flex flex-col gap-2'>
             <p className='text-sm font-semibold'>{etfIntro.category}</p>
-            <div className=''>
+            <div>
               <span className='text-xl font-bold mr-2'>
                 {etfIntro.issueName}
               </span>
@@ -133,15 +133,17 @@ export default function EtfDetailContainer({
             <span className='text-xl font-bold mr-2 leading-none'>
               {formatComma(etfIntro.todayClose)}
             </span>
-            <ArrowCross
-              direction={`${parseInt(etfIntro.flucRate) > 0 ? 'up' : 'down'}`}
-            />
+            {parseFloat(etfIntro.flucRate) !== 0 && (
+              <ArrowCross
+                direction={`${parseFloat(etfIntro.flucRate) > 0 ? 'up' : 'down'}`}
+              />
+            )}
             <span
-              className={`text-xs leading-none ${parseInt(etfIntro.flucRate) > 0 ? 'text-hana-red' : 'text-blue'}`}
+              className={`text-xs leading-none ${parseFloat(etfIntro.flucRate) > 0 ? 'text-hana-red' : parseFloat(etfIntro.flucRate) === 0 ? 'text-gray-500' : 'text-blue'}`}
             >
-              {parseInt(etfIntro.flucRate) > 0
-                ? `+${parseInt(etfIntro.flucRate)} %`
-                : `${parseInt(etfIntro.flucRate)} %`}
+              {parseFloat(etfIntro.flucRate) > 0
+                ? `+${parseFloat(etfIntro.flucRate)} %`
+                : `${parseFloat(etfIntro.flucRate)} %`}
             </span>
           </div>
           <div className='flex justify-between items-center text-xs'>
