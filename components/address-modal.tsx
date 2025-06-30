@@ -15,6 +15,7 @@ export default function AddressSearch({
   openState,
 }: AddressSearchProps) {
   const [isClosing, setIsClosing] = useState(false);
+  const [scriptLoaded, setScriptLoaded] = useState(false);
 
   const handleClose = useCallback(() => {
     setIsClosing(true);
@@ -25,18 +26,35 @@ export default function AddressSearch({
   }, [onCloseAction]);
 
   useEffect(() => {
+    const existingScript = document.getElementById('daum-postcode-script');
+    if (!existingScript) {
+      const script = document.createElement('script');
+      script.id = 'daum-postcode-script';
+      script.src =
+        '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
+      script.onload = () => setScriptLoaded(true);
+      document.body.appendChild(script);
+    } else {
+      setScriptLoaded(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!scriptLoaded) {
+      return;
+    }
     const container = document.getElementById('address-search-container');
-    if (!container) return;
+    if (!container || !window.daum?.Postcode) return;
 
     const postcode = new window.daum.Postcode({
-      oncomplete: (data) => {
+      oncomplete: (data: any) => {
         onCompleteAction(data.address);
         handleClose();
       },
     });
 
     postcode.embed(container);
-  }, [onCompleteAction, handleClose]);
+  }, [scriptLoaded, onCompleteAction, handleClose]);
 
   useEffect(() => {
     if (openState) {
