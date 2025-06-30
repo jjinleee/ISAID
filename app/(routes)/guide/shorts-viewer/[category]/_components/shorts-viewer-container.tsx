@@ -61,14 +61,12 @@ export const ShortsViewerContainer = ({ session }: Props) => {
     }
   }, [category, investType]);
 
-  useEffect(() => {}, []);
-
   return (
     <div className='flex flex-col py-5 px-4 gap-5'>
       <h2 className='text-lg font-semibold'>{pageTitle}</h2>
       <div className='grid grid-cols-3 gap-4'>
         {filteredVideo.map(
-          ({ id, title, duration, views, videoUrl, category }) => (
+          ({ id, title, duration, views, videoUrl, category }, idx) => (
             <VideoPreview
               key={id}
               id={id}
@@ -78,6 +76,7 @@ export const ShortsViewerContainer = ({ session }: Props) => {
               videoUrl={videoUrl}
               category={category}
               investType={investType}
+              idx={idx}
             />
           )
         )}

@@ -27,7 +27,7 @@ export const SliderWrapper = ({ videos, investType }: SliderWrapperProps) => {
           },
         }}
       >
-        {videos.map((video: VideoPreviewProps) => (
+        {videos.map((video: VideoPreviewProps, idx: number) => (
           <SwiperSlide
             key={video.id}
             className='!w-[240px] min-w-0 shrink-0 !p-2'
@@ -41,6 +41,7 @@ export const SliderWrapper = ({ videos, investType }: SliderWrapperProps) => {
               videoUrl={video.videoUrl}
               category={video.category}
               investType={investType}
+              idx={idx}
             />
           </SwiperSlide>
         ))}

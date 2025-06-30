@@ -1,32 +1,22 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Session } from 'next-auth';
 import { useParams, useSearchParams } from 'next/navigation';
 import { useHeader } from '@/context/header-context';
-import { fetchTitle } from '@/utils/guide';
 import { convertToKorLabel } from '@/utils/my-page';
 import { InvestType } from '@prisma/client';
 import { shortVideos, VideoItem } from '../../../data/video-data';
 
-interface ShortsScrollViewerProps {
-  session?: Session | null;
-  videos: VideoItem[];
-  initialIndex?: number;
-}
-const ShortsScrollViewer: React.FC<ShortsScrollViewerProps> = ({
-  session,
-  initialIndex = 0,
-}) => {
+const ShortsScrollViewer = () => {
   const { setHeader } = useHeader();
   const [filteredVideo, setFilteredVideo] = useState<VideoItem[]>([]);
-  const [pageTitle, setPageTitle] = useState<string>('');
   const params = useParams();
 
+  const searchParams = useSearchParams();
   const raw = params['category'];
   const category = Array.isArray(raw) ? (raw[0] as string) : (raw as string);
-  const searchParams = useSearchParams();
   const investType = searchParams.get('investType') ?? undefined;
+  const initialIndex = Number(searchParams.get('selectedIdx') ?? 0);
 
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -53,14 +43,6 @@ const ShortsScrollViewer: React.FC<ShortsScrollViewerProps> = ({
     }
 
     setFilteredVideo(filtered);
-
-    if (session?.user.name != null && investType) {
-      setPageTitle(fetchTitle(session?.user.name, investType));
-    } else {
-      setPageTitle(
-        category === 'hana' ? '투자 꿀팁? 하나면 충분!' : '숏츠 가이드'
-      );
-    }
   }, [category, investType]);
 
   useEffect(() => {
@@ -165,7 +147,6 @@ const ShortsScrollViewer: React.FC<ShortsScrollViewerProps> = ({
         );
       }
     });
-
     return () => observer.disconnect();
   }, [filteredVideo]);
 
