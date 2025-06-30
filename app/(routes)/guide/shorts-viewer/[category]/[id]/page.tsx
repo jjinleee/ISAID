@@ -16,6 +16,8 @@ export default async function Page({ params }: { params: Params }) {
 
   if (initialIndex === -1) notFound();
 
+  console.log('filteredVideos : ');
+
   return (
     <ShortsScrollViewer videos={filteredVideos} initialIndex={initialIndex} />
   );

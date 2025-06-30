@@ -111,6 +111,61 @@ const ShortsScrollViewer: React.FC<ShortsScrollViewerProps> = ({
     };
   }, [filteredVideo]);
 
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const iframe = entry.target.querySelector(
+            'iframe'
+          ) as HTMLIFrameElement;
+          if (!iframe?.contentWindow) return;
+
+          iframe.contentWindow.postMessage(
+            JSON.stringify({
+              event: 'command',
+              func: entry.isIntersecting ? 'playVideo' : 'pauseVideo',
+              args: [],
+            }),
+            '*'
+          );
+
+          if (!entry.isIntersecting) {
+            iframe.contentWindow.postMessage(
+              JSON.stringify({
+                event: 'command',
+                func: 'seekTo',
+                args: [0, true],
+              }),
+              '*'
+            );
+          }
+        });
+      },
+      {
+        root: containerRef.current,
+        threshold: 0.9,
+      }
+    );
+    const items = containerRef.current?.querySelectorAll('.video-container');
+    items?.forEach((el) => observer.observe(el));
+
+    items?.forEach((el) => {
+      const iframe = el.querySelector('iframe') as HTMLIFrameElement;
+      if (iframe?.contentWindow) {
+        iframe.contentWindow.postMessage(
+          JSON.stringify({
+            event: 'command',
+            func: 'pauseVideo',
+            args: [],
+          }),
+          '*'
+        );
+      }
+    });
+
+    return () => observer.disconnect();
+  }, [filteredVideo]);
+
   return (
     <div
       ref={containerRef}
@@ -120,7 +175,7 @@ const ShortsScrollViewer: React.FC<ShortsScrollViewerProps> = ({
       {filteredVideo.map((video, idx) => (
         <div
           key={video.id}
-          className='h-[calc(100vh-150px)] overflow-y-hidden snap-start'
+          className='h-[calc(100vh-150px)] overflow-y-hidden snap-start video-container'
         >
           {/*// <div key={video.id} className='h-screen snap-start'>*/}
           {/*<div key={video.id} className='min-h-screen snap-start'>*/}
@@ -129,7 +184,7 @@ const ShortsScrollViewer: React.FC<ShortsScrollViewerProps> = ({
           <iframe
             width='100%'
             height='100%'
-            src={`https://www.youtube.com/embed/${video.videoUrl.split('/').pop()?.split('?')[0]}?autoplay=1&mute=1`}
+            src={`https://www.youtube.com/embed/${video.videoUrl.split('/').pop()?.split('?')[0]}?autoplay=0&mute=1&enablejsapi=1`}
             title={video.title}
             allow='autoplay; encrypted-media'
             allowFullScreen
