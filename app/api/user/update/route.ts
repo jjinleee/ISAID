@@ -47,7 +47,12 @@ export async function PATCH(req: Request) {
     const data: any = {};
 
     for (const [key, value] of Object.entries(body)) {
-      if (value !== undefined && key !== 'password' && key !== 'oldPinCode') {
+      if (
+        value !== undefined &&
+        key !== 'password' &&
+        key !== 'oldPinCode' &&
+        key !== 'oldPassword'
+      ) {
         data[key] = value;
       }
     }
@@ -81,6 +86,25 @@ export async function PATCH(req: Request) {
     }
 
     if (body.password !== undefined) {
+      if (!body.oldPassword) {
+        return NextResponse.json(
+          { error: '기존 비밀번호를 입력해야 합니다.' },
+          { status: 400 }
+        );
+      }
+
+      const isPasswordValid = await bcrypt.compare(
+        body.oldPassword,
+        existingUser.password
+      );
+
+      if (!isPasswordValid) {
+        return NextResponse.json(
+          { error: '기존 비밀번호가 일치하지 않습니다.' },
+          { status: 400 }
+        );
+      }
+
       data.password = await hash(body.password, 10);
     }
 

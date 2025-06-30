@@ -185,7 +185,10 @@ export default function GuidePageContainer({ session }: Props) {
           {recommendVideo.length === 0 ? (
             <p className='text-sm text-gray-500'>추천 영상이 없습니다.</p>
           ) : (
-            <SliderWrapper videos={recommendVideo.slice(0, 6)} />
+            <SliderWrapper
+              videos={recommendVideo.slice(0, 6)}
+              investType={investType}
+            />
           )}
         </div>
       </div>

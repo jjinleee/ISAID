@@ -20,6 +20,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: 'ISAID',
   description: '디지털 하나로 1차 프로젝트',
+  icons: {
+    icon: '/favicon.svg',
+  },
 };
 
 export default function RootLayout({

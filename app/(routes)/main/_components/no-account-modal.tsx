@@ -22,7 +22,7 @@ export default function NoIsaModal({ onClose }: NoIsaModalProps) {
   /** 모달 종료 + 메인 이동 */
   const handleClose = () => {
     onClose?.();
-    router.replace('/main');
+    router.replace('/isa');
   };
 
   return (
@@ -48,7 +48,7 @@ export default function NoIsaModal({ onClose }: NoIsaModalProps) {
           onClick={handleClose}
           className='mt-6 w-full cursor-pointer rounded-lg bg-hana-green py-2 font-semibold text-white transition hover:bg-hana-green/90'
         >
-          메인화면으로 이동
+          연결하러 가기
         </button>
       </div>
     </div>

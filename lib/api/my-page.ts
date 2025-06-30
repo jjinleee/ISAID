@@ -112,3 +112,12 @@ export const verifyPin = async (pin: string) => {
 
   return res.json();
 };
+
+export const verifyPassword = async (password: string) => {
+  const data = { password };
+  const res = await fetch('/api/user/비번-인증', { method: 'GET' });
+  if (!res.ok) {
+    const errorData = await res.json();
+    throw new Error(errorData.message || '수정 에러');
+  }
+};

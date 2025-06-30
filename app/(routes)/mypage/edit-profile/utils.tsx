@@ -11,6 +11,8 @@ export const submitUserUpdate = async ({
   onSuccess?: () => void;
   onFinally?: () => void;
 }) => {
+  const isPinUpdate = 'oldPinCode' in data && 'pinCode' in data;
+  const isPasswordUpdate = 'oldPassword' in data && 'password' in data;
   const res = await updateUser(data);
 
   if (res.success) {
@@ -25,15 +27,22 @@ export const submitUserUpdate = async ({
 
     onSuccess?.();
   } else {
-    toast.error('잠시 후 다시 시도해주세요.', {
-      duration: 2000,
-      icon: <CircleAlert className='w-5 h-5 text-hana-red' />,
-      style: {
-        borderRadius: '8px',
-        color: 'black',
-        fontWeight: '500',
-      },
-    });
+    toast.error(
+      isPinUpdate
+        ? '이전 비밀번호가 일치하지 않습니다.'
+        : isPasswordUpdate
+          ? '기존 비밀번호를 입력해야 합니다.'
+          : '잠시 후 다시 시도해주세요.',
+      {
+        duration: 2000,
+        icon: <CircleAlert className='w-5 h-5 text-hana-red' />,
+        style: {
+          borderRadius: '8px',
+          color: 'black',
+          fontWeight: '500',
+        },
+      }
+    );
   }
 
   onFinally?.();

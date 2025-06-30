@@ -11,11 +11,13 @@ import { Label } from '@/components/ui/label';
 import { validateField } from '@/lib/utils';
 
 interface PasswordData {
+  oldPassword: string;
   password: string;
   passwordConfirm: string;
 }
 
 interface ValidationErrors {
+  oldPassword: string;
   password: boolean;
   passwordConfirm: boolean;
 }
@@ -28,10 +30,12 @@ export const EditPasswordContainer = () => {
   }, []);
 
   const [passwordData, setPasswordData] = useState<PasswordData>({
+    oldPassword: '',
     password: '',
     passwordConfirm: '',
   });
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>({
+    oldPassword: '',
     password: true,
     passwordConfirm: true,
   });
@@ -41,6 +45,17 @@ export const EditPasswordContainer = () => {
   const [loading, setLoading] = useState(false);
 
   const handleInputChange = (field: keyof FormData, value: string) => {
+    if (field === 'oldPassword') {
+      setPasswordData((prev) => ({ ...prev, [field]: value }));
+
+      const isValid = validateField(field, value, passwordData);
+      setValidationErrors((prev) => ({
+        ...prev,
+        oldPassword: isValid ? '' : '비밀번호를 입력해주세요.',
+      }));
+      setShowPasswordError(!isValid && value.length > 0);
+      return;
+    }
     if (field === 'password') {
       const isValid = validateField(field, value, passwordData);
       setShowPasswordError(!isValid && value.length > 0);
@@ -58,6 +73,7 @@ export const EditPasswordContainer = () => {
 
   const submitData = async () => {
     const data = {
+      oldPassword: passwordData.oldPassword,
       password: passwordData.password,
     };
     setLoading(true);
@@ -74,7 +90,21 @@ export const EditPasswordContainer = () => {
       <div className='flex flex-col gap-4'>
         <div className='flex flex-col gap-2'>
           <Label htmlFor='password' className='text-gray-600'>
-            비밀번호
+            이전 비밀번호
+          </Label>
+          <CustomInput
+            type='password'
+            thin={true}
+            placeholder='이전 비밀번호'
+            name='oldPassword'
+            field='oldPassword'
+            value={passwordData.oldPassword}
+            onChangeField={handleInputChange}
+          />
+        </div>
+        <div className='flex flex-col gap-2'>
+          <Label htmlFor='password' className='text-gray-600'>
+            새 비밀번호
           </Label>
           <CustomInput
             type='password'
@@ -100,7 +130,7 @@ export const EditPasswordContainer = () => {
         </div>
         <div className='flex flex-col gap-2'>
           <Label htmlFor='password' className='text-gray-600'>
-            비밀번호 확인
+            새 비밀번호 확인
           </Label>
           <CustomInput
             type='password'

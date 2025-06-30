@@ -11,6 +11,7 @@ export interface VideoPreviewProps {
   views: string;
   videoUrl: string;
   category: string;
+  investType?: string;
 }
 
 const getYoutubeVideoId = (url: string): string | null => {
@@ -45,6 +46,7 @@ export const VideoPreview = ({
   views,
   videoUrl,
   category,
+  investType,
 }: VideoPreviewProps) => {
   const router = useRouter();
   const videoId = getYoutubeVideoId(videoUrl);
@@ -52,7 +54,13 @@ export const VideoPreview = ({
     ? `https://img.youtube.com/vi/${videoId}/0.jpg`
     : null;
   const handleClick = (id: string) => {
-    router.push(`/guide/shorts-viewer/${category}/${id}`);
+    if (investType) {
+      router.push(
+        `/guide/shorts-viewer/${category}/${id}?investType=${investType}`
+      );
+    } else {
+      router.push(`/guide/shorts-viewer/${category}/${id}`);
+    }
   };
 
   return (

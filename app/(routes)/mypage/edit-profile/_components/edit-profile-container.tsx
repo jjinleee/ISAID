@@ -51,14 +51,6 @@ export const EditProfileContainer = () => {
         ))}
       </div>
 
-      <div className='flex flex-col gap-2'>
-        <Button
-          text={'탈퇴하기'}
-          thin={false}
-          active={false}
-          onClick={() => setShowLeaveModal(true)}
-        />
-      </div>
       {showLeaveModal && (
         <ModalWrapper headerOnly={false}>
           <LeaveModal onClose={() => setShowLeaveModal(false)} />

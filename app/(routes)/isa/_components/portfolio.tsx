@@ -33,9 +33,6 @@ const Portfolio = ({
   rebalancingData?: RebalancingResponse;
 }) => {
   const [showScoreInfo, setShowScoreInfo] = useState<boolean>(false);
-  const [selectedTab, setSelectedTab] = useState<number>(0);
-  const tabList = ['잘하고 있어요', '아쉬워요'];
-
   const popoverRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -111,20 +108,24 @@ const Portfolio = ({
   const improperChartHeight =
     improperChartData.length * (BAR_SIZE + BAR_CATEGORY_GAP) + 24;
 
-  // ------------------------------------------------------------------
-  // Derived UI variables for the selected tab
-  const isProperTab = selectedTab === 0;
-  const currentChartData = isProperTab ? properChartData : improperChartData;
-  const currentChartHeight = isProperTab
-    ? properChartHeight
-    : improperChartHeight;
-  const currentOpinions = isProperTab ? properOpinions : improperOpinions;
-  const imageSrc = isProperTab
-    ? '/images/isa/star-pro-rebalancing-proper.svg'
-    : '/images/isa/star-pro-rebalancing.svg';
-  const imageWidth = isProperTab ? 80 : 36;
-  const textColorClass = isProperTab ? 'text-primary' : 'text-hana-red';
-  // ------------------------------------------------------------------
+  const sections = [
+    {
+      label: '잘하고 있어요',
+      chartData: properChartData,
+      chartHeight: properChartHeight,
+      opinions: properOpinions,
+      imageSrc: '/images/isa/star-pro-rebalancing-proper.svg',
+      imageWidth: 80,
+    },
+    {
+      label: '아쉬워요',
+      chartData: improperChartData,
+      chartHeight: improperChartHeight,
+      opinions: improperOpinions,
+      imageSrc: '/images/isa/star-pro-rebalancing.svg',
+      imageWidth: 36,
+    },
+  ];
 
   return (
     <div className='rounded-xl bg-white px-5 sm:px-10 py-6 shadow-sm mt-4'>
@@ -199,7 +200,7 @@ const Portfolio = ({
             </h2>
           </div>
 
-          <div className='flex flex-col gap-4'>
+          <div className='flex flex-col gap-4 p-4 '>
             <div className='flex gap-2 items-center rounded-xl bg-primary-2/10 p-4'>
               <p className='text-sm'>
                 <strong className='text-lg'>
@@ -221,126 +222,113 @@ const Portfolio = ({
                 )}
               </div>
             </div>
-            <div className='flex flex-col gap-2'>
-              <div className='flex gap-2 font-semibold'>
-                {tabList.map((item, idx) => (
-                  <div
-                    key={idx}
-                    className={` ${selectedTab === idx ? 'text-black' : 'text-gray-400'} cursor-pointer`}
-                    onClick={() => {
-                      setSelectedTab(idx);
-                    }}
-                  >
-                    {item}
-                  </div>
-                ))}
-              </div>
+            <div className='flex flex-col gap-5'>
+              {sections.map(
+                ({
+                  label,
+                  chartData,
+                  chartHeight,
+                  opinions,
+                  imageSrc,
+                  imageWidth,
+                }) => (
+                  <div key={label} className='flex flex-col gap-4'>
+                    <h3 className='text-base font-bold'>{label}</h3>
+                    <div className='flex flex-col gap-4 p-4 rounded-xl shadow-md'>
+                      <div className='w-full flex gap-4 items-start'>
+                        <ResponsiveContainer width='100%' height={chartHeight}>
+                          <BarChart
+                            data={chartData}
+                            layout='vertical'
+                            margin={{ left: 24, right: 16 }}
+                            barCategoryGap={BAR_CATEGORY_GAP}
+                          >
+                            <XAxis type='number' domain={[0, 100]} hide />
+                            <YAxis
+                              dataKey='name'
+                              type='category'
+                              axisLine={false}
+                              tickLine={false}
+                              width={110}
+                              interval={0}
+                            />
+                            <Bar
+                              name='현재'
+                              dataKey='user'
+                              fill='#14b8a6'
+                              radius={[0, 4, 4, 0]}
+                              barSize={BAR_SIZE}
+                            >
+                              <LabelList
+                                dataKey='user'
+                                position='right'
+                                formatter={(v: number) => `${v}%`}
+                                offset={4}
+                              />
+                            </Bar>
+                            <Bar
+                              name='권장'
+                              dataKey='recommended'
+                              fill='#f1ca3b'
+                              radius={[0, 4, 4, 0]}
+                              barSize={BAR_SIZE}
+                            >
+                              <LabelList
+                                dataKey='recommended'
+                                position='right'
+                                formatter={(v: number) => `${v}%`}
+                                offset={4}
+                              />
+                            </Bar>
+                          </BarChart>
+                        </ResponsiveContainer>
 
-              <div className='flex flex-col gap-2'>
-                <div className='w-full flex gap-4 items-start'>
-                  <ResponsiveContainer width='100%' height={currentChartHeight}>
-                    <BarChart
-                      data={currentChartData}
-                      layout='vertical'
-                      margin={{ left: 24, right: 16 }}
-                      barCategoryGap={BAR_CATEGORY_GAP}
-                    >
-                      <XAxis type='number' domain={[0, 100]} hide />
-                      <YAxis
-                        dataKey='name'
-                        type='category'
-                        axisLine={false}
-                        tickLine={false}
-                        width={110}
-                        interval={0}
-                      />
-                      <Bar
-                        name='현재'
-                        dataKey='user'
-                        fill={'#14b8a6'}
-                        radius={[0, 4, 4, 0]}
-                        barSize={BAR_SIZE}
-                      >
-                        <LabelList
-                          dataKey='user'
-                          position='right'
-                          formatter={(v: number) => `${v}%`}
-                          offset={4}
-                        />
-                      </Bar>
-                      <Bar
-                        name='권장'
-                        dataKey='recommended'
-                        fill='#f1ca3b'
-                        radius={[0, 4, 4, 0]}
-                        barSize={BAR_SIZE}
-                      >
-                        <LabelList
-                          dataKey='recommended'
-                          position='right'
-                          formatter={(v: number) => `${v}%`}
-                          offset={4}
-                        />
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
-                  <div className='flex flex-col gap-2'>
-                    {[
-                      { label: '현재', color: '#14b8a6' },
-                      { label: '권장', color: '#f1ca3b' },
-                    ].map(({ label, color }) => (
-                      <div key={label} className='flex items-center gap-1'>
-                        <span
-                          className='inline-block w-2.5 h-2.5 rounded-full'
-                          style={{ backgroundColor: color }}
-                        />
-                        <span className='text-sm font-medium' style={{ color }}>
-                          {label}
-                        </span>
+                        <div className='flex flex-col gap-2'>
+                          {[
+                            { label: '현재', color: '#14b8a6' },
+                            { label: '권장', color: '#f1ca3b' },
+                          ].map(({ label, color }) => (
+                            <div
+                              key={label}
+                              className='flex items-center gap-1'
+                            >
+                              <span
+                                className='inline-block w-2.5 h-2.5 rounded-full'
+                                style={{ backgroundColor: color }}
+                              />
+                              <span
+                                className='text-sm font-medium'
+                                style={{ color }}
+                              >
+                                {label}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                    ))}
-                  </div>
-                </div>
 
-                <div className='flex flex-row gap-4 shadow-xl p-4 rounded-2xl'>
-                  <Image
-                    src={imageSrc}
-                    alt='title'
-                    width={imageWidth}
-                    height={imageWidth}
-                  />
-                  <ul className='list-none'>
-                    {currentOpinions.map((item, idx) => (
-                      <li
-                        key={idx}
-                        className={`text-sm relative text-gray pl-4 before:content-['•'] before:absolute before:left-0 `}
-                      >
-                        {item.detail}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div className='mt-6 p-4 bg-hana-green/10 rounded-lg flex flex-col sm:flex-row justify-between items-center'>
-                  {/* 왼쪽 블록 */}
-                  <div className='flex items-start gap-2'>
-                    <Sparkles className='text-hana-green w-5 h-5 mt-0.5' />
-                    <div>
-                      <p className='font-medium text-gray-800 mb-1'>
-                        전문가 모델 기반 리밸런싱을 원하시나요?
-                      </p>
-                      <div className='flex items-center gap-1 text-xs text-gray-500'>
-                        하나은행 AI 기반 ISA 포트폴리오 추천과 연동해보세요.
+                      <div className='flex flex-row gap-4 p-4 rounded-2xl'>
+                        <Image
+                          src={imageSrc}
+                          alt='icon'
+                          width={imageWidth}
+                          height={imageWidth}
+                        />
+                        <ul className='list-none'>
+                          {opinions.map((item, idx) => (
+                            <li
+                              key={idx}
+                              className={`text-sm relative text-gray pl-4 before:content-['•'] before:absolute before:left-0`}
+                            >
+                              {item.detail}
+                            </li>
+                          ))}
+                        </ul>
                       </div>
                     </div>
                   </div>
-
-                  {/* 오른쪽 버튼 */}
-                  <button className='mt-4 sm:mt-0 flex items-center gap-1 text-sm text-hana-green font-semibold hover:underline whitespace-nowrap'>
-                    ISA 포트폴리오 연결하기
-                    <ArrowRight className='w-4 h-4' />
-                  </button>
-                </div>
-              </div>
+                )
+              )}
             </div>
           </div>
         </div>

@@ -45,10 +45,6 @@ export const EditPinContainer = () => {
     newPin: true,
   });
   useEffect(() => {
-    console.log('validationErrors : ', validationErrors);
-  }, [validationErrors]);
-  useEffect(() => {
-    console.log('pinData : ', pinData);
     setValidationErrors({
       oldPin: pinData.oldPin.length !== 6,
       newPin: pinData.newPin.length !== 6,
@@ -59,7 +55,6 @@ export const EditPinContainer = () => {
     const raw = value.replace(/\D/g, '').slice(0, 6);
 
     setPinData((prev) => ({ ...prev, [field]: raw }));
-    console.log('gmlgml');
 
     setValidationErrors((prev) => ({
       ...prev,

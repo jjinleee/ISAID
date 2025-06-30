@@ -85,21 +85,9 @@ export const shortVideos: VideoItem[] = [
     tags: ['주린이', '주식사전', '투자사전'],
     category: 'hana',
   },
+
   {
     id: '7',
-    title: '만기된 ISA를 100% 활용하는 방법',
-    description:
-      '만기되는 ISA가 있다면!!! IRP로 입금하고 연말정산 세액공제 혜택을 추가로 받아보자! ',
-    duration: '0:46',
-    views: '10K',
-    likes: 162,
-    author: '하나TV[하나은행]',
-    videoUrl: 'https://www.youtube.com/shorts/N8aIuKDMEOE',
-    tags: ['하나연금닥터', '퇴직연금', '연말정산세액공제'],
-    category: 'hana',
-  },
-  {
-    id: '8',
     title: '예금 특판 말고, 더 주는 ‘이거‘해보세요',
     description: '예금 특판 말고, 더 주는 ‘이거‘해보세요',
     duration: '0:21',
@@ -112,7 +100,7 @@ export const shortVideos: VideoItem[] = [
     investType: 'CONSERVATIVE',
   },
   {
-    id: '9',
+    id: '8',
     title: '채권이 뭔지 알려줄게',
     description: '채권이 뭔지 알려줄게',
     duration: '0:46',
@@ -125,7 +113,7 @@ export const shortVideos: VideoItem[] = [
     investType: 'CONSERVATIVE',
   },
   {
-    id: '10',
+    id: '9',
     title: '채권금리가 올라가면 채권 가격이 하락하는 이유?.. 아.. 망할..ㅠ',
     description:
       '한국 주식 상한가, 거래량 천만주, 거래대금 천억 이상 관련주 리포트@@',
@@ -139,7 +127,7 @@ export const shortVideos: VideoItem[] = [
     investType: 'CONSERVATIVE',
   },
   {
-    id: '11',
+    id: '10',
     title: '2가지만 기억해! S&P500과 미국국채!',
     description:
       '워렌버핏 할아버지도 말씀하셨지, S&P500과 미국국채에 분산투자하라고!',
@@ -153,7 +141,7 @@ export const shortVideos: VideoItem[] = [
     investType: 'CONSERVATIVE',
   },
   {
-    id: '12',
+    id: '11',
     title: '절세 만능 ISA 계좌 100% 활용법 1분 요약',
     description:
       '걱정 NO! 저희가 계좌 개설부터 절세 혜택까지 자세하게 정리해 놓았답니다',
@@ -167,7 +155,7 @@ export const shortVideos: VideoItem[] = [
     investType: 'CONSERVATIVE',
   },
   {
-    id: '13',
+    id: '12',
     title: 'ISA, 연금계좌에서 SCHD 활용하는 법?',
     description:
       'SCHD를 좀 더 효율적으로 투자할 수 있는 곳! 바로바로~~ ✨연금계좌✨입니다',
@@ -181,7 +169,7 @@ export const shortVideos: VideoItem[] = [
     investType: 'MODERATE',
   },
   {
-    id: '14',
+    id: '13',
     title: '난리난 해외 배당 ETF...이제 절세계좌보다 미국 직투일까?',
     description:
       '소리 소문 없이 개정된 외국납부세액 공제 방식 변경으로 역대급 난리난 ETF 시장',
@@ -195,7 +183,7 @@ export const shortVideos: VideoItem[] = [
     investType: 'MODERATE',
   },
   {
-    id: '15',
+    id: '14',
     title: '커버드콜 ETF 1분만에 이해하기',
     description: '커버드콜 ETF 1분만에 이해하기',
     duration: '0:59',
@@ -208,7 +196,7 @@ export const shortVideos: VideoItem[] = [
     investType: 'MODERATE',
   },
   {
-    id: '16',
+    id: '15',
     title: '절세대장 RISE 200 위클리커버드콜',
     description: '절세 계좌, 이제 세금 낸다고?! (feat. 멘붕)',
     duration: '1:07',
@@ -221,7 +209,7 @@ export const shortVideos: VideoItem[] = [
     investType: 'MODERATE',
   },
   {
-    id: '17',
+    id: '16',
     title:
       '재테크 고수 시니어들은 다 아는 월배당 ETF, Kodex 배당맛집 시니어투자자 인터뷰',
     description: '현금 흐름이 중요한 시니어의 월배당 포트폴리오',
@@ -235,7 +223,7 @@ export const shortVideos: VideoItem[] = [
     investType: 'MODERATE',
   },
   {
-    id: '18',
+    id: '17',
     title:
       "뭐야~? Kodex 배당맛집이 열렸다고? '보름배당' Kodex 미국배당다우존스 ETF",
     description:
@@ -250,7 +238,7 @@ export const shortVideos: VideoItem[] = [
     investType: 'MODERATE',
   },
   {
-    id: '19',
+    id: '18',
     title: '국내상장 해외ETF에 대한 세금은?',
     description: '국내상장 해외ETF에 대한 세금은?',
     duration: '0:42',
@@ -263,7 +251,7 @@ export const shortVideos: VideoItem[] = [
     investType: 'NEUTRAL',
   },
   {
-    id: '20',
+    id: '19',
     title: '해외 주식 양도소득세 250만원 한도까지 절세하는 꿀팁',
     description:
       '그 해에 주가가 오른 주식과 내린 주식이 있을때 양도세를 줄이기 좋은 방법입니다.',
@@ -277,7 +265,7 @@ export const shortVideos: VideoItem[] = [
     investType: 'NEUTRAL',
   },
   {
-    id: '21',
+    id: '20',
     title: '국내상장 해외 ETF 도대체 뭘 사야 하는 걸까?',
     description: '국내상장 해외 ETF',
     duration: '0:48',
@@ -290,7 +278,7 @@ export const shortVideos: VideoItem[] = [
     investType: 'NEUTRAL',
   },
   {
-    id: '22',
+    id: '21',
     title: '미국 주식이랑 한국 주식이랑 세금이 달라?',
     description: '미국 주식이랑 한국 주식이랑 세금이 달라?',
     duration: '1:44',
@@ -303,7 +291,7 @@ export const shortVideos: VideoItem[] = [
     investType: 'NEUTRAL',
   },
   {
-    id: '23',
+    id: '22',
     title: '배당주의 숨겨진 위험',
     description: '배당주의 숨겨진 위험',
     duration: '0:43',
@@ -316,7 +304,7 @@ export const shortVideos: VideoItem[] = [
     investType: 'NEUTRAL',
   },
   {
-    id: '24',
+    id: '23',
     title: '1부국내상장 미국ETF 미국ETF 세금 비교쇼츠',
     description: '1부국내상장 미국ETF 미국ETF 세금 비교쇼츠',
     duration: '0:40',
@@ -329,7 +317,7 @@ export const shortVideos: VideoItem[] = [
     investType: 'NEUTRAL',
   },
   {
-    id: '25',
+    id: '24',
     title: '채권가격은 어떻게 계산할까요?',
     description: '채권가격은 어떻게 계산할까요?',
     duration: '0:46',
@@ -343,7 +331,7 @@ export const shortVideos: VideoItem[] = [
   },
 
   {
-    id: '26',
+    id: '25',
     title: '국내 ETF 시장 280배 성장했다고요??｜ETF 쇼츠 ｜Kodex ｜코덱스',
     description:
       '삼성자산운용과 Kodex는 지난 20년이 넘는 시간 동안 국내 ETF시장과 함께 성장해 나아갔습니다.',
@@ -357,7 +345,7 @@ export const shortVideos: VideoItem[] = [
     investType: 'ACTIVE',
   },
   {
-    id: '27',
+    id: '26',
     title: '전문가가 알려주는 좋은 ETF 고르는 꿀팁 3가지',
     description: '전문가가 알려주는 좋은 ETF 고르는 꿀팁 3가지',
     duration: '0:54',
@@ -370,7 +358,7 @@ export const shortVideos: VideoItem[] = [
     investType: 'ACTIVE',
   },
   {
-    id: '28',
+    id: '27',
     title: '연준 발표 속 숨겨진 메세지 ‘스태그플레이션’ 시그널',
     description: '연준 발표 속 숨겨진 메세지 ‘스태그플레이션’ 시그널',
     duration: '1:17',
@@ -383,7 +371,7 @@ export const shortVideos: VideoItem[] = [
     investType: 'ACTIVE',
   },
   {
-    id: '29',
+    id: '28',
     title: '통화량 사상 최고, 지금 무엇을 사야 할까',
     description: '통화량 사상 최고, 지금 무엇을 사야 할까',
     duration: '1:18',
@@ -396,7 +384,7 @@ export const shortVideos: VideoItem[] = [
     investType: 'ACTIVE',
   },
   {
-    id: '30',
+    id: '29',
     title: '코스피 상승의 진정한 이유 (효라클, 한국주식5차파동)',
     description: '코스피 3000 시대를 넘어서 5000 까지 갈 수 있을까요?',
     duration: '0:52',
@@ -409,7 +397,7 @@ export const shortVideos: VideoItem[] = [
     investType: 'ACTIVE',
   },
   {
-    id: '31',
+    id: '30',
     title: '1분만에 완벽 정리 채권 가격과 금리의 상관관계 | 오답노트 EP.03',
     description:
       '1분만에 완벽 정리 채권 가격과 금리의 상관관계 | 오답노트 EP.03',
@@ -423,7 +411,7 @@ export const shortVideos: VideoItem[] = [
     investType: 'ACTIVE',
   },
   {
-    id: '32',
+    id: '31',
     title: 'ETF는 주식 같은? 펀드입니다',
     description: 'ETF는 주식 같은? 펀드입니다',
     duration: '0:57',
@@ -436,7 +424,7 @@ export const shortVideos: VideoItem[] = [
     investType: 'ACTIVE',
   },
   {
-    id: '33',
+    id: '32',
     title: '해외투자절세꿀팁 배우자증여',
     description: ' ',
     duration: '0:59',
@@ -449,7 +437,7 @@ export const shortVideos: VideoItem[] = [
     investType: 'AGGRESSIVE',
   },
   {
-    id: '34',
+    id: '33',
     title: '바이오 주식은 왜? 변동성이 큰 걸까?',
     description: '바이오 주식은 왜? 변동성이 큰 걸까?',
     duration: '0:47',
@@ -462,7 +450,7 @@ export const shortVideos: VideoItem[] = [
     investType: 'AGGRESSIVE',
   },
   {
-    id: '35',
+    id: '34',
     title: '주식 투자 꼭 해야할까?',
     description: '주식 투자 꼭 해야할까?',
     duration: '0:36',
@@ -475,7 +463,7 @@ export const shortVideos: VideoItem[] = [
     investType: 'AGGRESSIVE',
   },
   {
-    id: '36',
+    id: '35',
     title: '[주식썰] 귀 얇은 초보 투자자는 특특고고고위험군 투자유형이다',
     description: '[주식썰] 귀 얇은 초보 투자자는 특특고고고위험군 투자유형이다',
     duration: '0:48',

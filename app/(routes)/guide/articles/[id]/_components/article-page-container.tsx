@@ -112,7 +112,7 @@ export default function ArticlePageContainer({
                   elements.push(
                     <h1
                       key={i}
-                      className='text-2xl font-bold text-gray-900 mb-4 mt-6'
+                      className='text-2xl font-bold text-gray-900 mb-4'
                     >
                       {line.slice(2)}
                     </h1>

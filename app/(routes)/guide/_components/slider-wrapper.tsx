@@ -9,9 +9,10 @@ import 'swiper/css/pagination';
 
 interface SliderWrapperProps {
   videos: VideoPreviewProps[];
+  investType?: string;
 }
 
-export const SliderWrapper = ({ videos }: SliderWrapperProps) => {
+export const SliderWrapper = ({ videos, investType }: SliderWrapperProps) => {
   return (
     <>
       <Swiper
@@ -39,6 +40,7 @@ export const SliderWrapper = ({ videos }: SliderWrapperProps) => {
               views={video.views}
               videoUrl={video.videoUrl}
               category={video.category}
+              investType={investType}
             />
           </SwiperSlide>
         ))}
