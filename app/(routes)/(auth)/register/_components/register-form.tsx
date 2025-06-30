@@ -34,6 +34,7 @@ export interface FormData {
   password: string;
   passwordConfirm: string;
   pinCode: string;
+  oldPassword?: string;
 }
 
 interface ValidationErrors {

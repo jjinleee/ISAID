@@ -12,6 +12,7 @@ export const submitUserUpdate = async ({
   onFinally?: () => void;
 }) => {
   const isPinUpdate = 'oldPinCode' in data && 'pinCode' in data;
+  const isPasswordUpdate = 'oldPassword' in data && 'password' in data;
   const res = await updateUser(data);
 
   if (res.success) {
@@ -29,7 +30,9 @@ export const submitUserUpdate = async ({
     toast.error(
       isPinUpdate
         ? '이전 비밀번호가 일치하지 않습니다.'
-        : '잠시 후 다시 시도해주세요.',
+        : isPasswordUpdate
+          ? '기존 비밀번호를 입력해야 합니다.'
+          : '잠시 후 다시 시도해주세요.',
       {
         duration: 2000,
         icon: <CircleAlert className='w-5 h-5 text-hana-red' />,
