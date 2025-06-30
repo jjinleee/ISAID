@@ -64,9 +64,11 @@ const ShortsScrollViewer: React.FC<ShortsScrollViewerProps> = ({
   }, [category, investType]);
 
   useEffect(() => {
+    const itemHeight = window.innerHeight - 150;
+
     if (containerRef.current) {
       containerRef.current.scrollTo({
-        top: initialIndex * window.innerHeight,
+        top: initialIndex * itemHeight,
         behavior: 'auto',
       });
     }
@@ -78,9 +80,10 @@ const ShortsScrollViewer: React.FC<ShortsScrollViewerProps> = ({
 
     let startY = 0;
 
+    const BOTTOM_MARGIN = 150; // px
     const atTop = () => el.scrollTop <= 0;
     const atBottom = () =>
-      el.scrollTop + el.clientHeight >= el.scrollHeight - 1;
+      el.scrollTop + el.clientHeight >= el.scrollHeight - BOTTOM_MARGIN;
 
     const onWheel = (e: WheelEvent) => {
       if ((e.deltaY < 0 && atTop()) || (e.deltaY > 0 && atBottom())) {
@@ -169,18 +172,13 @@ const ShortsScrollViewer: React.FC<ShortsScrollViewerProps> = ({
   return (
     <div
       ref={containerRef}
-      className='h-screen overflow-y-scroll snap-y snap-mandatory overscroll-y-contain pb-[150px]'
-      style={{ scrollPaddingBottom: '150px' }}
+      className='h-[calc(100vh-150px)] overflow-y-scroll scrollbar-hide snap-y snap-mandatory overscroll-y-contain'
     >
       {filteredVideo.map((video, idx) => (
         <div
-          key={video.id}
+          key={idx}
           className='h-[calc(100vh-150px)] overflow-y-hidden snap-start video-container'
         >
-          {/*// <div key={video.id} className='h-screen snap-start'>*/}
-          {/*<div key={video.id} className='min-h-screen snap-start'>*/}
-          {/*<div className='h-[150px] shrink-0 snap-none aria-hidden:true'></div>*/}
-
           <iframe
             width='100%'
             height='100%'

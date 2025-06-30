@@ -77,6 +77,7 @@ export const ShortsViewerContainer = ({ session }: Props) => {
               views={views}
               videoUrl={videoUrl}
               category={category}
+              investType={investType}
             />
           )
         )}
