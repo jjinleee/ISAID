@@ -31,7 +31,7 @@ export const submitUserUpdate = async ({
       isPinUpdate
         ? '이전 비밀번호가 일치하지 않습니다.'
         : isPasswordUpdate
-          ? '기존 비밀번호를 입력해야 합니다.'
+          ? '기존 비밀번호가 일치하지 않습니다.'
           : '잠시 후 다시 시도해주세요.',
       {
         duration: 2000,
