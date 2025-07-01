@@ -39,7 +39,7 @@ describe('/api/challenge/claim', () => {
   });
 
   describe('POST', () => {
-    it('should return 401 when not authenticated', async () => {
+    it('인증되지 않은 경우 401을 반환한다', async () => {
       mockGetServerSession.mockResolvedValue(null);
 
       const request = new Request('http://localhost/api/challenge/claim', {
@@ -54,7 +54,7 @@ describe('/api/challenge/claim', () => {
       expect(data.message).toBe('Unauthorized');
     });
 
-    it('should return 400 when challengeId is missing', async () => {
+    it('challengeId가 없는 경우 400을 반환한다', async () => {
       mockGetServerSession.mockResolvedValue({
         user: { id: '1' },
       });
@@ -71,7 +71,7 @@ describe('/api/challenge/claim', () => {
       expect(data.message).toBe('Challenge ID is required');
     });
 
-    it('should successfully claim challenge reward', async () => {
+    it('챌린지 보상을 정상적으로 수령하면 200을 반환한다', async () => {
       mockGetServerSession.mockResolvedValue({
         user: { id: '1' },
       });
@@ -111,7 +111,7 @@ describe('/api/challenge/claim', () => {
       );
     });
 
-    it('should return 500 when cannot claim challenge', async () => {
+    it('보상을 받을 수 없는 챌린지인 경우 500을 반환한다', async () => {
       mockGetServerSession.mockResolvedValue({
         user: { id: '1' },
       });
@@ -138,7 +138,7 @@ describe('/api/challenge/claim', () => {
       expect(data.message).toBe('Already claimed');
     });
 
-    it('should return 400 when claim service returns failure', async () => {
+    it('보상 처리 중 실패한 경우 400을 반환한다', async () => {
       mockGetServerSession.mockResolvedValue({
         user: { id: '1' },
       });
@@ -166,7 +166,7 @@ describe('/api/challenge/claim', () => {
       expect(data.message).toBe('ISA account not found');
     });
 
-    it('should handle unexpected errors', async () => {
+    it('예상치 못한 오류가 발생하면 500을 반환한다', async () => {
       mockGetServerSession.mockResolvedValue({
         user: { id: '1' },
       });
