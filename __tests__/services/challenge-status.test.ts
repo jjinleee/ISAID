@@ -16,7 +16,7 @@ describe('Challenge Status Service', () => {
   const today = dayjs().tz('Asia/Seoul').startOf('day');
 
   describe('calculateChallengeStatus', () => {
-    it('should return CLAIMED when challenge is already claimed', () => {
+    it('이미 보상을 수령한 챌린지는 CLAIMED를 반환한다', () => {
       const challenge: ChallengeWithProgress = {
         id: BigInt(1),
         challengeType: 'ONCE',
@@ -30,7 +30,7 @@ describe('Challenge Status Service', () => {
       expect(status).toBe('CLAIMED');
     });
 
-    it('should return ACHIEVABLE for ONCE type when progress >= 1', () => {
+    it('ONCE 타입 챌린지는 진행도가 1 이상이면 ACHIEVABLE을 반환한다', () => {
       const challenge: ChallengeWithProgress = {
         id: BigInt(1),
         challengeType: 'ONCE',
@@ -44,7 +44,7 @@ describe('Challenge Status Service', () => {
       expect(status).toBe('ACHIEVABLE');
     });
 
-    it('should return INCOMPLETE for ONCE type when progress < 1', () => {
+    it('ONCE 타입 챌린지는 진행도가 1 미만이면 INCOMPLETE를 반환한다', () => {
       const challenge: ChallengeWithProgress = {
         id: BigInt(1),
         challengeType: 'ONCE',
@@ -58,7 +58,7 @@ describe('Challenge Status Service', () => {
       expect(status).toBe('INCOMPLETE');
     });
 
-    it('should return ACHIEVABLE for STREAK type when progress >= 7 and updated today', () => {
+    it('STREAK 타입 챌린지는 진행도 7 이상이고 오늘 갱신됐으면 ACHIEVABLE을 반환한다', () => {
       const challenge: ChallengeWithProgress = {
         id: BigInt(1),
         challengeType: 'STREAK',
@@ -76,7 +76,7 @@ describe('Challenge Status Service', () => {
       expect(status).toBe('ACHIEVABLE');
     });
 
-    it('should return INCOMPLETE for STREAK type when progress >= 7 but not updated today', () => {
+    it('STREAK 타입 챌린지는 진행도 7 이상이어도 오늘 갱신되지 않았으면 INCOMPLETE를 반환한다', () => {
       const yesterday = today.subtract(1, 'day');
       const challenge: ChallengeWithProgress = {
         id: BigInt(1),
@@ -95,7 +95,7 @@ describe('Challenge Status Service', () => {
       expect(status).toBe('INCOMPLETE');
     });
 
-    it('should return ACHIEVABLE for DAILY type when progress > 0 and updated today', () => {
+    it('DAILY 타입 챌린지는 진행도가 0보다 크고 오늘 갱신됐으면 ACHIEVABLE을 반환한다', () => {
       const challenge: ChallengeWithProgress = {
         id: BigInt(1),
         challengeType: 'DAILY',
@@ -113,7 +113,7 @@ describe('Challenge Status Service', () => {
       expect(status).toBe('ACHIEVABLE');
     });
 
-    it('should return ACHIEVABLE for DAILY type when progress > 0 and created today', () => {
+    it('DAILY 타입 챌린지는 진행도가 0보다 크고 오늘 생성됐으면 ACHIEVABLE을 반환한다', () => {
       const challenge: ChallengeWithProgress = {
         id: BigInt(1),
         challengeType: 'DAILY',
@@ -131,7 +131,7 @@ describe('Challenge Status Service', () => {
       expect(status).toBe('ACHIEVABLE');
     });
 
-    it('should return CLAIMED for DAILY type when already claimed today', () => {
+    it('DAILY 타입 챌린지는 오늘 이미 보상을 수령했으면 CLAIMED를 반환한다', () => {
       const challenge: ChallengeWithProgress = {
         id: BigInt(1),
         challengeType: 'DAILY',
@@ -149,7 +149,7 @@ describe('Challenge Status Service', () => {
       expect(status).toBe('CLAIMED');
     });
 
-    it('should return INCOMPLETE for DAILY type when progress = 0 even if updated today', () => {
+    it('DAILY 타입 챌린지는 진행도가 0이면 오늘 갱신됐더라도 INCOMPLETE를 반환한다', () => {
       const challenge: ChallengeWithProgress = {
         id: BigInt(1),
         challengeType: 'DAILY',
@@ -167,7 +167,7 @@ describe('Challenge Status Service', () => {
       expect(status).toBe('INCOMPLETE');
     });
 
-    it('should return INCOMPLETE if no progress data exists', () => {
+    it('진행도 정보가 없으면 INCOMPLETE를 반환한다', () => {
       const challenge: ChallengeWithProgress = {
         id: BigInt(1),
         challengeType: 'ONCE',
@@ -187,7 +187,7 @@ describe('Challenge Status Service', () => {
       mockTx = createChallengePrismaMock();
     });
 
-    it('should return false when challenge not found', async () => {
+    it('챌린지를 찾을 수 없으면 false를 반환하고 이유를 제공한다', async () => {
       mockTx.challenge.findUnique.mockResolvedValue(null);
 
       const result = await canClaimChallenge(BigInt(1), userId, mockTx);
@@ -196,7 +196,7 @@ describe('Challenge Status Service', () => {
       expect(result.reason).toBe('Challenge not found');
     });
 
-    it('should return false when already claimed', async () => {
+    it('이미 보상을 수령한 챌린지는 false를 반환하고 이유를 제공한다', async () => {
       const mockChallenge = {
         id: BigInt(1),
         challengeType: 'ONCE',
@@ -214,7 +214,7 @@ describe('Challenge Status Service', () => {
       expect(result.reason).toBe('Already claimed');
     });
 
-    it('should return true when challenge is achievable', async () => {
+    it('보상이 가능한 챌린지는 true를 반환한다', async () => {
       const mockChallenge = {
         id: BigInt(1),
         challengeType: 'ONCE',
@@ -232,7 +232,7 @@ describe('Challenge Status Service', () => {
       expect(result.reason).toBeUndefined();
     });
 
-    it('should return false when challenge is not completed', async () => {
+    it('완료되지 않은 챌린지는 false를 반환하고 이유를 제공한다', async () => {
       const mockChallenge = {
         id: BigInt(1),
         challengeType: 'ONCE',

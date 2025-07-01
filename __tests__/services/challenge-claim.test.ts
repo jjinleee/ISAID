@@ -20,7 +20,7 @@ describe('Challenge Claim Service', () => {
     mockTx = createChallengePrismaMock();
   });
 
-  it('should successfully claim ONCE type challenge reward', async () => {
+  it('ONCE 타입 챌린지 보상을 정상적으로 수령한다', async () => {
     // Arrange
     const mockChallenge = {
       id: challengeId,
@@ -88,7 +88,7 @@ describe('Challenge Claim Service', () => {
     expect(mockTx.userChallengeProgress.updateMany).not.toHaveBeenCalled();
   });
 
-  it('should successfully claim DAILY type challenge reward and reset progress', async () => {
+  it('DAILY 타입 챌린지 보상을 정상적으로 수령하고 진행도를 초기화한다', async () => {
     // Arrange
     const mockChallenge = {
       id: challengeId,
@@ -140,7 +140,7 @@ describe('Challenge Claim Service', () => {
     });
   });
 
-  it('should return error when challenge not found', async () => {
+  it('챌린지를 찾을 수 없으면 에러를 반환한다', async () => {
     mockTx.challenge.findUnique.mockResolvedValue(null);
 
     const result = await claimChallengeReward({ challengeId, userId }, mockTx);
@@ -149,7 +149,7 @@ describe('Challenge Claim Service', () => {
     expect(result.message).toBe('Challenge not found');
   });
 
-  it('should return error when ISA account not found', async () => {
+  it('ISA 계좌를 찾을 수 없으면 에러를 반환한다', async () => {
     const mockChallenge = {
       id: challengeId,
       etfId,
@@ -172,7 +172,7 @@ describe('Challenge Claim Service', () => {
     expect(result.message).toBe('ISA account not found');
   });
 
-  it('should return error when latest ETF price not found', async () => {
+  it('최신 ETF 가격을 찾을 수 없으면 에러를 반환한다', async () => {
     const mockChallenge = {
       id: challengeId,
       etfId,
@@ -196,7 +196,7 @@ describe('Challenge Claim Service', () => {
     expect(result.message).toBe('Latest ETF price not found');
   });
 
-  it('should handle existing ETF holding correctly', async () => {
+  it('기존 ETF 보유 내역이 있는 경우 올바르게 처리한다', async () => {
     // Arrange
     const mockChallenge = {
       id: challengeId,
@@ -276,7 +276,7 @@ describe('Challenge Claim Service', () => {
     });
   });
 
-  it('should correctly calculate avgCost when quantity and price have decimals', async () => {
+  it('수량과 가격이 소수일 경우 평균 단가를 올바르게 계산한다', async () => {
     const mockChallenge = {
       id: challengeId,
       etfId,
