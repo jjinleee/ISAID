@@ -1,0 +1,24 @@
+name: '[ Fix ] 버그 수정'
+description: 수정이 필요한 버그 사항을 작성해주세요.
+title: '[ Fix ] '
+body:
+  - type: markdown
+    attributes:
+      value: |
+        작성 예시 : "[ Fix ] 로그인 시 비정상 응답 처리"
+  - type: textarea
+    id: fix-description
+    attributes:
+      label: 🛠 Issue
+      description: 어떤 문제가 발생했는지 구체적으로 작성해주세요.
+      placeholder: 버그에 대한 설명을 작성해주세요.
+    validations:
+      required: true
+  - type: textarea
+    id: fix-list
+    attributes:
+      label: 📝 해결 방안 및 작업 목록
+      description: 수정에 필요한 항목을 체크리스트 형식으로 작성해주세요.
+      placeholder: 예) - [ ] API 오류 로그 확인\n- [ ] 예외 처리 로직 추가
+    validations:
+      required: true
