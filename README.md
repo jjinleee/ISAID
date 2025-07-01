@@ -43,15 +43,15 @@
 
 ## 화면 구성
 
-| 홈 화면 | 투자 성향 테스트 | ETF 추천 결과 | ETF 상세 조회 |
+| 첫 화면 | 홈 화면 | ETF 챌린지 | 데일리 퀴즈 |
 |--|--|--|--|
 | ![](https://github.com/user-attachments/assets/27578b73-4b72-42c9-b821-cd61a79c489d) | ![](https://github.com/user-attachments/assets/e3f7045b-e034-4d21-a977-50550e1d1f49)  | ![](https://github.com/user-attachments/assets/335916e3-d50b-4185-8279-6c5e7c30bb53)  | ![](https://github.com/user-attachments/assets/4c2574e1-8dcd-42d7-92b4-40574c3ed9fa)  |
 
-| 리밸런싱 추천 | 수익률 분석 | 절세 계산기 | 금융 퀴즈 캘린더 |
+| ETF 투자성향 테스트 | ETF 추천 | ETF 상세보기 | 마이페이지 |
 |--|--|--|--|
 | ![](https://github.com/user-attachments/assets/c1b5582a-6062-413b-95f1-6861fa2b81fb) | ![](https://github.com/user-attachments/assets/10b619a3-d3e3-4fe9-8b72-e9d5fcf7362c) | ![](https://github.com/user-attachments/assets/19ede02e-96be-442b-bb29-88441c4d597d)  | ![](https://github.com/user-attachments/assets/46c26371-cec6-4c5b-a360-1aa8c24133b4)  |
 
-| 마이페이지 | 금융 가이드 홈 | 가이드 카드 뷰 | 숏츠 가이드 |
+| ETF 투자 성향 테스트 | 금융 가이드  | 카테고리별 가이드 | 숏츠 가이드 |
 |--|--|--|--|
 | ![](https://github.com/user-attachments/assets/935a03f0-4ed8-48cc-ad3f-7ebdb9823b75) | ![](https://github.com/user-attachments/assets/b6e9fdb4-95a6-49fd-818a-1325b4d65b67) | ![](https://github.com/user-attachments/assets/1cd818bf-604f-467b-b4b6-e7f63a94aeaa) | ![](https://github.com/user-attachments/assets/4e94493e-8d9b-4b53-ae05-5762309f76c0) |
 
@@ -240,4 +240,4 @@ ISAID 프로젝트는 포괄적인 테스트 스위트를 제공하여 코드의
 ## 팀원 소개
 | <img src="https://avatars.githubusercontent.com/dbstj0403" width="130"/> | <img src="https://avatars.githubusercontent.com/HyejeongSon" width="130"/> | <img src="https://avatars.githubusercontent.com/hyo-joon" width="130"/> | <img src="https://avatars.githubusercontent.com/jjinleee" width="130"/> | <img src="https://avatars.githubusercontent.com/KimGiii" width="130"/> | <img src="https://avatars.githubusercontent.com/VarGun" width="130"/> |
 |:--:|:--:|:--:|:--:|:--:|:--:|
-| **윤서**<br>[@dbstj0403](https://github.com/dbstj0403)<br/> | **Hyejeong Son**<br>[@HyejeongSon](https://github.com/HyejeongSon)<br/> | **Hyo-joon**<br>[@hyo-joon](https://github.com/hyo-joon)<br/> | **Jin Lee**<br>[@jjinleee](https://github.com/jjinleee)<br/>| **Gibo Kim**<br>[@KimGiii](https://github.com/KimGiii)<br/> | **Heegun Kwak**<br>[@VarGun](https://github.com/VarGun)<br/> |
+| **Yoonseo**<br>[@dbstj0403](https://github.com/dbstj0403)<br/> | **Hyejeong Son**<br>[@HyejeongSon](https://github.com/HyejeongSon)<br/> | **Hyo-joon**<br>[@hyo-joon](https://github.com/hyo-joon)<br/> | **Jin Lee**<br>[@jjinleee](https://github.com/jjinleee)<br/>| **Gibo Kim**<br>[@KimGiii](https://github.com/KimGiii)<br/> | **Heegun Kwak**<br>[@VarGun](https://github.com/VarGun)<br/> |
